@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Blue-themed color palette inspired by Blue Zone Festival */
+    --color-primary: 59 130 153; /* Teal blue */
+    --color-primary-light: 102 178 201;
+    --color-primary-dark: 41 91 107;
+    --color-secondary: 82 166 193; /* Light blue */
+    --color-accent: 143 199 220; /* Soft sky blue */
+    --color-background: 248 251 253; /* Very light blue-tinted white */
+    --color-surface: 255 255 255;
+    --color-text-primary: 45 45 45;
+    --color-text: 45 45 45;
+    --color-text-secondary: 100 100 100;
+    --color-border: 215 230 238;
+    --color-success: 59 130 153;
+    --color-error: 196 113 102;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-[rgb(var(--color-background))] text-[rgb(var(--color-text-primary))];
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    line-height: 1.6;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: rgb(var(--color-text-primary));
+    letter-spacing: -0.02em;
+  }
+
+  h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: rgb(var(--color-text-primary));
+    letter-spacing: -0.01em;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: rgb(var(--color-text-primary));
+  }
+
+  h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: rgb(var(--color-text-primary));
+  }
+
+  h5 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: rgb(var(--color-text-primary));
+  }
+
+  p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: rgb(var(--color-text-primary));
+  }
+
+  a {
+    color: rgb(var(--color-primary));
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  a:hover {
+    color: rgb(var(--color-primary-dark));
+  }
+
+  /* Buttons */
+  button {
+    font-family: inherit;
+  }
+
+  /* Images */
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Lists */
+  ul, ol {
+    list-style: none;
+  }
+
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 2rem;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+    }
+  }
+}
