@@ -31,7 +31,8 @@
             </button>
           </template>
           <template v-else>
-            <button @click="navigate('chat')" class="nav-icon-btn" title="Messages">
+            <NotificationBell />
+            <button @click="navigate('messages')" class="nav-icon-btn" title="Messages">
               <MessageCircle :size="20" />
             </button>
             <button @click="navigate('profile')" class="nav-avatar">
@@ -69,7 +70,7 @@
             </button>
           </template>
           <template v-else>
-            <button @click="navigateAndClose('chat')" class="nav-btn nav-btn--ghost nav-btn--full">
+            <button @click="navigateAndClose('messages')" class="nav-btn nav-btn--ghost nav-btn--full">
               <MessageCircle :size="20" />
               <span>Messages</span>
             </button>
@@ -86,6 +87,7 @@
 
 <script>
 import { Sprout, Menu, X, MessageCircle, User } from 'lucide-vue-next'
+import NotificationBell from './NotificationBell.vue'
 
 export default {
   name: 'Navigation',
@@ -94,17 +96,15 @@ export default {
     Menu,
     X,
     MessageCircle,
-    User
+    User,
+    NotificationBell
   },
   props: {
     currentPage: {
       type: String,
       default: 'home'
     },
-    isLoggedIn: {
-      type: Boolean,
-      default: false
-    }
+    isLoggedIn: Boolean
   },
   data() {
     return {

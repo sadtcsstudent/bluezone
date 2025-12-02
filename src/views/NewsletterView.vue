@@ -42,9 +42,13 @@
             <span>Thank you for subscribing!</span>
           </div>
 
-          <p class="privacy-text">
-            We respect your privacy. Unsubscribe anytime.
-          </p>
+          <div class="privacy-container">
+            <p class="privacy-text">
+              We respect your privacy. 
+              <button v-if="subscribed" @click="handleUnsubscribe" class="unsubscribe-link">Unsubscribe</button>
+              <span v-else>Unsubscribe anytime.</span>
+            </p>
+          </div>
         </div>
       </div>
 
@@ -125,6 +129,7 @@
 
 <script>
 import { Mail, Calendar, Download, ArrowRight, CheckCircle } from 'lucide-vue-next'
+import api from '@/services/api'
 
 export default {
   name: 'NewsletterView',
@@ -139,41 +144,36 @@ export default {
     return {
       email: '',
       subscribed: false,
-      pastNewsletters: [
-        {
-          title: 'December 2025 - Winter Wellness',
-          date: 'December 1, 2025',
-          description: 'Seasonal recipes, upcoming winter events, and tips for staying active during the colder months.',
-          topics: ['Healthy Eating', 'Winter Activities', 'Community Events'],
-        },
-        {
-          title: 'November 2025 - Harvest Season',
-          date: 'November 1, 2025',
-          description: 'Celebrating local harvests, preserving techniques, and stories from community gardens.',
-          topics: ['Food Preservation', 'Local Produce', 'Garden Updates'],
-        },
-        {
-          title: 'October 2025 - Community Connections',
-          date: 'October 1, 2025',
-          description: 'Spotlight on new initiatives, member stories, and the impact of our walking groups.',
-          topics: ['Member Stories', 'New Initiatives', 'Walking Groups'],
-        },
-        {
-          title: 'September 2025 - Back to Basics',
-          date: 'September 1, 2025',
-          description: 'Simple healthy habits, meal planning tips, and upcoming autumn workshops.',
-          topics: ['Healthy Habits', 'Meal Planning', 'Workshops'],
-        },
-      ]
+      pastNewsletters: []
     }
   },
+  async created() {
+    const data = await api.get('/newsletter/past')
+    this.pastNewsletters = data.newsletters?.map((n) => ({
+      ...n,
+      date: new Date(n.publishedAt).toLocaleDateString()
+    })) || []
+  },
   methods: {
-    handleSubscribe() {
-      this.subscribed = true
-      setTimeout(() => {
-        this.email = ''
+    async handleSubscribe() {
+      try {
+        await api.post('/newsletter/subscribe', { email: this.email })
+        this.subscribed = true
+        // Keep subscribed state true for UI feedback
+      } catch (err) {
+        console.error('Subscribe failed', err)
+      }
+    },
+    async handleUnsubscribe() {
+      if (!confirm('Are you sure you want to unsubscribe?')) return
+      try {
+        await api.post('/newsletter/unsubscribe', { email: this.email })
         this.subscribed = false
-      }, 3000)
+        this.email = ''
+        alert('You have been unsubscribed.')
+      } catch (err) {
+        console.error('Unsubscribe failed', err)
+      }
     }
   }
 }
@@ -342,9 +342,27 @@ export default {
   margin-top: 2rem;
 }
 
+.privacy-container {
+  margin-top: 1rem;
+}
+
 .privacy-text {
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.875rem;
+}
+
+.unsubscribe-link {
+  background: none;
+  border: none;
+  color: white;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font-size: inherit;
+}
+
+.unsubscribe-link:hover {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* Benefits Section */

@@ -11,7 +11,11 @@
   "author": "Alexandra Lupan <alexandra.lupan@elnino.tech>",
   "license": "MIT",
   "dependencies": {
+    "axios": "^1.13.2",
     "lucide-vue-next": "^0.555.0",
+    "pinia": "^3.0.4",
+    "rollup": "^4.53.3",
+    "socket.io-client": "^4.8.1",
     "vue": "^3.5.25",
     "vue-router": "^4.6.3"
   },

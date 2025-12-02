@@ -35,9 +35,9 @@
                 <label for="password" class="form-label">
                   Password
                 </label>
-                <a href="#" class="forgot-link">
+                <RouterLink :to="{ name: 'forgot-password' }" class="forgot-link">
                   Forgot password?
-                </a>
+                </RouterLink>
               </div>
               <div class="input-wrapper">
                 <Lock class="input-icon" :size="20" />
@@ -91,8 +91,8 @@
 
           <!-- Social Login -->
           <div class="social-login">
-            <button class="social-button">Google</button>
-            <button class="social-button">Facebook</button>
+            <button class="social-button" @click="handleSocialLogin('google')">Google</button>
+            <button class="social-button" @click="handleSocialLogin('facebook')">Facebook</button>
           </div>
         </div>
 
@@ -114,6 +114,7 @@
 <script>
 import { Mail, Lock, ArrowRight } from 'lucide-vue-next'
 import ImageWithFallback from '../components/ImageWithFallback.vue'
+import { useAuthStore } from '@/stores/auth'
 
 export default {
   name: 'LoginView',
@@ -127,22 +128,29 @@ export default {
     return {
       email: '',
       password: '',
-      rememberMe: false
+      rememberMe: false,
+      error: null
     }
   },
+  setup() {
+    const authStore = useAuthStore()
+    return { authStore }
+  },
   methods: {
-    handleSubmit() {
-      // In a real app, this would validate credentials
-      console.log('Login attempt:', {
-        email: this.email,
-        password: this.password,
-        rememberMe: this.rememberMe
-      })
-      // For now, just navigate to home
-      this.$router.push({ name: 'home' })
+    async handleSubmit() {
+      this.error = null
+      try {
+        await this.authStore.login(this.email, this.password, this.rememberMe)
+        this.$router.push({ name: 'home' })
+      } catch (e) {
+        this.error = e.message || 'Login failed'
+      }
     },
     handleNavigate(page) {
       this.$router.push({ name: page })
+    },
+    handleSocialLogin(provider) {
+      window.location.href = `http://localhost:3000/api/auth/${provider}`
     }
   }
 }

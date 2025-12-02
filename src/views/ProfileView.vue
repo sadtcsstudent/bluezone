@@ -1,24 +1,38 @@
 <template>
   <div class="profile-page">
-    <div class="profile-container">
+    <div v-if="loading" class="loading-state">
+      <div class="spinner"></div>
+    </div>
+    <div v-else class="profile-container">
       <!-- Header -->
       <div class="profile-header">
         <div class="profile-info">
-          <div class="profile-avatar">
-            <User :size="48" />
+          <div class="profile-avatar" @click="triggerAvatarUpload">
+            <img v-if="profile.avatar" :src="profile.avatar" alt="Avatar" class="avatar-img" />
+            <User v-else :size="48" />
+            <div class="avatar-overlay">
+              <Camera :size="24" />
+            </div>
           </div>
+          <input
+            type="file"
+            ref="fileInput"
+            class="hidden-input"
+            accept="image/*"
+            @change="handleAvatarUpload"
+          />
           <div class="profile-details">
-            <h1>Anna van der Berg</h1>
-            <p class="profile-meta">Member since November 2024</p>
-            <p class="profile-location">Enschede, Twente</p>
+            <h1>{{ profile.name }}</h1>
+            <p class="profile-meta">Member since {{ memberSince }}</p>
+            <p class="profile-location">{{ profile.location }}</p>
           </div>
         </div>
         <div class="profile-actions">
-          <button class="btn btn--outline-primary">
+          <button class="btn btn--outline-primary" @click="openEditModal">
             <Edit :size="16" />
             <span>Edit Profile</span>
           </button>
-          <button class="btn btn--icon">
+          <button class="btn btn--icon" @click="navigate('settings')">
             <Settings :size="20" />
           </button>
         </div>
@@ -33,15 +47,15 @@
             <div class="stats-list">
               <div class="stat-item">
                 <span class="stat-label">Events Attended</span>
-                <span class="stat-value">12</span>
+                <span class="stat-value">{{ stats.eventsAttended }}</span>
               </div>
               <div class="stat-item">
                 <span class="stat-label">Groups Joined</span>
-                <span class="stat-value">3</span>
+                <span class="stat-value">{{ stats.groupsJoined }}</span>
               </div>
               <div class="stat-item">
                 <span class="stat-label">Forum Posts</span>
-                <span class="stat-value">28</span>
+                <span class="stat-value">{{ stats.forumPosts }}</span>
               </div>
             </div>
           </div>
@@ -50,7 +64,7 @@
           <div class="sidebar-card">
             <div class="card-header">
               <h3>My Interests</h3>
-              <button class="icon-btn">
+              <button class="icon-btn" @click="openEditModal">
                 <Edit :size="16" />
               </button>
             </div>
@@ -67,7 +81,7 @@
 
           <!-- Account Actions -->
           <div class="sidebar-card">
-            <button class="action-btn">
+            <button class="action-btn" @click="navigate('settings')">
               <Settings :size="20" />
               <span>Account Settings</span>
             </button>
@@ -146,96 +160,179 @@
               </button>
             </div>
             <div class="initiative-grid">
-              <div class="initiative-item">
-                <h5>Enschede Community Garden</h5>
-                <p class="initiative-location">Hengelosestraat 32, Enschede</p>
-              </div>
-              <div class="initiative-item">
-                <h5>Weekly Farmers Market</h5>
-                <p class="initiative-location">Oldenzaal Town Square</p>
+              <div
+                v-for="initiative in savedInitiatives"
+                :key="initiative.id"
+                class="initiative-item"
+              >
+                <h5>{{ initiative.name }}</h5>
+                <p class="initiative-location">{{ initiative.location }}</p>
               </div>
             </div>
           </div>
         </main>
       </div>
     </div>
+
+    <!-- Edit Profile Modal -->
+    <div v-if="showEditProfile" class="modal-overlay" @click.self="showEditProfile = false">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Edit Profile</h2>
+          <button class="close-btn" @click="showEditProfile = false">
+            <X :size="24" />
+          </button>
+        </div>
+        <form @submit.prevent="updateProfile" class="edit-form">
+          <div class="form-group">
+            <label>Display Name</label>
+            <input v-model="editForm.name" required />
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input v-model="editForm.location" placeholder="e.g. Enschede, NL" />
+          </div>
+          <div class="form-group">
+            <label>Bio</label>
+            <textarea v-model="editForm.bio" rows="3" placeholder="Tell us about yourself"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Interests (comma separated)</label>
+            <input v-model="editForm.interests" placeholder="Gardening, Cooking, Yoga" />
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn--ghost" @click="showEditProfile = false">Cancel</button>
+            <button type="submit" class="btn btn--primary" :disabled="saving">
+              {{ saving ? 'Saving...' : 'Save Changes' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { User, Calendar, MessageCircle, Heart, Settings, LogOut, Edit } from 'lucide-vue-next'
+import { User, Calendar, MessageCircle, Heart, Settings, LogOut, Edit, Camera, X } from 'lucide-vue-next'
+import api from '@/services/api'
+import { useToastStore } from '@/stores/toast'
 
 export default {
   name: 'ProfileView',
-  components: {
-    User,
-    Calendar,
-    MessageCircle,
-    Heart,
-    Settings,
-    LogOut,
-    Edit
-  },
+  components: { User, Calendar, MessageCircle, Heart, Settings, LogOut, Edit, Camera, X },
   data() {
     return {
-      upcomingEvents: [
-        {
-          title: 'Community Garden Workshop',
-          date: 'December 7, 2025',
-          time: '10:00 - 13:00',
-          status: 'Registered',
-        },
-        {
-          title: 'Healthy Cooking Class',
-          date: 'December 10, 2025',
-          time: '18:00 - 20:30',
-          status: 'Interested',
-        },
-        {
-          title: 'Nature Walk & Meditation',
-          date: 'December 14, 2025',
-          time: '09:00 - 11:00',
-          status: 'Registered',
-        },
-      ],
-      myGroups: [
-        {
-          name: 'Community Garden Members',
-          category: 'Gardening',
-          members: 24,
-          role: 'Member',
-        },
-        {
-          name: 'Walking Group Hengelo',
-          category: 'Health',
-          members: 18,
-          role: 'Member',
-        },
-        {
-          name: 'Healthy Cooking Enthusiasts',
-          category: 'Food & Nutrition',
-          members: 32,
-          role: 'Moderator',
-        },
-      ],
-      interests: [
-        'Gardening',
-        'Healthy Cooking',
-        'Walking Groups',
-        'Sustainability',
-        'Local Food',
-        'Community Events',
-      ]
+      profile: {},
+      memberSince: '',
+      interests: [],
+      stats: { eventsAttended: 0, groupsJoined: 0, forumPosts: 0 },
+      upcomingEvents: [],
+      myGroups: [],
+      savedInitiatives: [],
+      showEditProfile: false,
+      editForm: { name: '', location: '', bio: '', interests: '' },
+      saving: false,
+      loading: true
     }
   },
+  async created() {
+    await this.loadProfile()
+  },
   methods: {
+    async loadProfile() {
+      this.loading = true
+      try {
+        const profile = await api.get('/users/me')
+        const events = await api.get('/users/me/events')
+        const groups = await api.get('/users/me/groups')
+        const saved = await api.get('/users/me/saved-initiatives')
+
+        this.profile = profile.user || {}
+        this.memberSince = this.profile.memberSince ? new Date(this.profile.memberSince).toLocaleDateString() : ''
+        this.interests = this.profile.interests || []
+        this.stats = profile.stats || this.stats
+        this.upcomingEvents = (events.upcoming || []).map(e => ({
+          title: e.title,
+          date: new Date(e.date).toLocaleDateString(),
+          time: e.time,
+          status: 'Registered'
+        }))
+        this.myGroups = (groups.groups || []).map(g => ({
+          name: g.name,
+          category: g.category,
+          members: g.members?.length || 0,
+          role: 'Member'
+        }))
+        this.savedInitiatives = saved.initiatives || []
+      } catch (err) {
+        console.error('Failed to load profile', err)
+      } finally {
+        this.loading = false
+      }
+    },
     navigate(page) {
       this.$router.push({ name: page })
     },
     handleLogout() {
-      // Emit logout event to parent (App.vue)
-      this.$emit('logout')
-      this.$router.push({ name: 'home' })
+      // Clear token logic here if needed, or just redirect
+      localStorage.removeItem('token') // Assuming token is stored here
+      this.$router.push({ name: 'login' })
+    },
+    triggerAvatarUpload() {
+      this.$refs.fileInput.click()
+    },
+    async handleAvatarUpload(event) {
+      const file = event.target.files[0]
+      if (!file) return
+
+      const toast = useToastStore()
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('Image size should be less than 5MB')
+        return
+      }
+
+      const formData = new FormData()
+      formData.append('file', file)
+
+      try {
+        const response = await api.post('/upload/avatar', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
+        this.profile.avatar = response.url
+        toast.success('Avatar uploaded successfully')
+      } catch (error) {
+        console.error('Avatar upload failed:', error)
+        toast.error('Failed to upload avatar')
+      }
+    },
+    openEditModal() {
+      this.editForm = {
+        name: this.profile.name || '',
+        location: this.profile.location || '',
+        bio: this.profile.bio || '',
+        interests: (this.profile.interests || []).join(', ')
+      }
+      this.showEditProfile = true
+    },
+    async updateProfile() {
+      this.saving = true
+      const toast = useToastStore()
+      try {
+        const interestsArray = this.editForm.interests.split(',').map(i => i.trim()).filter(i => i)
+        const updates = {
+          ...this.editForm,
+          interests: interestsArray
+        }
+        await api.put('/users/me', updates)
+        await this.loadProfile()
+        this.showEditProfile = false
+        toast.success('Profile updated!')
+      } catch (err) {
+        console.error('Failed to update profile', err)
+        toast.error('Failed to update profile')
+      } finally {
+        this.saving = false
+      }
     }
   }
 }
@@ -306,6 +403,34 @@ export default {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.profile-avatar:hover .avatar-overlay {
+  opacity: 1;
+}
+
+.hidden-input {
+  display: none;
 }
 
 .profile-details h1 {
@@ -665,5 +790,139 @@ export default {
 
 .btn--icon:hover {
   background: white;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: rgb(var(--color-text));
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgb(var(--color-text-secondary));
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-text));
+}
+
+/* Loading State */
+.loading-state {
+  height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(var(--color-primary), 0.1);
+  border-top-color: rgb(var(--color-primary));
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: rgb(var(--color-text));
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(var(--color-border));
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: rgb(var(--color-primary));
+  box-shadow: 0 0 0 3px rgba(var(--color-primary), 0.1);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.btn--primary {
+  background: rgb(var(--color-primary));
+  color: white;
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: rgb(var(--color-primary-dark));
+}
+
+.btn--ghost {
+  background: transparent;
+  color: rgb(var(--color-text-secondary));
+}
+
+.btn--ghost:hover {
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-text));
+}
+
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 </style>

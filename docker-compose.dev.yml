@@ -1,0 +1,55 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bluezone
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev.api
+    working_dir: /app
+    env_file:
+      - server/.env
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@db:5432/bluezone?schema=public}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      NODE_ENV: development
+    volumes:
+      - ./server:/app
+      - api_node_modules:/app/node_modules
+      - ./server/uploads:/app/uploads
+    command: npm run dev
+    depends_on:
+      - db
+    ports:
+      - "4000:4000"
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev.web
+    working_dir: /app
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-/api}
+      VITE_PROXY_TARGET: http://api:4000
+      NODE_ENV: development
+      TAILWIND_DISABLE_LIGHTNINGCSS: "1"
+    volumes:
+      - ./:/app
+      - web_node_modules:/app/node_modules
+    command: npm run dev -- --host --port 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+  api_node_modules:
+  web_node_modules:

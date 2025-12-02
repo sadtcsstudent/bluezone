@@ -7,7 +7,8 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: HomeView,
+      meta: { requiresAuth: false }
     },
     {
       path: '/story',
@@ -53,6 +54,51 @@ const router = createRouter({
       path: '/forum',
       name: 'forum',
       component: () => import('../views/ForumView.vue')
+    },
+    {
+      path: '/forum/:id',
+      name: 'discussion-detail',
+      component: () => import('../views/DiscussionDetailView.vue')
+    },
+    {
+      path: '/events/:id',
+      name: 'event-detail',
+      component: () => import('../views/EventDetailView.vue')
+    },
+    {
+      path: '/messages',
+      name: 'messages',
+      component: () => import('../views/MessagesView.vue')
+    },
+    {
+      path: '/groups',
+      name: 'groups',
+      component: () => import('../views/GroupsView.vue')
+    },
+    {
+      path: '/groups/:id',
+      name: 'group-detail',
+      component: () => import('../views/GroupDetailView.vue')
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: () => import('../views/SettingsView.vue')
+    },
+    {
+      path: '/forgot-password',
+      name: 'forgot-password',
+      component: () => import('../views/ForgotPasswordView.vue')
+    },
+    {
+      path: '/reset-password',
+      name: 'reset-password',
+      component: () => import('../views/ResetPasswordView.vue')
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: () => import('../views/AdminDashboardView.vue')
     }
   ]
 })

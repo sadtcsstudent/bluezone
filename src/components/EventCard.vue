@@ -29,10 +29,14 @@
           <span>{{ attendees }} attending</span>
         </div>
       </div>
-      <button class="event-card__button" @click="handleViewDetails">
-        View Details
-        <ArrowRight :size="16" />
-      </button>
+      <div class="event-card__actions">
+        <button class="event-card__button event-card__button--outline" @click.stop="handleViewDetails">
+          View Details
+        </button>
+        <button class="event-card__button event-card__button--primary" @click.stop="handleRegister">
+          Register
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -84,7 +88,7 @@ export default {
       type: String,
       required: true
     },
-    onViewDetails: {
+    onRegister: {
       type: Function,
       default: () => {}
     }
@@ -92,6 +96,9 @@ export default {
   methods: {
     handleViewDetails() {
       this.onViewDetails()
+    },
+    handleRegister() {
+      this.onRegister()
     }
   }
 }
@@ -185,14 +192,16 @@ export default {
   color: rgb(var(--color-primary));
 }
 
-.event-card__button {
-  width: 100%;
+.event-card__actions {
+  display: flex;
+  gap: 0.5rem;
   margin-top: 1rem;
+}
+
+.event-card__button {
+  flex: 1;
   padding: 0.75rem 1rem;
   border-radius: 9999px;
-  border: 2px solid rgb(var(--color-primary));
-  background: transparent;
-  color: rgb(var(--color-primary));
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -200,10 +209,28 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  font-size: 0.875rem;
 }
 
-.event-card__button:hover {
+.event-card__button--outline {
+  border: 1px solid rgb(var(--color-border));
+  background: transparent;
+  color: rgb(var(--color-text));
+}
+
+.event-card__button--outline:hover {
+  border-color: rgb(var(--color-primary));
+  color: rgb(var(--color-primary));
+}
+
+.event-card__button--primary {
+  border: 1px solid rgb(var(--color-primary));
   background: rgb(var(--color-primary));
   color: white;
+}
+
+.event-card__button--primary:hover {
+  background: rgb(var(--color-primary-dark));
+  border-color: rgb(var(--color-primary-dark));
 }
 </style>

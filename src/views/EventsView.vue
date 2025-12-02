@@ -56,14 +56,27 @@
         </div>
       </div>
 
-      <!-- Events Grid/List -->
-      <div v-if="filteredEvents.length > 0" :class="viewMode === 'grid' ? 'events-grid' : 'events-list'">
-        <EventCard
-          v-for="(event, index) in filteredEvents"
-          :key="index"
-          v-bind="event"
-          :on-view-details="() => handleViewDetails(event)"
-        />
+      <!-- Loading State -->
+      <div v-if="loading" class="loading-state">
+        <div class="spinner"></div>
+      </div>
+
+      <div v-else-if="filteredEvents.length > 0">
+        <div :class="viewMode === 'grid' ? 'events-grid' : 'events-list'">
+          <EventCard
+            v-for="(event, index) in filteredEvents"
+            :key="index"
+            v-bind="event"
+            :on-view-details="() => handleViewDetails(event)"
+            :on-register="() => handleRegister(event)"
+          />
+        </div>
+        
+        <div v-if="hasMore && !searchQuery" class="load-more-container">
+          <button class="btn-load-more" @click="loadEvents(false)" :disabled="loadingMore">
+            {{ loadingMore ? 'Loading...' : 'Load More Events' }}
+          </button>
+        </div>
       </div>
 
       <!-- No Results -->
@@ -81,6 +94,8 @@
 <script>
 import { Calendar, Grid, List, Search, Filter } from 'lucide-vue-next'
 import EventCard from '../components/EventCard.vue'
+import api from '@/services/api'
+import { useToastStore } from '@/stores/toast'
 
 export default {
   name: 'EventsView',
@@ -105,69 +120,16 @@ export default {
         'Social',
         'Sustainability',
       ],
-      events: [
-        {
-          title: 'Community Garden Workshop',
-          date: 'December 7, 2025',
-          time: '10:00 - 13:00',
-          location: 'Enschede Community Garden',
-          attendees: 24,
-          imageUrl: 'https://images.unsplash.com/photo-1513906029980-32d13afe6d8c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb21tdW5pdHklMjBnYXJkZW4lMjBwZW9wbGV8ZW58MXx8fHwxNzY0NDMzODQyfDA&ixlib=rb-4.1.0&q=80&w=1080',
-          description: 'Learn sustainable gardening techniques and connect with fellow gardeners in our community.',
-          category: 'Gardening',
-        },
-        {
-          title: 'Healthy Cooking Class',
-          date: 'December 10, 2025',
-          time: '18:00 - 20:30',
-          location: 'De Kookplaats, Hengelo',
-          attendees: 18,
-          imageUrl: 'https://images.unsplash.com/photo-1686657429079-95d763456dbd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoZWFsdGh5JTIwbG9jYWwlMjBmb29kfGVufDF8fHx8MTc2NDQ5ODgwMnww&ixlib=rb-4.1.0&q=80&w=1080',
-          description: 'Discover delicious and nutritious recipes using local, seasonal ingredients.',
-          category: 'Food & Nutrition',
-        },
-        {
-          title: 'Nature Walk & Meditation',
-          date: 'December 14, 2025',
-          time: '09:00 - 11:00',
-          location: 'Lonnekerberg Nature Reserve',
-          attendees: 32,
-          imageUrl: 'https://images.unsplash.com/photo-1734596438089-ef300bc02fb0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxuYXR1cmUlMjB3ZWxsYmVpbmd8ZW58MXx8fHwxNzY0NDk4ODAyfDA&ixlib=rb-4.1.0&q=80&w=1080',
-          description: 'Join us for a peaceful morning walk in nature followed by a guided meditation session.',
-          category: 'Wellbeing',
-        },
-        {
-          title: 'Winter Farmers Market',
-          date: 'December 17, 2025',
-          time: '10:00 - 14:00',
-          location: 'Enschede Central Square',
-          attendees: 120,
-          imageUrl: 'https://images.unsplash.com/photo-1561136594-7f68413baa99?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsb2NhbCUyMGZhcm1lcnMlMjBtYXJrZXR8ZW58MXx8fHwxNzY0NDM3NjY0fDA&ixlib=rb-4.1.0&q=80&w=1080',
-          description: 'Shop local produce, handmade goods, and meet the farmers and artisans of Twente.',
-          category: 'Food & Nutrition',
-        },
-        {
-          title: 'Community Potluck Dinner',
-          date: 'December 20, 2025',
-          time: '18:00 - 21:00',
-          location: 'Community Center Hengelo',
-          attendees: 45,
-          imageUrl: 'https://images.unsplash.com/photo-1625246433906-6cfa33544b31?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb21tdW5pdHklMjBnYXRoZXJpbmd8ZW58MXx8fHwxNzY0NDU5MDg4fDA&ixlib=rb-4.1.0&q=80&w=1080',
-          description: 'Bring your favorite dish and share a meal with neighbors. A great way to connect and celebrate the season.',
-          category: 'Social',
-        },
-        {
-          title: 'Sustainable Living Workshop',
-          date: 'December 22, 2025',
-          time: '14:00 - 17:00',
-          location: 'EcoHub Enschede',
-          attendees: 28,
-          imageUrl: 'https://images.unsplash.com/photo-1661328992560-55256f06bdad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXN0YWluYWJsZSUyMGxpdmluZ3xlbnwxfHx8fDE3NjQ0OTg4MDN8MA&ixlib=rb-4.1.0&q=80&w=1080',
-          description: 'Learn practical tips for reducing waste, conserving energy, and living more sustainably.',
-          category: 'Sustainability',
-        },
-      ]
+      events: [],
+      loading: false,
+      page: 1,
+      limit: 9,
+      hasMore: true,
+      loadingMore: false
     }
+  },
+  async created() {
+    await this.loadEvents()
   },
   computed: {
     filteredEvents() {
@@ -181,6 +143,37 @@ export default {
     }
   },
   methods: {
+    async loadEvents(reset = false) {
+      if (reset) {
+        this.page = 1
+        this.events = []
+        this.hasMore = true
+        this.loading = true
+      } else {
+        this.loadingMore = true
+      }
+
+      try {
+        const offset = (this.page - 1) * this.limit
+        const data = await api.get(`/events?limit=${this.limit}&offset=${offset}`)
+
+        if (reset) {
+          this.events = data.events || []
+        } else {
+          this.events = [...this.events, ...(data.events || [])]
+        }
+
+        this.hasMore = (data.events || []).length === this.limit
+        if (this.hasMore) this.page++
+      } catch (err) {
+        console.error('Failed to load events', err)
+        const toast = useToastStore()
+        toast.error('Failed to load events')
+      } finally {
+        this.loading = false
+        this.loadingMore = false
+      }
+    },
     selectCategory(category) {
       this.selectedCategory = category === 'All Events' ? 'all' : category
     },
@@ -189,7 +182,18 @@ export default {
         this.selectedCategory === category
     },
     handleViewDetails(event) {
-      console.log('View event details:', event)
+      this.$router.push({ name: 'event-detail', params: { id: event.id } })
+    },
+    async handleRegister(event) {
+      if (!confirm(`Register for ${event.title}?`)) return
+      const toast = useToastStore()
+      try {
+        await api.post(`/events/${event.id}/register`)
+        toast.success('Successfully registered!')
+      } catch (err) {
+        console.error('Registration failed', err)
+        toast.error('Registration failed')
+      }
     }
   }
 }
@@ -418,5 +422,52 @@ export default {
 .no-results-text {
   margin-top: 0.5rem;
   color: rgb(var(--color-text-secondary));
+}
+
+/* Loading State */
+.loading-state {
+  padding: 4rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(var(--color-primary), 0.1);
+  border-top-color: rgb(var(--color-primary));
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+.btn-load-more {
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
+  background: white;
+  border: 1px solid rgb(var(--color-border));
+  color: rgb(var(--color-text));
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-load-more:hover:not(:disabled) {
+  border-color: rgb(var(--color-primary));
+  color: rgb(var(--color-primary));
+}
+
+.btn-load-more:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 </style>

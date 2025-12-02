@@ -1,0 +1,21 @@
+FROM node:20-bullseye
+
+WORKDIR /app
+
+# Install build dependencies for native modules
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+ENV TAILWIND_DISABLE_LIGHTNINGCSS=1
+RUN rm -f package-lock.json && npm install && npm remove lightningcss
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev", "--", "--host", "--port", "3000"]

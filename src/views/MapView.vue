@@ -15,42 +15,49 @@
           </p>
         </div>
 
-        <!-- Filter Buttons -->
-        <div class="filter-buttons">
-          <button
-            @click="filterType = 'all'"
-            :class="['filter-btn', { 'filter-btn--active': filterType === 'all' }]"
-          >
-            All Initiatives
-          </button>
-          <button
-            @click="filterType = 'garden'"
-            :class="['filter-btn', { 'filter-btn--garden': filterType === 'garden' }]"
-          >
-            <Leaf :size="16" />
-            <span>Gardens</span>
-          </button>
-          <button
-            @click="filterType = 'market'"
-            :class="['filter-btn', { 'filter-btn--market': filterType === 'market' }]"
-          >
-            <ShoppingBasket :size="16" />
-            <span>Markets</span>
-          </button>
-          <button
-            @click="filterType = 'event'"
-            :class="['filter-btn', { 'filter-btn--event': filterType === 'event' }]"
-          >
-            <Calendar :size="16" />
-            <span>Events</span>
-          </button>
-          <button
-            @click="filterType = 'group'"
-            :class="['filter-btn', { 'filter-btn--group': filterType === 'group' }]"
-          >
-            <Users :size="16" />
-            <span>Groups</span>
-          </button>
+        <!-- Search & Filter -->
+        <div class="map-controls">
+          <div class="search-bar">
+            <Search :size="18" class="search-icon" />
+            <input v-model="searchQuery" type="text" placeholder="Search initiatives..." />
+          </div>
+
+          <div class="filter-buttons">
+            <button
+              @click="filterType = 'all'"
+              :class="['filter-btn', { 'filter-btn--active': filterType === 'all' }]"
+            >
+              All Initiatives
+            </button>
+            <button
+              @click="filterType = 'garden'"
+              :class="['filter-btn', { 'filter-btn--garden': filterType === 'garden' }]"
+            >
+              <Leaf :size="16" />
+              <span>Gardens</span>
+            </button>
+            <button
+              @click="filterType = 'market'"
+              :class="['filter-btn', { 'filter-btn--market': filterType === 'market' }]"
+            >
+              <ShoppingBasket :size="16" />
+              <span>Markets</span>
+            </button>
+            <button
+              @click="filterType = 'event'"
+              :class="['filter-btn', { 'filter-btn--event': filterType === 'event' }]"
+            >
+              <Calendar :size="16" />
+              <span>Events</span>
+            </button>
+            <button
+              @click="filterType = 'group'"
+              :class="['filter-btn', { 'filter-btn--group': filterType === 'group' }]"
+            >
+              <Users :size="16" />
+              <span>Groups</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -157,8 +164,12 @@
               <button class="action-btn action-btn--primary">
                 Get Directions
               </button>
-              <button class="action-btn action-btn--icon">
-                <Heart :size="20" />
+              <button 
+                class="action-btn action-btn--icon" 
+                :class="{ 'action-btn--active': selectedInitiative.isSaved }"
+                @click="toggleSave"
+              >
+                <Heart :size="20" :fill="selectedInitiative.isSaved ? 'currentColor' : 'none'" />
               </button>
             </div>
           </div>
@@ -169,7 +180,9 @@
 </template>
 
 <script>
-import { MapPin, X, ExternalLink, Calendar, Users, Leaf, ShoppingBasket, Heart } from 'lucide-vue-next'
+import { MapPin, X, ExternalLink, Calendar, Users, Leaf, ShoppingBasket, Heart, Search } from 'lucide-vue-next'
+import api from '@/services/api'
+import { useAuthStore } from '@/stores/auth'
 
 export default {
   name: 'MapView',
@@ -181,89 +194,85 @@ export default {
     Users,
     Leaf,
     ShoppingBasket,
-    Heart
+    Heart,
+    Search
   },
   data() {
     return {
       selectedInitiative: null,
       filterType: 'all',
+      searchQuery: '',
       typeIcons: {
         garden: Leaf,
         market: ShoppingBasket,
         event: Calendar,
         group: Users,
       },
-      initiatives: [
-        {
-          id: 1,
-          name: 'Enschede Community Garden',
-          type: 'garden',
-          location: 'Hengelosestraat 32, Enschede',
-          description: 'A thriving community garden where members grow vegetables, herbs, and flowers together. Open to all residents.',
-          coordinates: { x: 30, y: 40 },
-          contact: 'garden@bluezonetwente.nl',
-          website: 'enschedegarden.nl',
-        },
-        {
-          id: 2,
-          name: 'Weekly Farmers Market',
-          type: 'market',
-          location: 'Oldenzaal Town Square',
-          description: 'Every Saturday morning, local farmers and artisans gather to sell fresh produce, baked goods, and handmade items.',
-          coordinates: { x: 70, y: 25 },
-          contact: 'market@bluezonetwente.nl',
-        },
-        {
-          id: 3,
-          name: 'Hengelo Walking Group',
-          type: 'group',
-          location: 'Starts at Central Park, Hengelo',
-          description: 'Join us every Wednesday evening for a social walk through the neighborhood. All fitness levels welcome!',
-          coordinates: { x: 50, y: 60 },
-          contact: 'walking@bluezonetwente.nl',
-        },
-        {
-          id: 4,
-          name: 'De Groene Winkel',
-          type: 'market',
-          location: 'Langestraat 45, Enschede',
-          description: 'Organic food store specializing in local, sustainable products. Supporting regional farmers and producers.',
-          coordinates: { x: 35, y: 50 },
-          website: 'degroenewinkel.nl',
-        },
-        {
-          id: 5,
-          name: 'Lonnekerberg Nature Reserve',
-          type: 'event',
-          location: 'Lonnekerberg, near Enschede',
-          description: 'Beautiful nature area perfect for walking, meditation, and connecting with nature. Regular guided walks available.',
-          coordinates: { x: 45, y: 30 },
-        },
-        {
-          id: 6,
-          name: 'Community Kitchen Oldenzaal',
-          type: 'event',
-          location: 'Ganzenmarkt 8, Oldenzaal',
-          description: 'Monthly cooking classes and community dinners featuring healthy, seasonal recipes.',
-          coordinates: { x: 75, y: 45 },
-          contact: 'kitchen@bluezonetwente.nl',
-        },
-        {
-          id: 7,
-          name: 'Bike Repair Collective',
-          type: 'group',
-          location: 'Haaksbergerstraat 220, Enschede',
-          description: 'Learn to repair your own bike or help others. Tools and expertise shared freely every Sunday.',
-          coordinates: { x: 25, y: 70 },
-        },
-      ]
+      initiatives: [],
+      loading: false
     }
+  },
+  setup() {
+    const authStore = useAuthStore()
+    return { authStore }
+  },
+  async created() {
+    await this.loadInitiatives()
   },
   computed: {
     filteredInitiatives() {
-      return this.filterType === 'all'
-        ? this.initiatives
-        : this.initiatives.filter(i => i.type === this.filterType)
+      let filtered = this.initiatives
+      
+      if (this.filterType !== 'all') {
+        filtered = filtered.filter(i => i.type === this.filterType)
+      }
+      
+      if (this.searchQuery) {
+        const q = this.searchQuery.toLowerCase()
+        filtered = filtered.filter(i => 
+          i.name.toLowerCase().includes(q) || 
+          i.description.toLowerCase().includes(q) ||
+          i.location.toLowerCase().includes(q)
+        )
+      }
+      
+      return filtered
+    },
+    isSaved() {
+      if (!this.selectedInitiative || !this.authStore.user) return false
+      return this.selectedInitiative.isSaved
+    }
+  },
+  methods: {
+    async loadInitiatives() {
+      try {
+        const data = await api.get('/initiatives')
+        this.initiatives = (data.initiatives || []).map((i) => ({
+          ...i,
+          coordinates: { x: i.coordinateX, y: i.coordinateY }
+        }))
+      } catch (error) {
+        console.error('Failed to load initiatives', error)
+      }
+    },
+    async toggleSave() {
+      if (!this.selectedInitiative) return
+      
+      const initiative = this.selectedInitiative
+      const action = initiative.isSaved ? 'unsave' : 'save'
+      
+      try {
+        if (action === 'save') {
+          await api.post(`/initiatives/${initiative.id}/save`)
+          initiative.isSaved = true
+        } else {
+          await api.delete(`/initiatives/${initiative.id}/save`)
+          initiative.isSaved = false
+        }
+      } catch (error) {
+        console.error(`Failed to ${action} initiative`, error)
+        alert(`Failed to ${action} initiative`)
+      }
     }
   }
 }
@@ -333,6 +342,40 @@ export default {
   color: rgb(var(--color-text-secondary));
   font-size: 1.125rem;
   line-height: 1.7;
+}
+
+.map-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.search-bar {
+  position: relative;
+  max-width: 400px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgb(var(--color-text-secondary));
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.75rem;
+  border-radius: 9999px;
+  border: 1px solid rgb(var(--color-border));
+  background: white;
+  transition: all 0.2s;
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: rgb(var(--color-primary));
+  box-shadow: 0 0 0 3px rgba(var(--color-primary), 0.1);
 }
 
 /* Filter Buttons */
@@ -688,5 +731,11 @@ export default {
 .action-btn--icon:hover {
   background: rgb(var(--color-primary));
   color: white;
+}
+
+.action-btn--active {
+  background: rgb(var(--color-primary));
+  color: white;
+  border-color: rgb(var(--color-primary));
 }
 </style>

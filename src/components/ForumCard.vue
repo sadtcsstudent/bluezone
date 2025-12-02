@@ -1,5 +1,5 @@
 <template>
-  <div class="forum-card">
+  <div class="forum-card" @click="$emit('click')">
     <div class="forum-card-header">
       <div class="forum-card-info">
         <h3 class="forum-card-title">{{ title }}</h3>
@@ -36,6 +36,7 @@ export default {
     MessageCircle,
     Clock
   },
+  emits: ['click'],
   props: {
     title: {
       type: String,

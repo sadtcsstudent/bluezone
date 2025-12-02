@@ -237,6 +237,7 @@
 <script>
 import { User, Mail, Lock, ArrowRight, MapPin } from 'lucide-vue-next'
 import ImageWithFallback from '../components/ImageWithFallback.vue'
+import { useAuthStore } from '@/stores/auth'
 
 export default {
   name: 'SignupView',
@@ -269,21 +270,26 @@ export default {
         'Local Food',
         'Community Events',
         'Volunteering',
-      ]
+      ],
+      authStore: useAuthStore()
     }
   },
   methods: {
-    handleSubmit() {
-      // Validate passwords match
+    async handleSubmit() {
       if (this.formData.password !== this.formData.confirmPassword) {
         alert('Passwords do not match!')
         return
       }
 
-      // In a real app, this would create an account
-      console.log('Signup attempt:', this.formData)
+      await this.authStore.signup({
+        name: this.formData.name,
+        email: this.formData.email,
+        password: this.formData.password,
+        location: this.formData.location,
+        interests: this.formData.interests,
+        newsletter: this.formData.newsletter
+      })
 
-      // Navigate to home
       this.$router.push({ name: 'home' })
     },
     handleNavigate(page) {
