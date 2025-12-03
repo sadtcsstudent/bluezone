@@ -12,7 +12,8 @@ import {
   updateDiscussion,
   deleteDiscussion,
   updateReply,
-  deleteReply
+  deleteReply,
+  likeDiscussion
 } from '../controllers/forum.controller';
 
 const router = Router();
@@ -26,5 +27,8 @@ router.put('/discussions/:id', writeLimiter, authenticate, updateDiscussion);
 router.delete('/discussions/:id', writeLimiter, authenticate, deleteDiscussion);
 router.put('/discussions/:id/replies/:replyId', writeLimiter, authenticate, updateReply);
 router.delete('/discussions/:id/replies/:replyId', writeLimiter, authenticate, deleteReply);
+router.put('/replies/:replyId', writeLimiter, authenticate, updateReply);
+router.delete('/replies/:replyId', writeLimiter, authenticate, deleteReply);
+router.post('/discussions/:id/like', writeLimiter, authenticate, likeDiscussion);
 
 export default router;

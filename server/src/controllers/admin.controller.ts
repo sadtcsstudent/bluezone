@@ -14,7 +14,22 @@ export const listUsers = async (_req: Request, res: Response, next: NextFunction
 
 export const suspendUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user = await prisma.user.update({ where: { id: req.params.id }, data: { suspended: true } });
+    const user = await prisma.user.update({ where: { id: req.params.id }, data: { suspended: req.body.suspended } });
+    res.json({ user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const unlockUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = await prisma.user.update({
+      where: { id: req.params.id },
+      data: {
+        lockoutUntil: null,
+        failedLoginAttempts: 0
+      }
+    });
     res.json({ user });
   } catch (error) {
     next(error);

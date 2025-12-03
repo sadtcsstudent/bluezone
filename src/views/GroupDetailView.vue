@@ -33,36 +33,36 @@
               </div>
             </div>
             
-            <div class="group-actions">
-              <template v-if="isAdmin">
-                <button class="btn btn--white-outline" @click="showEditModal = true">
-                  <Edit :size="20" />
-                  <span>Edit Group</span>
-                </button>
-                <button class="btn btn--danger" @click="deleteGroup">
-                  <Trash2 :size="20" />
-                  <span>Delete</span>
-                </button>
-              </template>
-              <button 
-                v-if="isMember && !isAdmin" 
-                class="btn btn--outline" 
-                @click="leaveGroup"
-                :disabled="processing"
-              >
-                <LogOut :size="20" />
-                <span>Leave Group</span>
+          <div class="group-actions">
+            <template v-if="isAdmin">
+              <button class="btn btn--white-outline" @click="showEditModal = true">
+                <Edit :size="20" />
+                <span>Edit Group</span>
               </button>
-              <button 
-                v-else-if="!isMember"
-                class="btn btn--primary" 
-                @click="joinGroup"
-                :disabled="processing"
-              >
-                <UserPlus :size="20" />
-                <span>Join Group</span>
+              <button class="btn btn--danger" @click="deleteGroup">
+                <Trash2 :size="20" />
+                <span>Delete</span>
               </button>
-            </div>
+            </template>
+            <button 
+              v-if="isMember" 
+              class="btn btn--outline" 
+              @click="leaveGroup"
+              :disabled="processing"
+            >
+              <LogOut :size="20" />
+              <span>Leave Group</span>
+            </button>
+            <button 
+              v-else
+              class="btn btn--primary" 
+              @click="joinGroup"
+              :disabled="processing"
+            >
+              <UserPlus :size="20" />
+              <span>Join Group</span>
+            </button>
+          </div>
           </div>
         </div>
       </div>

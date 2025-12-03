@@ -4,7 +4,7 @@ import { prisma } from '../utils/prisma';
 import { AppError } from '../utils/errors';
 import { hashPassword, verifyPassword } from '../services/auth.service';
 import { isStrongPassword } from '../utils/validators';
-import { formatUser } from '../utils/serializers';
+import { formatUser, formatUsers } from '../utils/serializers';
 
 export const userSchemas = {
   updateProfile: z.object({
@@ -138,6 +138,30 @@ export const deleteAccount = async (req: Request, res: Response, next: NextFunct
     await prisma.user.delete({ where: { id: req.user!.id } });
     res.clearCookie('token');
     res.json({ success: true });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const searchUsers = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const query = (req.query.q as string) || (req.query.search as string) || '';
+    if (!query.trim()) {
+      return res.json({ users: [] });
+    }
+
+    const users = await prisma.user.findMany({
+      where: {
+        OR: [
+          { name: { contains: query, mode: 'insensitive' } },
+          { email: { contains: query, mode: 'insensitive' } },
+          { location: { contains: query, mode: 'insensitive' } }
+        ]
+      },
+      take: 20
+    });
+
+    res.json({ users: formatUsers(users) });
   } catch (error) {
     next(error);
   }

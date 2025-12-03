@@ -4,6 +4,7 @@ import { readLimiter, writeLimiter } from '../middleware/rateLimiter.middleware'
 import {
   listUsers,
   suspendUser,
+  unlockUser,
   deleteUser,
   adminCreateEvent,
   adminUpdateEvent,
@@ -17,6 +18,7 @@ router.use(authenticate, authorize('admin'));
 
 router.get('/users', readLimiter, listUsers);
 router.put('/users/:id/suspend', writeLimiter, suspendUser);
+router.put('/users/:id/unlock', writeLimiter, unlockUser);
 router.delete('/users/:id', writeLimiter, deleteUser);
 router.post('/events', writeLimiter, adminCreateEvent);
 router.put('/events/:id', writeLimiter, adminUpdateEvent);

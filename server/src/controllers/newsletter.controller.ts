@@ -22,6 +22,20 @@ export const subscribeNewsletter = async (req: Request, res: Response, next: Nex
   }
 };
 
+export const unsubscribeNewsletter = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email } = req.body;
+    await prisma.newsletterSubscriber.upsert({
+      where: { email },
+      update: { subscribed: false },
+      create: { email, subscribed: false, userId: req.user?.id }
+    });
+    res.json({ success: true, message: 'Unsubscribed from newsletter' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const pastNewsletters = async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const newsletters = await prisma.newsletter.findMany({ orderBy: { publishedAt: 'desc' } });

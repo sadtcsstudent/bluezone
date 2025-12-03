@@ -247,10 +247,13 @@ export default {
     async loadInitiatives() {
       try {
         const data = await api.get('/initiatives')
-        this.initiatives = (data.initiatives || []).map((i) => ({
+        const initiatives = (data.initiatives || []).map((i) => ({
           ...i,
+          isSaved: !!i.isSaved,
           coordinates: { x: i.coordinateX, y: i.coordinateY }
         }))
+
+        this.initiatives = initiatives.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
       } catch (error) {
         console.error('Failed to load initiatives', error)
       }

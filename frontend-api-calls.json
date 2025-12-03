@@ -1,0 +1,408 @@
+{
+  "endpoints": [
+    {
+      "method": "DELETE",
+      "endpoint": "/admin/events/:id",
+      "usedIn": [
+        "AdminDashboardView.vue"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/admin/users/:id",
+      "usedIn": [
+        "AdminDashboardView.vue"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/events/:id/register",
+      "usedIn": [
+        "EventDetailView.vue"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/forum/discussions/:id",
+      "usedIn": [
+        "DiscussionDetailView.vue",
+        "AdminDashboardView.vue"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/forum/replies/:id",
+      "usedIn": [
+        "DiscussionDetailView.vue"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/groups/:id",
+      "usedIn": [
+        "GroupDetailView.vue"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/groups/:id/leave",
+      "usedIn": [
+        "GroupDetailView.vue"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/groups/:id/members/:id",
+      "usedIn": [
+        "GroupDetailView.vue"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/initiatives/:id/save",
+      "usedIn": [
+        "MapView.vue"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/messages/conversations/:id",
+      "usedIn": [
+        "MessagesView.vue"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/users/me",
+      "usedIn": [
+        "SettingsView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/admin/stats",
+      "usedIn": [
+        "AdminDashboardView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/admin/users",
+      "usedIn": [
+        "AdminDashboardView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/auth/verify-reset-token/:id",
+      "usedIn": [
+        "ResetPasswordView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/events",
+      "usedIn": [
+        "AdminDashboardView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/events/:id",
+      "usedIn": [
+        "EventDetailView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/events?limit=:id&offset=:id",
+      "usedIn": [
+        "EventsView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/forum/discussions/:id",
+      "usedIn": [
+        "DiscussionDetailView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/forum/discussions/trending",
+      "usedIn": [
+        "ForumView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/forum/discussions?limit=50",
+      "usedIn": [
+        "AdminDashboardView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/forum/discussions?limit=:id&offset=:id",
+      "usedIn": [
+        "ForumView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/groups",
+      "usedIn": [
+        "GroupsView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/groups/:id",
+      "usedIn": [
+        "GroupDetailView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/initiatives",
+      "usedIn": [
+        "MapView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/messages/conversations",
+      "usedIn": [
+        "MessagesView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/messages/conversations/:id",
+      "usedIn": [
+        "MessagesView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/newsletter/past",
+      "usedIn": [
+        "NewsletterView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/users/me",
+      "usedIn": [
+        "ProfileView.vue",
+        "SettingsView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/users/me/events",
+      "usedIn": [
+        "ProfileView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/users/me/groups",
+      "usedIn": [
+        "ProfileView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/users/me/saved-initiatives",
+      "usedIn": [
+        "ProfileView.vue"
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/users?search=:id",
+      "usedIn": [
+        "MessagesView.vue"
+      ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/admin/events",
+      "usedIn": [
+        "AdminDashboardView.vue"
+      ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/auth/forgot-password",
+      "usedIn": [
+        "ForgotPasswordView.vue"
+      ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/auth/reset-password",
+      "usedIn": [
+        "ResetPasswordView.vue"
+      ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/events/:id/register",
+      "usedIn": [
+        "EventsView.vue",
+        "EventDetailView.vue"
+      ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/forum/discussions",
+      "usedIn": [
+        "ForumView.vue"
+      ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/forum/discussions/:id/replies",
+      "usedIn": [
+        "DiscussionDetailView.vue"
+      ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/groups",
+      "usedIn": [
+        "GroupsView.vue"
+      ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/groups/:id/join",
+      "usedIn": [
+        "GroupDetailView.vue"
+      ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/initiatives/:id/save",
+      "usedIn": [
+        "MapView.vue"
+      ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/messages/conversations",
+      "usedIn": [
+        "MessagesView.vue"
+      ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/messages/conversations/:id/messages",
+      "usedIn": [
+        "MessagesView.vue"
+      ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/newsletter/subscribe",
+      "usedIn": [
+        "NewsletterView.vue"
+      ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/newsletter/unsubscribe",
+      "usedIn": [
+        "NewsletterView.vue"
+      ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/upload/avatar",
+      "usedIn": [
+        "ProfileView.vue",
+        "SettingsView.vue"
+      ]
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/admin/users/:id/suspend",
+      "usedIn": [
+        "AdminDashboardView.vue"
+      ]
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/admin/users/:id/unlock",
+      "usedIn": [
+        "AdminDashboardView.vue"
+      ]
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/forum/discussions/:id",
+      "usedIn": [
+        "DiscussionDetailView.vue"
+      ]
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/forum/replies/:id",
+      "usedIn": [
+        "DiscussionDetailView.vue"
+      ]
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/groups/:id",
+      "usedIn": [
+        "GroupDetailView.vue"
+      ]
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/groups/:id/members/:id",
+      "usedIn": [
+        "GroupDetailView.vue"
+      ]
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/messages/conversations/:id/read",
+      "usedIn": [
+        "MessagesView.vue"
+      ]
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/users/me",
+      "usedIn": [
+        "ProfileView.vue",
+        "SettingsView.vue"
+      ]
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/users/me/email",
+      "usedIn": [
+        "SettingsView.vue"
+      ]
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/users/me/password",
+      "usedIn": [
+        "SettingsView.vue"
+      ]
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/users/me/preferences",
+      "usedIn": [
+        "SettingsView.vue"
+      ]
+    }
+  ]
+}

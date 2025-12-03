@@ -117,11 +117,53 @@ export const updateMemberRole = async (req: Request, res: Response, next: NextFu
     const allowed = await ensureGroupAdmin(req.params.id, req.user!.id);
     if (!allowed && req.user!.role !== 'admin') throw new AppError(403, 'Not authorized');
 
+    const role = req.body.role as string | undefined;
+    if (!role) throw new AppError(400, 'Role is required');
+
+    const existing = await prisma.groupMember.findUnique({
+      where: { userId_groupId: { userId: req.params.userId, groupId: req.params.id } }
+    });
+    if (!existing) throw new AppError(404, 'Member not found');
+
+    const isDemotingAdmin = ['admin', 'owner', 'moderator'].includes(existing.role) && role === 'member';
+    if (isDemotingAdmin && req.user!.role !== 'admin') {
+      const adminCount = await prisma.groupMember.count({
+        where: { groupId: req.params.id, role: { in: ['admin', 'owner', 'moderator'] } }
+      });
+      if (adminCount <= 1) throw new AppError(400, 'Cannot remove the last group admin');
+    }
+
     const updated = await prisma.groupMember.update({
       where: { userId_groupId: { userId: req.params.userId, groupId: req.params.id } },
-      data: { role: req.body.role }
+      data: { role }
     });
+
     res.json({ membership: updated });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const removeMember = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const allowed = await ensureGroupAdmin(req.params.id, req.user!.id);
+    if (!allowed && req.user!.role !== 'admin') throw new AppError(403, 'Not authorized');
+
+    const member = await prisma.groupMember.findUnique({
+      where: { userId_groupId: { userId: req.params.userId, groupId: req.params.id } }
+    });
+    if (!member) throw new AppError(404, 'Member not found');
+
+    const isRemovingAdmin = ['admin', 'owner', 'moderator'].includes(member.role);
+    if (isRemovingAdmin && req.user!.role !== 'admin') {
+      const adminCount = await prisma.groupMember.count({
+        where: { groupId: req.params.id, role: { in: ['admin', 'owner', 'moderator'] } }
+      });
+      if (adminCount <= 1) throw new AppError(400, 'Cannot remove the last group admin');
+    }
+
+    await prisma.groupMember.delete({ where: { userId_groupId: { userId: req.params.userId, groupId: req.params.id } } });
+    res.json({ success: true });
   } catch (error) {
     next(error);
   }

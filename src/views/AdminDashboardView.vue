@@ -107,22 +107,30 @@
                     <span class="badge role-badge">{{ user.role }}</span>
                   </td>
                   <td>
-                    <span class="badge status-badge" :class="user.suspended ? 'suspended' : 'active'">
-                      {{ user.suspended ? 'Suspended' : 'Active' }}
+                    <span class="badge status-badge" :class="user.suspended ? 'suspended' : (user.lockoutUntil && new Date(user.lockoutUntil) > new Date() ? 'locked' : 'active')">
+                      {{ user.suspended ? 'Suspended' : (user.lockoutUntil && new Date(user.lockoutUntil) > new Date() ? 'Locked' : 'Active') }}
                     </span>
                   </td>
                   <td>{{ new Date(user.createdAt).toLocaleDateString() }}</td>
                   <td>
                     <div class="actions-cell">
-                      <button 
-                        class="action-btn" 
+                      <button
+                        v-if="user.lockoutUntil && new Date(user.lockoutUntil) > new Date()"
+                        class="action-btn unlock"
+                        title="Unlock Account"
+                        @click="unlockAccount(user)"
+                      >
+                        <Unlock :size="16" />
+                      </button>
+                      <button
+                        class="action-btn"
                         :title="user.suspended ? 'Unsuspend' : 'Suspend'"
                         @click="toggleSuspend(user)"
                       >
                         <Ban :size="16" />
                       </button>
-                      <button 
-                        class="action-btn delete" 
+                      <button
+                        class="action-btn delete"
                         title="Delete"
                         @click="deleteUser(user)"
                       >
@@ -246,9 +254,9 @@
 
 <script setup>
 import { onMounted, ref, computed, watch } from 'vue'
-import { 
-  LayoutDashboard, Users, Calendar, Mail, Leaf, 
-  Search, Ban, Trash2, Plus, MessageSquare 
+import {
+  LayoutDashboard, Users, Calendar, Mail, Leaf,
+  Search, Ban, Trash2, Plus, MessageSquare, Unlock
 } from 'lucide-vue-next'
 import api from '@/services/api'
 
@@ -322,6 +330,18 @@ const toggleSuspend = async (user) => {
   } catch (err) {
     console.error('Failed to suspend user', err)
     alert('Failed to update user status')
+  }
+}
+
+const unlockAccount = async (user) => {
+  try {
+    await api.put(`/admin/users/${user.id}/unlock`)
+    user.lockoutUntil = null
+    user.failedLoginAttempts = 0
+    alert('Account unlocked successfully')
+  } catch (err) {
+    console.error('Failed to unlock user', err)
+    alert('Failed to unlock account')
   }
 }
 
@@ -584,6 +604,11 @@ onMounted(load)
   color: #b91c1c;
 }
 
+.status-badge.locked {
+  background: rgba(249, 115, 22, 0.1);
+  color: #c2410c;
+}
+
 .actions-cell {
   display: flex;
   gap: 0.5rem;
@@ -607,6 +632,12 @@ onMounted(load)
   background: #fee2e2;
   color: #ef4444;
   border-color: #fee2e2;
+}
+
+.action-btn.unlock:hover {
+  background: #dbeafe;
+  color: #2563eb;
+  border-color: #dbeafe;
 }
 
 /* Forms */

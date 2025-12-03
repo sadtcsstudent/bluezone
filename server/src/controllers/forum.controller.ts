@@ -146,12 +146,13 @@ export const deleteDiscussion = async (req: Request, res: Response, next: NextFu
 
 export const updateReply = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const reply = await prisma.reply.findUnique({ where: { id: req.params.replyId } });
+    const replyId = req.params.replyId || req.params.id;
+    const reply = await prisma.reply.findUnique({ where: { id: replyId } });
     if (!reply) throw new AppError(404, 'Reply not found');
     if (reply.authorId !== req.user!.id && req.user!.role !== 'admin' && req.user!.role !== 'moderator') {
       throw new AppError(403, 'Not authorized');
     }
-    const updated = await prisma.reply.update({ where: { id: req.params.replyId }, data: { content: req.body.content } });
+    const updated = await prisma.reply.update({ where: { id: replyId }, data: { content: req.body.content } });
     res.json({ reply: updated });
   } catch (error) {
     next(error);
@@ -160,12 +161,41 @@ export const updateReply = async (req: Request, res: Response, next: NextFunctio
 
 export const deleteReply = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const reply = await prisma.reply.findUnique({ where: { id: req.params.replyId } });
+    const replyId = req.params.replyId || req.params.id;
+    const reply = await prisma.reply.findUnique({ where: { id: replyId } });
     if (!reply) throw new AppError(404, 'Reply not found');
     if (reply.authorId !== req.user!.id && req.user!.role !== 'admin' && req.user!.role !== 'moderator') {
       throw new AppError(403, 'Not authorized');
     }
-    await prisma.reply.delete({ where: { id: req.params.replyId } });
+    await prisma.reply.delete({ where: { id: replyId } });
+    res.json({ success: true });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const likeDiscussion = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const discussion = await prisma.discussion.findUnique({ where: { id: req.params.id } });
+    if (!discussion) throw new AppError(404, 'Discussion not found');
+
+    const likerName = req.user?.name || 'Someone';
+    const existingNotification = await prisma.notification.findFirst({
+      where: { userId: discussion.authorId, type: 'discussion_like', link: discussion.id }
+    });
+
+    if (!existingNotification) {
+      await prisma.notification.create({
+        data: {
+          userId: discussion.authorId,
+          type: 'discussion_like',
+          title: 'Your discussion was liked',
+          content: `${likerName} liked your discussion "${discussion.title}"`,
+          link: discussion.id
+        }
+      });
+    }
+
     res.json({ success: true });
   } catch (error) {
     next(error);

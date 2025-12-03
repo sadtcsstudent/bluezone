@@ -5,6 +5,11 @@ const CSRF_COOKIE_NAME = 'XSRF-TOKEN';
 const CSRF_HEADER_NAME = 'X-XSRF-TOKEN';
 
 export const csrfProtection = (req: Request, res: Response, next: NextFunction) => {
+    // Disable CSRF in development mode
+    if (process.env.NODE_ENV !== 'production') {
+        return next();
+    }
+
     if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') {
         // Generate new token if not present
         if (!req.cookies[CSRF_COOKIE_NAME]) {

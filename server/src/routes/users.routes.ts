@@ -11,7 +11,8 @@ import {
   changePassword,
   updateEmail,
   updatePreferences,
-  deleteAccount
+  deleteAccount,
+  searchUsers
 } from '../controllers/users.controller';
 import { readLimiter, writeLimiter } from '../middleware/rateLimit.middleware';
 
@@ -19,6 +20,8 @@ const router = Router();
 
 router.get('/me', readLimiter, authenticate, getProfile);
 router.put('/me', writeLimiter, authenticate, validate(updateUserSchema), updateProfile);
+router.get('/profile', readLimiter, authenticate, getProfile);
+router.put('/profile', writeLimiter, authenticate, validate(updateUserSchema), updateProfile);
 router.get('/me/events', readLimiter, authenticate, getUserEvents);
 router.get('/me/groups', readLimiter, authenticate, getUserGroups);
 router.get('/me/saved-initiatives', readLimiter, authenticate, getSavedInitiatives);
@@ -26,5 +29,7 @@ router.put('/me/password', writeLimiter, authenticate, changePassword);
 router.put('/me/email', writeLimiter, authenticate, updateEmail);
 router.put('/me/preferences', writeLimiter, authenticate, validate(updateUserSchema), updatePreferences);
 router.delete('/me', writeLimiter, authenticate, deleteAccount);
+router.get('/', readLimiter, authenticate, searchUsers);
+router.get('/search', readLimiter, authenticate, searchUsers);
 
 export default router;

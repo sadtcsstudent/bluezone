@@ -26,6 +26,26 @@ export async function authenticate(req: Request, _res: Response, next: NextFunct
   }
 }
 
+// Soft-auth helper that attaches a user when a valid token is present but
+// does not block unauthenticated requests.
+export async function maybeAuthenticate(req: Request, _res: Response, next: NextFunction) {
+  const token = req.cookies?.token || req.headers.authorization?.replace('Bearer ', '');
+  if (!token) return next();
+
+  try {
+    const { userId } = verifyToken(token);
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+
+    if (user && !user.suspended) {
+      req.user = formatUser(user) as any;
+    }
+  } catch (err) {
+    // Ignore invalid/expired tokens for optional auth paths
+  }
+
+  next();
+}
+
 export function authorize(...roles: string[]) {
   return (req: Request, _res: Response, next: NextFunction) => {
     if (!req.user || !roles.includes(req.user.role)) {

@@ -11,7 +11,8 @@ import {
   deleteGroup,
   joinGroup,
   leaveGroup,
-  updateMemberRole
+  updateMemberRole,
+  removeMember
 } from '../controllers/groups.controller';
 
 const router = Router();
@@ -24,5 +25,7 @@ router.delete('/:id', writeLimiter, authenticate, deleteGroup);
 router.post('/:id/join', writeLimiter, authenticate, joinGroup);
 router.delete('/:id/leave', writeLimiter, authenticate, leaveGroup);
 router.put('/:id/members/:userId/role', writeLimiter, authenticate, updateMemberRole);
+router.put('/:id/members/:userId', writeLimiter, authenticate, updateMemberRole);
+router.delete('/:id/members/:userId', writeLimiter, authenticate, removeMember);
 
 export default router;

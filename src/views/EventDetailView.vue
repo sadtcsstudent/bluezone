@@ -155,8 +155,10 @@ import { useRoute } from 'vue-router'
 import { Calendar, Clock, MapPin, Check, Star, User, Share2, Download } from 'lucide-vue-next'
 import api from '@/services/api'
 import ImageWithFallback from '@/components/ImageWithFallback.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()
+const authStore = useAuthStore()
 const event = ref(null)
 const attendees = ref([])
 const loading = ref(true)
@@ -174,8 +176,9 @@ const load = async () => {
   loading.value = true
   try {
     const data = await api.get(`/events/${route.params.id}`)
-    event.value = { ...data.event, status: data.isRegistered ? 'registered' : null } // Simplified status logic
-    attendees.value = data.attendees || []
+    const isRegistered = data.isRegistered ?? ((data.event?.registrations || []).some((r) => r.userId === authStore.user?.id))
+    event.value = { ...data.event, status: isRegistered ? 'registered' : null }
+    attendees.value = data.attendees || data.event?.registrations?.map((r) => r.user).filter(Boolean) || []
   } catch (error) {
     console.error('Failed to load event:', error)
   } finally {

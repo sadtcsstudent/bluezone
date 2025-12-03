@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "smoke": "playwright test"
   },
   "repository": "https://github.com/sadtcsstudent/bluezone.git",
   "author": "Alexandra Lupan <alexandra.lupan@elnino.tech>",
@@ -20,6 +21,7 @@
     "vue-router": "^4.6.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
     "@tailwindcss/postcss": "^4.1.17",
     "@vitejs/plugin-vue": "^6.0.2",
     "autoprefixer": "^10.4.22",
