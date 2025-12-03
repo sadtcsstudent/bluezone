@@ -4,7 +4,7 @@
       <div class="nav-content">
         <!-- Logo -->
         <div class="nav-logo" @click="navigate('home')">
-          <Sprout :size="32" class="nav-logo-icon" />
+          <img src="../img/logo.png" alt="Blue Zone Twente Logo" class="nav-logo-icon" />
           <span class="nav-logo-text">Blue Zone Twente</span>
         </div>
 
@@ -85,12 +85,11 @@
 </template>
 
 <script>
-import { Sprout, Menu, X, MessageCircle, User } from 'lucide-vue-next'
+import { Menu, X, MessageCircle, User } from 'lucide-vue-next'
 
 export default {
   name: 'Navigation',
   components: {
-    Sprout,
     Menu,
     X,
     MessageCircle,
@@ -188,7 +187,9 @@ export default {
 }
 
 .nav-logo-icon {
-  color: rgb(var(--color-primary));
+  height: 48px;
+  width: 48px;
+  object-fit: contain;
 }
 
 .nav-logo-text {

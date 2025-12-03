@@ -6,7 +6,7 @@
         <!-- About Section -->
         <div class="footer-section">
           <div class="footer-logo">
-            <Sprout :size="32" class="footer-logo-icon" />
+            <img src="../img/logo.png" alt="Blue Zone Twente Logo" class="footer-logo-icon" />
             <span class="footer-logo-text">Blue Zone Twente</span>
           </div>
           <p class="footer-description">
@@ -89,12 +89,11 @@
 </template>
 
 <script>
-import { Sprout, Facebook, Twitter, Instagram, Linkedin, Mail, MapPin, Phone } from 'lucide-vue-next'
+import { Facebook, Twitter, Instagram, Linkedin, Mail, MapPin, Phone } from 'lucide-vue-next'
 
 export default {
   name: 'Footer',
   components: {
-    Sprout,
     Facebook,
     Twitter,
     Instagram,
@@ -177,7 +176,9 @@ export default {
 }
 
 .footer-logo-icon {
-  color: rgb(var(--color-primary));
+  height: 48px;
+  width: 48px;
+  object-fit: contain;
 }
 
 .footer-logo-text {
