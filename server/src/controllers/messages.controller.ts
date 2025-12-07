@@ -176,18 +176,28 @@ export const unreadCount = async (req: Request, res: Response, next: NextFunctio
 export const deleteConversation = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const conversationId = req.params.id;
+    const userId = req.user!.id;
+
     const membership = await prisma.conversationParticipant.findFirst({
-      where: { conversationId, userId: req.user!.id }
+      where: { conversationId, userId }
     });
     if (!membership) throw new AppError(403, 'Not part of conversation');
 
-    await prisma.$transaction([
-      prisma.message.deleteMany({ where: { conversationId } }),
-      prisma.conversationParticipant.deleteMany({ where: { conversationId } }),
-      prisma.conversation.delete({ where: { id: conversationId } })
-    ]);
+    const { remaining } = await prisma.$transaction(async (tx) => {
+      await tx.conversationParticipant.delete({
+        where: { conversationId_userId: { conversationId, userId } }
+      });
 
-    res.json({ success: true });
+      const remaining = await tx.conversationParticipant.count({ where: { conversationId } });
+      if (remaining === 0) {
+        await tx.message.deleteMany({ where: { conversationId } });
+        await tx.conversation.delete({ where: { id: conversationId } });
+      }
+
+      return { remaining };
+    });
+
+    res.json({ success: true, conversationDeleted: remaining === 0 });
   } catch (error) {
     next(error);
   }

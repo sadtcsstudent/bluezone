@@ -1,7 +1,7 @@
-import type { User as PrismaUser } from '@prisma/client';
+import type { SafeUser } from '../utils/serializers';
 
 declare module 'express-serve-static-core' {
   interface Request {
-    user?: PrismaUser;
+    user?: SafeUser;
   }
 }

@@ -15,8 +15,18 @@ export const subscribeNewsletter = async (req: Request, res: Response, next: Nex
       update: { subscribed: true },
       create: { email, subscribed: true, userId: req.user?.id }
     });
-    await sendNewsletterConfirmation(email);
-    res.json({ success: true, message: 'Subscribed to newsletter' });
+    let emailSent = true;
+    try {
+      await sendNewsletterConfirmation(email);
+    } catch (err) {
+      emailSent = false;
+      console.error('Newsletter confirmation send failed:', err);
+    }
+    res.json({
+      success: true,
+      emailSent,
+      message: emailSent ? 'Subscribed to newsletter' : 'Subscribed, but failed to send confirmation email'
+    });
   } catch (error) {
     next(error);
   }

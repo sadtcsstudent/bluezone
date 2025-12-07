@@ -151,14 +151,17 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { Calendar, Clock, MapPin, Check, Star, User, Share2, Download } from 'lucide-vue-next'
 import api from '@/services/api'
 import ImageWithFallback from '@/components/ImageWithFallback.vue'
 import { useAuthStore } from '@/stores/auth'
+import { useToastStore } from '@/stores/toast'
 
 const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
+const toast = useToastStore()
 const event = ref(null)
 const attendees = ref([])
 const loading = ref(true)
@@ -181,12 +184,20 @@ const load = async () => {
     attendees.value = data.attendees || data.event?.registrations?.map((r) => r.user).filter(Boolean) || []
   } catch (error) {
     console.error('Failed to load event:', error)
+    toast.error('Failed to load event details')
   } finally {
     loading.value = false
   }
 }
 
+const requireLogin = () => {
+  if (authStore.isLoggedIn && authStore.user) return true
+  router.push({ name: 'login', query: { redirect: route.fullPath } })
+  return false
+}
+
 const register = async (status) => {
+  if (!requireLogin()) return
   try {
     await api.post(`/events/${route.params.id}/register`, { status })
     await load()
@@ -196,6 +207,7 @@ const register = async (status) => {
 }
 
 const unregister = async () => {
+  if (!requireLogin()) return
   if (!confirm('Are you sure you want to unregister?')) return
   try {
     await api.delete(`/events/${route.params.id}/register`)
@@ -224,9 +236,25 @@ const shareEvent = async () => {
 
 const downloadICS = () => {
   const e = event.value
-  const startDate = new Date(e.date).toISOString().replace(/-|:|\.\d+/g, '')
-  const endDate = new Date(new Date(e.date).getTime() + 2 * 60 * 60 * 1000).toISOString().replace(/-|:|\.\d+/g, '') // Assume 2 hours
-  
+  const toLocalDate = () => {
+    const base = new Date(e.date)
+    const [h, m] = (e.time || '').split(':').map(Number)
+    if (!Number.isNaN(h) && !Number.isNaN(m)) {
+      base.setHours(h, m, 0, 0)
+    }
+    return base
+  }
+  const formatICSDate = (dateObj) => {
+    const pad = (n) => String(n).padStart(2, '0')
+    return `${dateObj.getFullYear()}${pad(dateObj.getMonth() + 1)}${pad(dateObj.getDate())}T${pad(dateObj.getHours())}${pad(dateObj.getMinutes())}${pad(dateObj.getSeconds())}`
+  }
+
+  const start = toLocalDate()
+  const end = new Date(start.getTime() + 2 * 60 * 60 * 1000) // Assume 2 hours
+
+  const startDate = formatICSDate(start)
+  const endDate = formatICSDate(end)
+
   const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
 BEGIN:VEVENT

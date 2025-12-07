@@ -34,7 +34,13 @@ export const listDiscussions = async (req: Request, res: Response, next: NextFun
     if (sort === 'active') orderBy = { updatedAt: 'desc' };
 
     const [discussions, total] = await Promise.all([
-      prisma.discussion.findMany({ where, take, skip, orderBy, include: { replies: true, author: true } }),
+      prisma.discussion.findMany({
+        where,
+        take,
+        skip,
+        orderBy,
+        include: { replies: true, author: true, _count: { select: { likes: true } } }
+      }),
       prisma.discussion.count({ where })
     ]);
 
@@ -63,15 +69,30 @@ export const createDiscussion = async (req: Request, res: Response, next: NextFu
 
 export const getDiscussion = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const discussion = await prisma.discussion.update({
-      where: { id: req.params.id },
-      data: { views: { increment: 1 } },
-      include: {
-        author: true,
-        replies: { include: { author: true }, orderBy: { createdAt: 'asc' } }
-      }
+    const include = {
+      author: true,
+      replies: { include: { author: true }, orderBy: { createdAt: 'asc' } },
+      likes: { select: { userId: true } },
+      _count: { select: { likes: true } }
+    };
+
+    const discussion = await prisma.$transaction(async (tx) => {
+      const existing = await tx.discussion.findUnique({ where: { id: req.params.id } });
+      if (!existing) throw new AppError(404, 'Discussion not found');
+
+      return tx.discussion.update({
+        where: { id: req.params.id },
+        data: { views: { increment: 1 } },
+        include
+      });
     });
-    res.json({ discussion, replies: discussion.replies });
+
+    const { likes, _count, ...rest } = discussion;
+    const likedByUser = req.user ? likes.some((like) => like.userId === req.user!.id) : false;
+    res.json({
+      discussion: { ...rest, likedByUser, likesCount: _count.likes },
+      replies: discussion.replies
+    });
   } catch (error) {
     next(error);
   }
@@ -80,6 +101,9 @@ export const getDiscussion = async (req: Request, res: Response, next: NextFunct
 export const addReply = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { content } = req.body;
+    const discussion = await prisma.discussion.findUnique({ where: { id: req.params.id } });
+    if (!discussion) throw new AppError(404, 'Discussion not found');
+
     const reply = await prisma.reply.create({
       data: {
         content,
@@ -176,27 +200,46 @@ export const deleteReply = async (req: Request, res: Response, next: NextFunctio
 
 export const likeDiscussion = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const discussion = await prisma.discussion.findUnique({ where: { id: req.params.id } });
+    const discussionId = req.params.id;
+    const userId = req.user!.id;
+
+    const discussion = await prisma.discussion.findUnique({
+      where: { id: discussionId },
+      select: { id: true, title: true, authorId: true }
+    });
     if (!discussion) throw new AppError(404, 'Discussion not found');
 
-    const likerName = req.user?.name || 'Someone';
-    const existingNotification = await prisma.notification.findFirst({
-      where: { userId: discussion.authorId, type: 'discussion_like', link: discussion.id }
+    const existingLike = await prisma.discussionLike.findUnique({
+      where: { discussionId_userId: { discussionId, userId } }
     });
 
-    if (!existingNotification) {
-      await prisma.notification.create({
-        data: {
-          userId: discussion.authorId,
-          type: 'discussion_like',
-          title: 'Your discussion was liked',
-          content: `${likerName} liked your discussion "${discussion.title}"`,
-          link: discussion.id
-        }
+    if (existingLike) {
+      await prisma.discussionLike.delete({ where: { discussionId_userId: { discussionId, userId } } });
+    } else {
+      await prisma.discussionLike.create({
+        data: { discussionId, userId }
       });
+
+      const likerName = req.user?.name || 'Someone';
+      const existingNotification = await prisma.notification.findFirst({
+        where: { userId: discussion.authorId, type: 'discussion_like', link: discussion.id }
+      });
+
+      if (!existingNotification) {
+        await prisma.notification.create({
+          data: {
+            userId: discussion.authorId,
+            type: 'discussion_like',
+            title: 'Your discussion was liked',
+            content: `${likerName} liked your discussion "${discussion.title}"`,
+            link: discussion.id
+          }
+        });
+      }
     }
 
-    res.json({ success: true });
+    const likes = await prisma.discussionLike.count({ where: { discussionId } });
+    res.json({ success: true, liked: !existingLike, likes });
   } catch (error) {
     next(error);
   }

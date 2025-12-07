@@ -11,7 +11,15 @@ export const groupSchemas = {
       description: z.string(),
       avatar: z.string().optional()
     })
-  })
+  }),
+  update: z
+    .object({
+      name: z.string().min(2).optional(),
+      category: z.string().optional(),
+      description: z.string().optional(),
+      avatar: z.string().optional()
+    })
+    .strict()
 };
 
 const ensureGroupAdmin = async (groupId: string, userId: string) => {
@@ -71,9 +79,16 @@ export const updateGroup = async (req: Request, res: Response, next: NextFunctio
     const allowed = await ensureGroupAdmin(req.params.id, req.user!.id);
     if (!allowed && req.user!.role !== 'admin') throw new AppError(403, 'Not authorized');
 
-    const group = await prisma.group.update({ where: { id: req.params.id }, data: req.body });
+    const updates = groupSchemas.update.parse(req.body);
+    if (Object.keys(updates).length === 0) throw new AppError(400, 'No valid fields provided');
+
+    const group = await prisma.group.update({ where: { id: req.params.id }, data: updates });
     res.json({ group });
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      const message = error.errors.map((err) => err.message).join(', ') || 'Invalid group data';
+      return next(new AppError(400, message));
+    }
     next(error);
   }
 };
@@ -92,6 +107,9 @@ export const deleteGroup = async (req: Request, res: Response, next: NextFunctio
 
 export const joinGroup = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const groupExists = await prisma.group.findUnique({ where: { id: req.params.id } });
+    if (!groupExists) throw new AppError(404, 'Group not found');
+
     const membership = await prisma.groupMember.upsert({
       where: { userId_groupId: { userId: req.user!.id, groupId: req.params.id } },
       create: { userId: req.user!.id, groupId: req.params.id, role: 'member' },

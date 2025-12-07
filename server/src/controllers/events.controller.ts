@@ -88,7 +88,13 @@ export const registerForEvent = async (req: Request, res: Response, next: NextFu
       }
 
       const existing = event.registrations.find((r) => r.userId === userId);
-      if (existing) return existing;
+      if (existing) {
+        if (existing.status === status) return existing;
+        return tx.eventRegistration.update({
+          where: { userId_eventId: { userId, eventId } },
+          data: { status }
+        });
+      }
 
       return tx.eventRegistration.create({
         data: { userId, eventId, status }

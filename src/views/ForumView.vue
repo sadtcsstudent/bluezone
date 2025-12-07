@@ -24,7 +24,7 @@
             class="search-input"
           />
         </div>
-        <button class="btn-new-discussion" @click="showNewDiscussion = true">
+        <button class="btn-new-discussion" @click="startNewDiscussion">
           <Plus :size="20" />
           <span>New Discussion</span>
         </button>
@@ -162,6 +162,7 @@ import { MessageCircle, Search, Plus, TrendingUp, X } from 'lucide-vue-next'
 import ForumCard from '../components/ForumCard.vue'
 import api from '@/services/api'
 import { useToastStore } from '@/stores/toast'
+import { useAuthStore } from '@/stores/auth'
 
 export default {
   name: 'ForumView',
@@ -174,7 +175,9 @@ export default {
     X
   },
   data() {
+    const authStore = useAuthStore()
     return {
+      authStore,
       searchQuery: '',
       selectedCategory: 'all',
       sortBy: 'recent',
@@ -214,7 +217,7 @@ export default {
         const query = this.searchQuery.toLowerCase()
         filtered = filtered.filter(d =>
           d.title.toLowerCase().includes(query) ||
-          d.preview.toLowerCase().includes(query) ||
+          (d.content || '').toLowerCase().includes(query) ||
           d.category.toLowerCase().includes(query)
         )
       }
@@ -263,7 +266,17 @@ export default {
     openDiscussion(id) {
       this.$router.push({ name: 'discussion-detail', params: { id } })
     },
+    ensureLoggedIn() {
+      if (this.authStore?.isLoggedIn && this.authStore?.user) return true
+      this.$router.push({ name: 'login', query: { redirect: this.$route.fullPath } })
+      return false
+    },
+    startNewDiscussion() {
+      if (!this.ensureLoggedIn()) return
+      this.showNewDiscussion = true
+    },
     async createDiscussion() {
+      if (!this.ensureLoggedIn()) return
       this.creating = true
       const toast = useToastStore()
       try {

@@ -159,7 +159,7 @@
                   <span class="member-name">{{ member.user?.name || member.user?.email }}</span>
                   <span class="member-role">{{ member.role }}</span>
                 </div>
-                <div v-if="isAdmin && member.userId !== authStore.user.id" class="member-actions">
+                <div v-if="isAdmin && authStore.user && member.userId !== authStore.user.id" class="member-actions">
                   <button class="icon-btn" title="Promote to Admin" @click="updateRole(member.userId, 'admin')">
                     <Shield :size="16" />
                   </button>
@@ -261,7 +261,8 @@ const tabs = [
 ]
 
 const isMember = computed(() => {
-  return group.value?.members?.some(m => m.userId === authStore.user.id)
+  if (!authStore.user) return false
+  return group.value?.members?.some((m) => m.userId === authStore.user.id) || false
 })
 
 const isAdmin = computed(() => {
@@ -279,6 +280,13 @@ const formatDate = (dateString) => {
     month: 'long',
     year: 'numeric'
   })
+}
+
+const requireLogin = () => {
+  if (authStore.isLoggedIn && authStore.user) return true
+  toast.error('Please log in to continue')
+  router.push({ name: 'login', query: { redirect: route.fullPath } })
+  return false
 }
 
 const load = async () => {
@@ -300,6 +308,7 @@ const load = async () => {
 }
 
 const joinGroup = async () => {
+  if (!requireLogin()) return
   processing.value = true
   try {
     await api.post(`/groups/${route.params.id}/join`)
@@ -314,6 +323,7 @@ const joinGroup = async () => {
 }
 
 const leaveGroup = async () => {
+  if (!requireLogin()) return
   if (!confirm('Are you sure you want to leave this group?')) return
   
   processing.value = true
@@ -330,6 +340,7 @@ const leaveGroup = async () => {
 }
 
 const deleteGroup = async () => {
+  if (!requireLogin()) return
   if (!confirm('Are you sure you want to delete this group? This action cannot be undone.')) return
   
   processing.value = true
