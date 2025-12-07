@@ -69,17 +69,47 @@ export default {
       if (!notification.read) {
         store.markAsRead(notification.id)
       }
-      if (notification.link) {
-        router.push(notification.link)
+      
+      let link = notification.link
+      
+      // Handle cases where link is just an ID (not a path)
+      if (link && !link.startsWith('/')) {
+        switch (notification.type) {
+          case 'forum_reply':
+          case 'discussion_like':
+          case 'reply_like':
+            link = `/forum/${link}`
+            break
+          case 'event_registration':
+          case 'event_reminder':
+            link = `/events/${link}`
+            break
+          case 'group_invite':
+          case 'group_join':
+            link = `/groups/${link}`
+            break
+          default:
+            // Fallback for unknown types if they look like IDs
+            if (notification.type && notification.type.includes('event')) {
+              link = `/events/${link}`
+            } else if (notification.type && (notification.type.includes('forum') || notification.type.includes('discussion') || notification.type.includes('reply'))) {
+              link = `/forum/${link}`
+            }
+        }
+      }
+
+      if (link) {
+        router.push(link)
       }
     }
 
     const getIcon = (type) => {
-      switch (type) {
-        case 'event_registration': return Calendar
-        case 'forum_reply': return MessageCircle
-        default: return Info
-      }
+      if (!type) return Info
+      
+      if (type.includes('event') || type === 'event_registration') return Calendar
+      if (type.includes('forum') || type.includes('discussion') || type.includes('reply') || type === 'message') return MessageCircle
+      
+      return Info
     }
 
     const formatTime = (date) => {

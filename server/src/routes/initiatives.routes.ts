@@ -10,7 +10,8 @@ import {
   createInitiative,
   getInitiative,
   supportInitiative,
-  deleteInitiative
+  deleteInitiative,
+  updateInitiative
 } from '../controllers/initiatives.controller';
 
 const router = Router();
@@ -21,6 +22,7 @@ router.get('/:id', readLimiter, getInitiative);
 router.post('/:id/support', writeLimiter, authenticate, supportInitiative);
 router.post('/:id/save', writeLimiter, authenticate, saveInitiative);
 router.delete('/:id/save', writeLimiter, authenticate, unsaveInitiative);
+router.put('/:id', writeLimiter, authenticate, validate(initiativeSchemas.create), updateInitiative);
 router.delete('/:id', writeLimiter, authenticate, deleteInitiative);
 
 export default router;

@@ -46,7 +46,7 @@
                 <span class="conversation-time">{{ formatTime(c.lastMessageAt) }}</span>
               </div>
               <p class="conversation-preview" :class="{ unread: c.unreadCount > 0 }">
-                {{ c.lastMessage?.content || 'Start a conversation' }}
+                {{ getPreview(c) }}
               </p>
             </div>
             
@@ -171,6 +171,7 @@
 
 <script setup>
 import { onMounted, onUnmounted, ref, nextTick, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { 
   User, Search, Edit, ArrowLeft, Phone, Video, 
   MoreVertical, Paperclip, Send, MessageCircle, Trash2 
@@ -182,6 +183,7 @@ import { useToastStore } from '@/stores/toast'
 
 const authStore = useAuthStore()
 const toast = useToastStore()
+const route = useRoute()
 const conversations = ref([])
 const activeConversation = ref(null)
 const activeId = ref(null)
@@ -205,6 +207,14 @@ const getRecipient = (conversation) => {
 const isOnline = (userId) => {
   // This would ideally come from a reactive store updated by socket events
   return true // Placeholder
+}
+
+const getPreview = (conversation) => {
+  const msg = conversation.lastMessage
+  if (!msg) return 'Start a conversation'
+  
+  const isOwn = msg.senderId === authStore.user.id
+  return (isOwn ? 'You: ' : '') + msg.content
 }
 
 const formatTime = (dateString) => {
@@ -279,12 +289,7 @@ const send = async () => {
   activeConversation.value.messages.push(tempMessage)
   scrollToBottom()
   
-  socketService.emit('message:send', {
-    conversationId: activeId.value,
-    senderId: authStore.user.id,
-    content: content.value,
-    recipientId: recipient?.userId
-  })
+
 
   const msgContent = content.value
   content.value = ''
@@ -346,14 +351,38 @@ const startConversation = async (userId) => {
   }
 }
 
-onMounted(() => {
-  load()
+onMounted(async () => {
+  await load()
+  
+  if (route.params.id) {
+    openConversation(route.params.id)
+  }
   
   socketService.on('message:new', (message) => {
-    if (activeId.value === message.conversationId) {
+    // Update active conversation chat
+    if (activeId.value === message.conversationId && activeConversation.value) {
       activeConversation.value.messages.push(message)
       scrollToBottom()
       api.put(`/messages/conversations/${activeId.value}/read`)
+    }
+
+    // Update sidebar list
+    const convIndex = conversations.value.findIndex(c => c.id === message.conversationId)
+    if (convIndex !== -1) {
+      const conv = conversations.value[convIndex]
+      conv.lastMessage = message
+      conv.lastMessageAt = message.createdAt
+      
+      if (activeId.value !== message.conversationId) {
+        conv.unreadCount = (conv.unreadCount || 0) + 1
+      }
+      
+      // Move to top
+      conversations.value.splice(convIndex, 1)
+      conversations.value.unshift(conv)
+    } else {
+      // New conversation received
+      load()
     }
   })
 

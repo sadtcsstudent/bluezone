@@ -29,20 +29,7 @@ export const setupSocket = (server: any) => {
       io.to(`user:${data.recipientId}`).emit('typing:stop', data);
     });
 
-    socket.on('message:send', async (data: { conversationId: string; senderId: string; content: string; recipientId: string }) => {
-      try {
-        const message = await prisma.message.create({
-          data: {
-            conversationId: data.conversationId,
-            senderId: data.senderId,
-            content: data.content
-          }
-        });
-        io.to(`user:${data.recipientId}`).emit('message:new', message);
-      } catch (error) {
-        logger.error('Socket message error', { error });
-      }
-    });
+
 
     socket.on('disconnect', () => {
       if (userId) {

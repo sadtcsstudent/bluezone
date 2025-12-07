@@ -32,6 +32,14 @@
             <Edit :size="16" />
             <span>Edit Profile</span>
           </button>
+          <button v-if="profile.role === 'admin'" class="btn btn--primary" @click="navigate('admin')">
+            <LayoutDashboard :size="16" />
+            <span>Admin Panel</span>
+          </button>
+          <button v-if="profile.role === 'company'" class="btn btn--primary" @click="navigate('company-dashboard')">
+            <LayoutDashboard :size="16" />
+            <span>Company Dashboard</span>
+          </button>
           <button class="btn btn--icon" @click="navigate('settings')">
             <Settings :size="20" />
           </button>
@@ -213,13 +221,13 @@
 </template>
 
 <script>
-import { User, Calendar, MessageCircle, Heart, Settings, LogOut, Edit, Camera, X } from 'lucide-vue-next'
+import { User, Calendar, MessageCircle, Heart, Settings, LogOut, Edit, Camera, X, LayoutDashboard } from 'lucide-vue-next'
 import api from '@/services/api'
 import { useToastStore } from '@/stores/toast'
 
 export default {
   name: 'ProfileView',
-  components: { User, Calendar, MessageCircle, Heart, Settings, LogOut, Edit, Camera, X },
+  components: { User, Calendar, MessageCircle, Heart, Settings, LogOut, Edit, Camera, X, LayoutDashboard },
   data() {
     return {
       profile: {},

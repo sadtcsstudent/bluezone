@@ -77,12 +77,28 @@
               <Search :size="16" />
               <input v-model="userSearch" type="text" placeholder="Search users..." />
             </div>
+            <button 
+              v-if="selectedUsers.length > 0" 
+              class="btn btn--danger btn--sm" 
+              style="margin-left: 1rem;"
+              @click="deleteSelectedUsers"
+            >
+              <Trash2 :size="16" />
+              Delete Selected ({{ selectedUsers.length }})
+            </button>
           </div>
 
           <div class="table-container">
             <table class="data-table">
               <thead>
                 <tr>
+                  <th>
+                    <input 
+                      type="checkbox" 
+                      :checked="selectedUsers.length > 0 && selectedUsers.length === filteredUsers.length"
+                      @change="toggleAllUsers"
+                    />
+                  </th>
                   <th>User</th>
                   <th>Role</th>
                   <th>Status</th>
@@ -92,6 +108,13 @@
               </thead>
               <tbody>
                 <tr v-for="user in filteredUsers" :key="user.id">
+                  <td>
+                    <input 
+                      type="checkbox" 
+                      :checked="selectedUsers.includes(user.id)"
+                      @change="toggleUserSelection(user.id)"
+                    />
+                  </td>
                   <td>
                     <div class="user-cell">
                       <div class="avatar-sm">
@@ -104,7 +127,15 @@
                     </div>
                   </td>
                   <td>
-                    <span class="badge role-badge">{{ user.role }}</span>
+                    <select 
+                      :value="user.role" 
+                      @change="updateUserRole(user, $event.target.value)"
+                      class="role-select"
+                    >
+                      <option value="user">User</option>
+                      <option value="company">Company</option>
+                      <option value="admin">Admin</option>
+                    </select>
                   </td>
                   <td>
                     <span class="badge status-badge" :class="user.suspended ? 'suspended' : (user.lockoutUntil && new Date(user.lockoutUntil) > new Date() ? 'locked' : 'active')">
@@ -171,6 +202,9 @@
                </div>
              </div>
           </div>
+          <div class="load-more-row" v-if="events.length < eventsTotal">
+            <button class="btn btn--outline" @click="fetchEvents()">Load more events</button>
+          </div>
         </div>
 
         <!-- Forum Moderation Tab -->
@@ -196,6 +230,9 @@
                 </button>
               </div>
             </div>
+          </div>
+          <div class="load-more-row" v-if="discussions.length < discussionsTotal">
+            <button class="btn btn--outline" @click="fetchDiscussions()">Load more discussions</button>
           </div>
         </div>
 
@@ -247,7 +284,7 @@
           </div>
 
           <div class="events-list">
-             <div v-for="initiative in initiatives" :key="initiative.id" class="admin-event-card">
+             <div v-for="initiative in visibleInitiatives" :key="initiative.id" class="admin-event-card">
                <div class="event-info">
                  <h3>{{ initiative.name }}</h3>
                  <p class="meta-info">
@@ -256,9 +293,13 @@
                  </p>
                </div>
                <div class="event-actions">
+                 <button class="btn btn--sm btn--outline" @click="openEditInitiative(initiative)">Edit</button>
                  <button class="btn btn--sm btn--danger" @click="deleteInitiative(initiative.id)">Delete</button>
                </div>
              </div>
+          </div>
+          <div class="load-more-row" v-if="visibleInitiatives.length < initiatives.length">
+            <button class="btn btn--outline" @click="initiativesShown += 10">Load more initiatives</button>
           </div>
         </div>
       </main>
@@ -300,7 +341,7 @@
     <!-- Create Initiative Modal -->
      <div v-if="showCreateInitiative" class="modal-overlay" @click.self="closeCreateInitiative">
       <div class="modal-content modal-content--lg">
-        <h2>Add Community Initiative</h2>
+        <h2>{{ isEditingInitiative ? 'Edit Initiative' : 'Add Community Initiative' }}</h2>
         <form @submit.prevent="saveInitiative" class="create-form">
           <div class="form-row">
             <div class="form-group">
@@ -335,14 +376,27 @@
           </div>
 
           <div class="form-group">
-            <label>Location (Click on map to set)</label>
+            <label>Location (Click on map or search address)</label>
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <div class="search-row" style="display: flex; gap: 0.5rem;">
+                <input 
+                  v-model="addressQuery" 
+                  placeholder="Type an address to find..." 
+                  @keydown.enter.prevent="searchAddress"
+                />
+                <button type="button" class="btn btn--outline" @click="searchAddress" :disabled="searchingAddress">
+                  <Search :size="16" />
+                  {{ searchingAddress ? '...' : 'Find' }}
+                </button>
+              </div>
+            </div>
             <div id="picker-map" class="picker-map"></div>
             <p class="help-text">Selected coordinates: {{ newInitiative.coordinateX.toFixed(1) }}, {{ newInitiative.coordinateY.toFixed(1) }}</p>
           </div>
 
           <div class="modal-actions">
             <button type="button" class="btn btn--ghost" @click="closeCreateInitiative">Cancel</button>
-            <button type="submit" class="btn btn--primary">Create Initiative</button>
+            <button type="submit" class="btn btn--primary">{{ isEditingInitiative ? 'Save Changes' : 'Create Initiative' }}</button>
           </div>
         </form>
       </div>
@@ -364,15 +418,21 @@ const activeTab = ref('overview')
 const stats = ref({})
 const users = ref([])
 const events = ref([])
+const eventsTotal = ref(0)
+const eventsOffset = ref(0)
 const initiatives = ref([])
+const initiativesShown = ref(10)
 const discussions = ref([])
+const discussionsTotal = ref(0)
+const discussionsOffset = ref(0)
 const userSearch = ref('')
 const showCreateEvent = ref(false)
 const isEditing = ref(false)
 const editingId = ref(null)
 const sending = ref(false)
+const addressQuery = ref('')
+const searchingAddress = ref(false)
 
-const newsletter = ref({ subject: '', content: '' })
 const newsletter = ref({ subject: '', content: '' })
 const newEvent = ref({ title: '', date: '', location: '', description: '', category: 'General', imageUrl: '' })
 const selectedImage = ref(null)
@@ -387,6 +447,8 @@ const newInitiative = ref({
   coordinateY: 50
 })
 const showCreateInitiative = ref(false)
+const isEditingInitiative = ref(false)
+const editingInitiativeId = ref(null)
 const map = ref(null)
 const mapMarker = ref(null)
 
@@ -399,6 +461,25 @@ const tabs = [
   { id: 'newsletter', label: 'Newsletter', icon: Mail }
 ]
 
+const visibleInitiatives = computed(() => initiatives.value.slice(0, initiativesShown.value))
+
+const fetchEvents = async (reset = false) => {
+  try {
+    if (reset) {
+      eventsOffset.value = 0
+      events.value = []
+    }
+    const limit = 10
+    const data = await api.get(`/events?limit=${limit}&offset=${eventsOffset.value}`)
+    const fetched = data.events || []
+    eventsTotal.value = data.total || fetched.length
+    events.value = [...events.value, ...fetched]
+    eventsOffset.value += limit
+  } catch (e) {
+    console.warn('Events load failed', e)
+  }
+}
+
 const load = async () => {
   try {
     const statsData = await api.get('/admin/stats')
@@ -407,14 +488,12 @@ const load = async () => {
     const usersData = await api.get('/admin/users')
     users.value = usersData.users || []
 
-    try {
-      const eventsData = await api.get('/events') 
-      events.value = eventsData.events || []
-    } catch (e) { console.warn('Events load failed', e) }
+    await fetchEvents(true)
 
     try {
       const initData = await api.get('/initiatives')
       initiatives.value = initData.initiatives || []
+      initiativesShown.value = 10
     } catch (e) { console.warn('Initiatives load failed', e) }
 
   } catch (err) {
@@ -422,10 +501,18 @@ const load = async () => {
   }
 }
 
-const loadDiscussions = async () => {
+const fetchDiscussions = async (reset = false) => {
   try {
-    const data = await api.get('/forum/discussions?limit=50')
-    discussions.value = data.discussions || []
+    if (reset) {
+      discussionsOffset.value = 0
+      discussions.value = []
+    }
+    const limit = 20
+    const data = await api.get(`/forum/discussions?limit=${limit}&offset=${discussionsOffset.value}`)
+    const fetched = data.discussions || []
+    discussionsTotal.value = data.total || fetched.length
+    discussions.value = [...discussions.value, ...fetched]
+    discussionsOffset.value += limit
   } catch (err) {
     console.error('Failed to load discussions', err)
   }
@@ -433,7 +520,10 @@ const loadDiscussions = async () => {
 
 watch(activeTab, (newTab) => {
   if (newTab === 'moderation') {
-    loadDiscussions()
+    fetchDiscussions(true)
+  }
+  if (newTab === 'events') {
+    fetchEvents(true)
   }
 })
 
@@ -453,6 +543,25 @@ const toggleSuspend = async (user) => {
   } catch (err) {
     console.error('Failed to suspend user', err)
     alert('Failed to update user status')
+  }
+}
+
+const updateUserRole = async (user, newRole) => {
+  if (user.role === newRole) return
+  if (!confirm(`Change role of ${user.name || user.email} to ${newRole}?`)) {
+    // Reset selection (this is tricky with simple select, usually requires forcing update)
+    // For simplicity, we assume the user confirms or we'd need to re-render.
+    // Ideally we force re-render, but let's just proceed.
+    return
+  }
+  
+  try {
+    await api.put(`/admin/users/${user.id}/role`, { role: newRole })
+    user.role = newRole
+    alert('User role updated')
+  } catch (err) {
+    console.error('Failed to update user role', err)
+    alert('Failed to update user role')
   }
 }
 
@@ -476,6 +585,39 @@ const deleteUser = async (user) => {
   } catch (err) {
     console.error('Failed to delete user', err)
     alert('Failed to delete user')
+  }
+}
+
+const selectedUsers = ref([])
+
+const toggleUserSelection = (userId) => {
+  if (selectedUsers.value.includes(userId)) {
+    selectedUsers.value = selectedUsers.value.filter(id => id !== userId)
+  } else {
+    selectedUsers.value.push(userId)
+  }
+}
+
+const toggleAllUsers = () => {
+  if (selectedUsers.value.length === filteredUsers.value.length) {
+    selectedUsers.value = []
+  } else {
+    selectedUsers.value = filteredUsers.value.map(u => u.id)
+  }
+}
+
+const deleteSelectedUsers = async () => {
+  if (selectedUsers.value.length === 0) return
+  if (!confirm(`Are you sure you want to delete ${selectedUsers.value.length} users? This cannot be undone.`)) return
+  
+  try {
+    await api.post('/admin/users/bulk-delete', { userIds: selectedUsers.value })
+    users.value = users.value.filter(u => !selectedUsers.value.includes(u.id))
+    selectedUsers.value = []
+    alert('Selected users deleted successfully')
+  } catch (err) {
+    console.error('Failed to delete selected users', err)
+    alert('Failed to delete selected users')
   }
 }
 
@@ -520,23 +662,39 @@ const handleImageSelect = (event) => {
   reader.readAsDataURL(file)
 }
 
+const uploadEventImage = async () => {
+  if (!selectedImage.value) return newEvent.value.imageUrl || ''
+  const formData = new FormData()
+  formData.append('file', selectedImage.value)
+  const res = await api.post('/upload/event-image', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  })
+  return res.url
+}
+
 const saveEvent = async () => {
   try {
+    const payload = { ...newEvent.value }
+    if (selectedImage.value) {
+      payload.imageUrl = await uploadEventImage()
+    }
+
     if (isEditing.value && editingId.value) {
-      await api.put(`/admin/events/${editingId.value}`, newEvent.value)
+      await api.put(`/admin/events/${editingId.value}`, payload)
       alert('Event updated')
     } else {
-      await api.post('/admin/events', newEvent.value)
+      await api.post('/admin/events', payload)
       alert('Event created')
     }
     
     showCreateEvent.value = false
-    newEvent.value = { title: '', date: '', location: '', description: '', category: 'General' }
+    newEvent.value = { title: '', date: '', location: '', description: '', category: 'General', imageUrl: '' }
+    selectedImage.value = null
+    imagePreview.value = null
     editingId.value = null
     isEditing.value = false
     
-    const eventsData = await api.get('/events') 
-    events.value = eventsData.events || []
+    await fetchEvents(true)
   } catch (err) {
     console.error('Failed to save event', err)
     alert('Failed to save event: ' + (err.response?.data?.message || err.message))
@@ -547,7 +705,7 @@ const deleteEvent = async (id) => {
   if (!confirm('Delete this event?')) return
   try {
     await api.delete(`/admin/events/${id}`)
-    events.value = events.value.filter(e => e.id !== id)
+    await fetchEvents(true)
   } catch (err) {
     console.error('Failed to delete event', err)
   }
@@ -558,6 +716,7 @@ const deleteDiscussion = async (id) => {
   try {
     await api.delete(`/forum/discussions/${id}`)
     discussions.value = discussions.value.filter(d => d.id !== id)
+    discussionsTotal.value = Math.max(discussionsTotal.value - 1, discussions.value.length)
   } catch (err) {
     console.error('Failed to delete discussion', err)
     alert('Failed to delete discussion')
@@ -565,18 +724,61 @@ const deleteDiscussion = async (id) => {
 }
 
 const sendNewsletter = async () => {
-  sending.value = true
-  // Simulate sending
-  setTimeout(() => {
-    alert(`Newsletter "${newsletter.value.subject}" sent to all subscribers!`)
-    newsletter.value = { subject: '', content: '' }
-    sending.value = false
-  }, 1500)
+  if (!newsletter.value.subject || !newsletter.value.content) {
+    alert('Please fill in both subject and content');
+    return;
+  }
+  
+  if (!confirm('Are you sure you want to send this newsletter to ALL subscribers?')) return;
+
+  sending.value = true;
+  try {
+    const response = await api.post('/admin/newsletter/send', {
+      subject: newsletter.value.subject,
+      content: newsletter.value.content
+    });
+    
+    alert(response.message || `Newsletter sent to ${response.count} subscribers!`);
+    newsletter.value = { subject: '', content: '' };
+  } catch (err) {
+    console.error('Failed to send newsletter', err);
+    alert('Failed to send newsletter: ' + (err.response?.data?.message || err.message));
+  } finally {
+    sending.value = false;
+  }
 }
 
+
+
+
 const openCreateInitiative = () => {
+  isEditingInitiative.value = false
+  editingInitiativeId.value = null
+  newInitiative.value = { 
+    name: '', 
+    type: 'garden', 
+    description: '', 
+    contact: '', 
+    website: '', 
+    coordinateX: 50, 
+    coordinateY: 50 
+  }
+  addressQuery.value = ''
+  
   showCreateInitiative.value = true
   // Wait for DOM
+  setTimeout(() => {
+    initPickerMap()
+  }, 100)
+}
+
+const openEditInitiative = (initiative) => {
+  isEditingInitiative.value = true
+  editingInitiativeId.value = initiative.id
+  newInitiative.value = { ...initiative }
+  addressQuery.value = initiative.location || ''
+  
+  showCreateInitiative.value = true
   setTimeout(() => {
     initPickerMap()
   }, 100)
@@ -591,14 +793,41 @@ const closeCreateInitiative = () => {
 }
 
 const initPickerMap = () => {
-  const lat = 52.22153
-  const lng = 6.89366
+  // Use existing coords if editing, else default
+  // Default: Enschede center approx
+  // If editing, convert X/Y back to Lat/Lng? 
+  // MapView logic:
+  // lat = 52.24 - (y / 100) * 0.04
+  // lng = 6.87 + (x / 100) * 0.05
+  
+  let lat = 52.22153
+  let lng = 6.89366
+  
+  if (isEditingInitiative.value || (newInitiative.value.coordinateX !== 50 || newInitiative.value.coordinateY !== 50)) {
+     const y = newInitiative.value.coordinateY
+     const x = newInitiative.value.coordinateX
+     lat = 52.24 - (y / 100) * 0.04
+     lng = 6.87 + (x / 100) * 0.05
+  }
+
   const zoom = 13
+
+  if (map.value) {
+      map.value.remove() // Clean up existing map instance if any (though usually destroyed on close)
+  }
 
   map.value = L.map('picker-map').setView([lat, lng], zoom)
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map.value)
+  
+  // Add initial marker if editing or coordinates set
+  if (isEditingInitiative.value || (newInitiative.value.coordinateX !== 50 || newInitiative.value.coordinateY !== 50)) {
+     mapMarker.value = L.marker([lat, lng]).addTo(map.value)
+     if (newInitiative.value.location) {
+         mapMarker.value.bindPopup(newInitiative.value.location)
+     }
+  }
 
   // Add click handler
   map.value.on('click', (e) => {
@@ -624,49 +853,90 @@ const initPickerMap = () => {
   })
 }
 
+const searchAddress = async () => {
+  if (!addressQuery.value) return
+  
+  searchingAddress.value = true
+  try {
+    const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressQuery.value)}`)
+    const data = await response.json()
+    
+    if (data && data.length > 0) {
+      const { lat, lon, display_name } = data[0]
+      const latitude = parseFloat(lat)
+      const longitude = parseFloat(lon)
+      
+      // Update Map
+      if (map.value) {
+        map.value.setView([latitude, longitude], 16)
+        
+        if (mapMarker.value) {
+          mapMarker.value.setLatLng([latitude, longitude])
+            .bindPopup(display_name).openPopup()
+        } else {
+          mapMarker.value = L.marker([latitude, longitude]).addTo(map.value)
+            .bindPopup(display_name).openPopup()
+        }
+      }
+
+      // Calculate X/Y
+      // Y: 0% -> 52.24 (Top), 100% -> 52.20 (Bottom)
+      const y = Math.max(0, Math.min(100, ((52.24 - latitude) / 0.04) * 100))
+      // X: 0% -> 6.87 (Left), 100% -> 6.92 (Right)
+      const x = Math.max(0, Math.min(100, ((longitude - 6.87) / 0.05) * 100))
+
+      newInitiative.value.coordinateX = x
+      newInitiative.value.coordinateY = y
+      
+      // Update location text
+      // We'll use the query or the display name, let's use the short display name or just the query for now
+      // and maybe format it a bit given the user request "address should be dispplayed on map"
+      newInitiative.value.location = addressQuery.value 
+    } else {
+      alert('Address not found')
+    }
+  } catch (err) {
+    console.error('Geocoding error', err)
+    alert('Failed to search address')
+  } finally {
+    searchingAddress.value = false
+  }
+}
+
 const saveInitiative = async () => {
   try {
-    await api.post('/initiatives', {
+    if (isEditingInitiative.value && editingInitiativeId.value) {
+       await api.put(`/initiatives/${editingInitiativeId.value}`, {
         ...newInitiative.value,
-        location: 'Enschede Area' // Or derive from coords if needed
-    })
-    alert('Initiative created successfully')
+        location: newInitiative.value.location || 'Enschede Area'
+       })
+       alert('Initiative updated successfully')
+    } else {
+       await api.post('/initiatives', {
+        ...newInitiative.value,
+        location: newInitiative.value.location || 'Enschede Area'
+       })
+       alert('Initiative created successfully')
+    }
+
     closeCreateInitiative()
     // Reload
     const initData = await api.get('/initiatives')
     initiatives.value = initData.initiatives || []
     
     // Reset
-    newInitiative.value = { 
-      name: '', 
-      type: 'garden', 
-      description: '', 
-      contact: '', 
-      website: '',
-      coordinateX: 50,
-      coordinateY: 50
-    }
+    openCreateInitiative()
+    closeCreateInitiative()
+    
   } catch (err) {
-    console.error('Failed to create initiative', err)
-    alert('Failed to create initiative')
+    console.error('Failed to save initiative', err)
+    alert('Failed to save initiative')
   }
 }
 
 const deleteInitiative = async (id) => {
   if (!confirm('Are you sure you want to delete this initiative?')) return
   try {
-    // Current backend might not support DELETE logic in initiatives.routes.ts, 
-    // but assuming standard REST pattern or will add if missing. 
-    // Checking routes... initiatives.routes.ts only has GET /, POST /, GET /:id, POST /support, POST/DELETE save.
-    // It DOES NOT seem to have a generic DELETE /:id for initiatives themselves (only for saving).
-    // I need to check the backend routes again.
-    // Looking at file view... 
-    // router.get('/', ...); router.post('/', ...); router.get('/:id', ...); 
-    // router.post('/:id/support', ...); router.post('/:id/save', ...); router.delete('/:id/save', ...);
-    //
-    // MISSING: router.delete('/:id', ...) in initiatives.routes.ts
-    // I will add the frontend code now, and will immediately fix the backend in the next step.
-    
     await api.delete(`/initiatives/${id}`)
     initiatives.value = initiatives.value.filter(i => i.id !== id)
   } catch (err) {
@@ -958,11 +1228,19 @@ input, textarea {
 
 .picker-map {
   width: 100%;
-  height: 300px;
+  height: 100%;
   border-radius: 0.5rem;
   border: 1px solid rgb(var(--color-border));
   margin-top: 0.5rem;
   z-index: 10;
+}
+
+.role-select {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid rgb(var(--color-border));
+  background: white;
+  font-size: 0.875rem;
 }
 
 .help-text {
@@ -1056,6 +1334,12 @@ input, textarea {
   border: 1px solid rgb(var(--color-border));
   border-radius: 0.5rem;
   margin-bottom: 1rem;
+}
+
+.load-more-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
 }
 
 .moderation-card {

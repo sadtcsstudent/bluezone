@@ -10,6 +10,7 @@ import messagesRoutes from './messages.routes';
 import notificationsRoutes from './notifications.routes';
 import adminRoutes from './admin.routes';
 import uploadRoutes from './upload.routes';
+import companyRoutes from './company.routes';
 
 const router = Router();
 
@@ -24,5 +25,6 @@ router.use('/messages', messagesRoutes);
 router.use('/notifications', notificationsRoutes);
 router.use('/admin', adminRoutes);
 router.use('/upload', uploadRoutes);
+router.use('/company', companyRoutes);
 
 export default router;

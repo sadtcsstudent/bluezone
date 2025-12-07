@@ -19,7 +19,9 @@
 import { Bell } from 'lucide-vue-next'
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useNotificationStore } from '@/stores/notifications'
+import { useToastStore } from '@/stores/toast'
 import { storeToRefs } from 'pinia'
+import { socketService } from '@/services/socket.service'
 import NotificationDropdown from './NotificationDropdown.vue'
 
 export default {
@@ -29,6 +31,7 @@ export default {
     const isOpen = ref(false)
     const container = ref(null)
     const store = useNotificationStore()
+    const toast = useToastStore()
     const { unreadCount } = storeToRefs(store)
 
     const toggleDropdown = () => {
@@ -41,13 +44,20 @@ export default {
       }
     }
 
+    const handleNotification = (notification) => {
+      store.addNotification(notification)
+      toast.info(notification.content)
+    }
+
     onMounted(() => {
       document.addEventListener('click', closeDropdown)
       store.fetchUnreadCount()
+      socketService.on('notification:new', handleNotification)
     })
 
     onUnmounted(() => {
       document.removeEventListener('click', closeDropdown)
+      socketService.off('notification:new')
     })
 
     return {

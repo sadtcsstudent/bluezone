@@ -115,7 +115,7 @@
                   </span>
                 </div>
               </div>
-              <button class="download-button">
+              <button class="download-button" @click="downloadNewsletter(newsletter)">
                 <Download :size="20" />
                 <span>Download</span>
               </button>
@@ -174,6 +174,19 @@ export default {
       } catch (err) {
         console.error('Unsubscribe failed', err)
       }
+    },
+    downloadNewsletter(newsletter) {
+      if (!newsletter.fileUrl) {
+        alert('Download not available for this newsletter.')
+        return
+      }
+      const link = document.createElement('a')
+      link.href = newsletter.fileUrl
+      link.setAttribute('download', '')
+      link.target = '_blank'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
     }
   }
 }

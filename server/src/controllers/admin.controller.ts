@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { prisma } from '../utils/prisma';
 import { AppError } from '../utils/errors';
 import { formatUsers } from '../utils/serializers';
+import { sendNewsletterBroadcast } from '../services/email.service';
 
 const adminEventSchema = z
   .object({
@@ -56,10 +57,49 @@ export const unlockUser = async (req: Request, res: Response, next: NextFunction
   }
 };
 
+export const updateUserRole = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { role } = req.body;
+    if (!['user', 'admin', 'company'].includes(role)) {
+      throw new AppError(400, 'Invalid role');
+    }
+
+    const user = await prisma.user.update({
+      where: { id: req.params.id },
+      data: { role }
+    });
+    res.json({ user });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     await prisma.user.delete({ where: { id: req.params.id } });
     res.json({ success: true });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const bulkDeleteUsers = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { userIds } = req.body;
+
+    if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
+      throw new AppError(400, 'Invalid user IDs provided');
+    }
+
+    const result = await prisma.user.deleteMany({
+      where: {
+        id: {
+          in: userIds
+        }
+      }
+    });
+
+    res.json({ success: true, count: result.count });
   } catch (error) {
     next(error);
   }
@@ -144,13 +184,58 @@ export const adminDeleteEvent = async (req: Request, res: Response, next: NextFu
 
 export const getStats = async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    const [users, events, discussions, groups] = await Promise.all([
+    const [users, events, discussions, groups, initiatives] = await Promise.all([
       prisma.user.count(),
       prisma.event.count(),
       prisma.discussion.count(),
-      prisma.group.count()
+      prisma.group.count(),
+      prisma.initiative.count()
     ]);
-    res.json({ stats: { users, events, discussions, groups } });
+    res.json({ stats: { users, events, discussions, groups, initiatives } });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const broadcastNewsletter = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { subject, content } = req.body;
+
+    if (!subject || !content) {
+      throw new AppError(400, 'Subject and content are required');
+    }
+
+    // 1. Get all subscribers
+    const subscribers = await prisma.newsletterSubscriber.findMany({
+      where: { subscribed: true },
+      select: { email: true }
+    });
+
+    if (subscribers.length === 0) {
+      res.json({ success: true, count: 0, message: 'No subscribers found' });
+      return;
+    }
+
+    // 2. Send broadcast
+    const recipientEmails = subscribers.map(s => s.email);
+    const sentCount = await sendNewsletterBroadcast(recipientEmails, subject, content);
+
+    // 3. Save to database as a "Past Newsletter"
+    await prisma.newsletter.create({
+      data: {
+        title: subject,
+        description: content.substring(0, 200) + (content.length > 200 ? '...' : ''), // Brief summary
+        fileUrl: '', // No file for email broadcasts usually, or could generate PDF later
+        publishedAt: new Date(),
+        topics: ['Community Update']
+      }
+    });
+
+    res.json({
+      success: true,
+      count: sentCount,
+      message: `Newsletter queued/sent to ${sentCount} subscribers`
+    });
   } catch (error) {
     next(error);
   }

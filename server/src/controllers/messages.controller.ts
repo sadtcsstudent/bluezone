@@ -12,20 +12,30 @@ export const messageSchemas = {
 
 export const listConversations = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const userId = req.user!.id;
     const conversations = await prisma.conversation.findMany({
-      where: { participants: { some: { userId: req.user!.id } } },
+      where: { participants: { some: { userId } } },
       include: {
         participants: { include: { user: true } },
         messages: { take: 1, orderBy: { createdAt: 'desc' }, include: { sender: true } }
       },
       orderBy: { updatedAt: 'desc' }
     });
+
     res.json({
-      conversations: conversations.map((c) => ({
-        ...c,
-        participants: c.participants.map((p) => ({ ...p, user: formatUser(p.user as any) })),
-        messages: c.messages.map((m) => ({ ...m, sender: formatUser(m.sender as any) }))
-      }))
+      conversations: conversations.map((c) => {
+        const currentUserParticipant = c.participants.find(p => p.userId === userId);
+        const unreadCount = currentUserParticipant ? currentUserParticipant.unreadCount : 0;
+        const lastMessage = c.messages[0] ? { ...c.messages[0], sender: formatUser(c.messages[0].sender as any) } : null;
+
+        return {
+          ...c,
+          unreadCount,
+          lastMessage,
+          participants: c.participants.map((p) => ({ ...p, user: formatUser(p.user as any) })),
+          messages: c.messages.map((m) => ({ ...m, sender: formatUser(m.sender as any) }))
+        };
+      })
     });
   } catch (error) {
     next(error);
@@ -121,15 +131,26 @@ export const sendMessage = async (req: Request, res: Response, next: NextFunctio
         select: { userId: true }
       });
 
-      recipients.forEach(recipient => {
+      recipients.forEach(async (recipient) => {
         io.to(`user:${recipient.userId}`).emit('message:new', { ...message, sender: req.user });
-        // Also emit notification
-        io.to(`user:${recipient.userId}`).emit('notification:new', {
-          type: 'message',
-          title: 'New Message',
-          content: `New message from ${req.user?.name}`,
-          link: `/messages/${conversationId}`
-        });
+
+        // Persist notification to database first
+        try {
+          const notification = await prisma.notification.create({
+            data: {
+              userId: recipient.userId,
+              type: 'message',
+              title: 'New Message',
+              content: `New message from ${req.user?.name}`,
+              link: `/messages/${conversationId}`
+            }
+          });
+
+          // Emit the persisted notification object so it matches DB structure (including ID)
+          io.to(`user:${recipient.userId}`).emit('notification:new', notification);
+        } catch (err) {
+          console.error('Failed to create notification record:', err);
+        }
       });
     } catch (error) {
       // Socket error shouldn't fail the request

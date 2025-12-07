@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import AdminDashboardView from '../views/AdminDashboardView.vue'
+import CompanyDashboardView from '../views/CompanyDashboardView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -71,6 +73,11 @@ const router = createRouter({
       component: () => import('../views/MessagesView.vue')
     },
     {
+      path: '/messages/:id',
+      name: 'message-detail',
+      component: () => import('../views/MessagesView.vue')
+    },
+    {
       path: '/groups',
       name: 'groups',
       component: () => import('../views/GroupsView.vue')
@@ -98,7 +105,12 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'admin',
-      component: () => import('../views/AdminDashboardView.vue')
+      component: AdminDashboardView
+    },
+    {
+      path: '/company-dashboard',
+      name: 'company-dashboard',
+      component: CompanyDashboardView
     }
   ]
 })

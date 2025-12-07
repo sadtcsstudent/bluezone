@@ -33,9 +33,10 @@ export const resetPasswordSchema = z.object({
 export const updateUserSchema = z.object({
   body: z.object({
     name: z.string().min(2).optional(),
-    location: z.string().optional(),
+    location: z.string().nullable().optional(),
     interests: z.array(z.string()).optional(),
-    bio: z.string().optional(),
+    bio: z.string().nullable().optional(),
+    avatar: z.string().optional(),
     emailPreferences: z.object({
       marketing: z.boolean().optional(),
       notifications: z.boolean().optional(),
@@ -44,15 +45,22 @@ export const updateUserSchema = z.object({
 });
 
 // Event Schemas
+const dateField = z
+  .string()
+  .min(1, 'Date is required')
+  .refine((val) => !Number.isNaN(new Date(val).getTime()), 'Invalid date format');
+
 export const createEventSchema = z.object({
   body: z.object({
     title: z.string().min(3, 'Title must be at least 3 characters'),
-    description: z.string().min(10, 'Description must be at least 10 characters'),
-    date: z.string().datetime().or(z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/, 'Invalid date format')),
+    description: z.string().min(3, 'Description must be at least 3 characters'),
+    date: dateField,
     location: z.string().min(2, 'Location is required'),
     category: z.string().min(2, 'Category is required'),
-    maxAttendees: z.number().int().positive().optional(),
+    maxAttendees: z.coerce.number().int().positive().optional(),
     image: z.string().optional(),
+    imageUrl: z.string().optional(),
+    time: z.string().optional(),
   }),
 });
 
@@ -60,11 +68,13 @@ export const updateEventSchema = z.object({
   body: z.object({
     title: z.string().min(3).optional(),
     description: z.string().min(10).optional(),
-    date: z.string().datetime().or(z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)).optional(),
+    date: dateField.optional(),
     location: z.string().min(2).optional(),
     category: z.string().min(2).optional(),
-    maxAttendees: z.number().int().positive().optional(),
+    maxAttendees: z.coerce.number().int().positive().optional(),
     image: z.string().optional(),
+    imageUrl: z.string().optional(),
+    time: z.string().optional(),
   }),
 });
 

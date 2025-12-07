@@ -91,7 +91,8 @@ export const createInitiative = async (req: Request, res: Response, next: NextFu
         coordinateX: typeof coordinateX === 'number' ? coordinateX : 0,
         coordinateY: typeof coordinateY === 'number' ? coordinateY : 0,
         contact: contact || null,
-        website: website || null
+        website: website || null,
+        createdById: req.user?.id
       }
     });
 
@@ -136,6 +137,48 @@ export const deleteInitiative = async (req: Request, res: Response, next: NextFu
 
     await prisma.initiative.delete({ where: { id: req.params.id } });
     res.json({ success: true });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateInitiative = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (req.user?.role !== 'admin') {
+      throw new AppError(403, 'Unauthorized');
+    }
+
+    const {
+      title,
+      name,
+      description,
+      category,
+      type,
+      location,
+      coordinateX,
+      coordinateY,
+      contact,
+      website
+    } = req.body;
+
+    const initiative = await prisma.initiative.findUnique({ where: { id: req.params.id } });
+    if (!initiative) throw new AppError(404, 'Initiative not found');
+
+    const updated = await prisma.initiative.update({
+      where: { id: req.params.id },
+      data: {
+        name: name || title || initiative.name,
+        type: type || category || initiative.type,
+        location: location || initiative.location,
+        description: description || initiative.description,
+        coordinateX: typeof coordinateX === 'number' ? coordinateX : initiative.coordinateX,
+        coordinateY: typeof coordinateY === 'number' ? coordinateY : initiative.coordinateY,
+        contact: contact !== undefined ? contact : initiative.contact,
+        website: website !== undefined ? website : initiative.website
+      }
+    });
+
+    res.json({ initiative: updated });
   } catch (error) {
     next(error);
   }

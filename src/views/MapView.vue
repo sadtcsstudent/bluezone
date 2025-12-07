@@ -134,7 +134,7 @@
 
             <!-- Actions -->
             <div class="modal-actions">
-              <button class="action-btn action-btn--primary">
+              <button class="action-btn action-btn--primary" @click="getDirections">
                 Get Directions
               </button>
               <button 
@@ -158,6 +158,7 @@ import api from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { markRaw } from 'vue'
 
 export default {
   name: 'MapView',
@@ -259,11 +260,13 @@ export default {
       const lng = 6.89366;
       const zoom = 13;
 
-      this.map = L.map('map').setView([lat, lng], zoom);
+      this.map = markRaw(L.map('map').setView([lat, lng], zoom));
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(this.map);
+
+      this.updateMapMarkers();
     },
     updateMapMarkers() {
       if (!this.map) return;
@@ -321,8 +324,21 @@ export default {
              this.selectedInitiative = initiative;
           });
 
-        this.markers.push(marker);
+        this.markers.push(markRaw(marker));
       });
+    },
+    getDirections() {
+      if (!this.selectedInitiative || !this.selectedInitiative.coordinates) return
+      
+      // Calculate Lat/Lng from X/Y (same logic as map markers)
+      // Y: 0% -> 52.24 (Top/North), 100% -> 52.20 (Bottom/South)
+      const lat = 52.24 - (this.selectedInitiative.coordinates.y / 100) * 0.04;
+      
+      // X: 0% -> 6.87 (Left/West), 100% -> 6.92 (Right/East)
+      const lng = 6.87 + (this.selectedInitiative.coordinates.x / 100) * 0.05;
+
+      const destination = `${lat},${lng}`
+      window.open(`https://www.google.com/maps/dir/?api=1&destination=${destination}`, '_blank')
     },
     async toggleSave() {
       if (!this.selectedInitiative) return

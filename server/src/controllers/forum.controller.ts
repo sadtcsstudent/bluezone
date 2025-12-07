@@ -150,8 +150,9 @@ export const likeReply = async (req: Request, res: Response, next: NextFunction)
 
       if (reply.authorId !== userId) {
         const likerName = req.user?.name || 'Someone';
+        // Check for existing notification (using new path format)
         const existingNotification = await prisma.notification.findFirst({
-          where: { userId: reply.authorId, type: 'reply_like', link: reply.discussionId }
+          where: { userId: reply.authorId, type: 'reply_like', link: `/forum/${reply.discussionId}` }
         });
 
         if (!existingNotification) {
@@ -161,7 +162,7 @@ export const likeReply = async (req: Request, res: Response, next: NextFunction)
               type: 'reply_like',
               title: 'Your reply was liked',
               content: `${likerName} liked your reply`,
-              link: reply.discussionId
+              link: `/forum/${reply.discussionId}`
             }
           });
         }
@@ -316,7 +317,7 @@ export const likeDiscussion = async (req: Request, res: Response, next: NextFunc
 
       const likerName = req.user?.name || 'Someone';
       const existingNotification = await prisma.notification.findFirst({
-        where: { userId: discussion.authorId, type: 'discussion_like', link: discussion.id }
+        where: { userId: discussion.authorId, type: 'discussion_like', link: `/forum/${discussion.id}` }
       });
 
       if (!existingNotification) {
@@ -326,7 +327,7 @@ export const likeDiscussion = async (req: Request, res: Response, next: NextFunc
             type: 'discussion_like',
             title: 'Your discussion was liked',
             content: `${likerName} liked your discussion "${discussion.title}"`,
-            link: discussion.id
+            link: `/forum/${discussion.id}`
           }
         });
       }

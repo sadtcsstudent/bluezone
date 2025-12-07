@@ -295,6 +295,7 @@ const updateProfile = async () => {
       name: profile.value.name,
       bio: profile.value.bio,
       location: profile.value.location,
+      avatar: profile.value.avatar,
       interests: interestsInput.value.split(',').map((s) => s.trim()).filter(Boolean)
     })
     alert('Profile updated successfully')
