@@ -5,12 +5,12 @@ export type SafeUser = Omit<User, 'password'> & {
   preferences: User['preferences'] | null;
 };
 
-export const formatUser = (user: User | null): SafeUser | null => {
+export const formatUser = (user: User | SafeUser | null): SafeUser | null => {
   if (!user) return user;
   // Drop sensitive fields like password before exposing the user object.
   // Keep defaults applied for nullable/array fields to simplify consumers.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { password, ...rest } = user;
+  const { password, ...rest } = user as any;
   return {
     ...rest,
     interests: user.interests || [],

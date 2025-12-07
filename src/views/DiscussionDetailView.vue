@@ -57,11 +57,17 @@
             </div>
 
             <footer class="post-actions">
-              <button class="action-btn">
+              <button
+                class="action-btn"
+                :class="{ active: discussion?.likedByUser }"
+                @click="toggleLike"
+              >
                 <ThumbsUp :size="18" />
-                <span>Like</span>
+                <span>
+                  {{ (discussion?.likesCount || 0) }} Like{{ (discussion?.likesCount || 0) === 1 ? '' : 's' }}
+                </span>
               </button>
-              <button class="action-btn">
+              <button class="action-btn" @click="shareDiscussion">
                 <Share2 :size="18" />
                 <span>Share</span>
               </button>
@@ -76,70 +82,38 @@
         <!-- Replies Section -->
         <div class="replies-section">
           <div class="replies-header">
-            <h3>{{ replies.length }} Replies</h3>
+            <h3>{{ totalReplies }} Replies</h3>
           </div>
 
           <div class="replies-list">
-            <article v-for="reply in replies" :key="reply.id" class="post-card reply-card">
-              <div class="post-sidebar">
-                <div class="author-avatar sm">
-                  <img v-if="reply.author?.avatar" :src="reply.author.avatar" :alt="reply.author.name" />
-                  <div v-else class="avatar-placeholder sm">
-                    {{ (reply.author?.name || reply.author?.email || '?')[0].toUpperCase() }}
-                  </div>
-                </div>
-              </div>
-
-              <div class="post-content-wrapper">
-                <header class="post-header">
-                  <div class="reply-meta">
-                    <span class="author-name">{{ reply.author?.name || reply.author?.email }}</span>
-                    <span class="post-date">{{ formatDate(reply.createdAt) }}</span>
-                  </div>
-                  <div v-if="isAuthor(reply.authorId)" class="post-menu">
-                    <button class="icon-btn" @click="startEditReply(reply)">
-                      <Edit2 :size="14" />
-                    </button>
-                    <button class="icon-btn danger" @click="deleteReply(reply.id)">
-                      <Trash2 :size="14" />
-                    </button>
-                  </div>
-                </header>
-                
-                <div v-if="editingReplyId === reply.id" class="edit-mode">
-                  <textarea v-model="editReplyContent" rows="3"></textarea>
-                  <div class="edit-actions">
-                    <button class="btn btn--sm btn--ghost" @click="cancelEditReply">Cancel</button>
-                    <button class="btn btn--sm btn--primary" @click="saveReply(reply.id)">Save</button>
-                  </div>
-                </div>
-                <div v-else class="post-body">
-                  {{ reply.content }}
-                </div>
-
-                <footer class="post-actions">
-                  <button class="action-btn sm">
-                    <ThumbsUp :size="16" />
-                    <span>Helpful</span>
-                  </button>
-                  <button class="action-btn sm">
-                    <MessageSquare :size="16" />
-                    <span>Reply</span>
-                  </button>
-                </footer>
-              </div>
-            </article>
+             <ReplyItem 
+              v-for="reply in rootReplies" 
+              :key="reply.id" 
+              :reply="reply" 
+              :current-user-id="authStore.user?.id"
+              :editing-id="editingReplyId"
+              @edit="startEditReply"
+              @delete="deleteReply"
+              @cancel-edit="cancelEditReply"
+              @save-edit="saveReplyEdit"
+              @like="toggleReplyLike"
+              @reply="replyToReply"
+            />
           </div>
         </div>
 
         <!-- Reply Composer -->
         <div class="composer-section" ref="composer">
-          <h3>Post a Reply</h3>
+          <h3>{{ replyingTo ? `Replying to ${replyingTo.author?.name || 'User'}` : 'Post a Reply' }}</h3>
+          <div v-if="replyingTo" class="reply-context">
+            <p>"{{ replyingTo.content.substring(0, 100) }}{{ replyingTo.content.length > 100 ? '...' : '' }}"</p>
+            <button class="btn-close-context" @click="cancelReplyTo">✕</button>
+          </div>
           <form @submit.prevent="postReply" class="reply-form">
             <div class="editor-wrapper">
               <textarea 
                 v-model="replyContent" 
-                placeholder="What are your thoughts?" 
+                :placeholder="replyingTo ? 'Write your reply...' : 'What are your thoughts?'" 
                 required
                 rows="4"
               ></textarea>
@@ -163,6 +137,7 @@ import { ChevronRight, ThumbsUp, Share2, MessageSquare, Edit2, Trash2 } from 'lu
 import api from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 import { useToastStore } from '@/stores/toast'
+import ReplyItem from './components/ReplyItem.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -178,10 +153,15 @@ const composer = ref(null)
 const editingDiscussion = ref(false)
 const editDiscussionContent = ref('')
 const editingReplyId = ref(null)
-const editReplyContent = ref('')
 
 const isAuthor = (authorId) => {
   return authStore.user?.id === authorId
+}
+
+const requireLogin = () => {
+  if (authStore.user) return true
+  router.push({ name: 'login', query: { redirect: route.fullPath } })
+  return false
 }
 
 const formatDate = (dateString) => {
@@ -201,12 +181,38 @@ const formatDate = (dateString) => {
   })
 }
 
+const rootReplies = ref([])
+const totalReplies = ref(0) // Track total count separately
+
+const buildReplyTree = (flatReplies) => {
+  const map = {}
+  const roots = []
+  
+  // First pass: Initialize map entries with children array
+  flatReplies.forEach(reply => {
+    map[reply.id] = { ...reply, children: [] }
+  })
+  
+  // Second pass: Link children to parents
+  flatReplies.forEach(reply => {
+    if (reply.parentId && map[reply.parentId]) {
+      map[reply.parentId].children.push(map[reply.id])
+    } else {
+      roots.push(map[reply.id])
+    }
+  })
+  
+  return roots
+}
+
 const load = async () => {
   loading.value = true
   try {
     const data = await api.get(`/forum/discussions/${route.params.id}`)
     discussion.value = data.discussion
-    replies.value = data.replies || []
+    replies.value = data.replies || [] // Keep flat list if needed
+    totalReplies.value = replies.value.length
+    rootReplies.value = buildReplyTree(replies.value)
   } catch (error) {
     console.error('Failed to load discussion:', error)
     toast.error('Failed to load discussion')
@@ -215,18 +221,70 @@ const load = async () => {
   }
 }
 
+const toggleLike = async () => {
+  if (!discussion.value || !requireLogin()) return
+  try {
+    const res = await api.post(`/forum/discussions/${discussion.value.id}/like`)
+    discussion.value = {
+      ...discussion.value,
+      likedByUser: res.liked,
+      likesCount: res.likes
+    }
+  } catch (error) {
+    console.error('Failed to like discussion:', error)
+    toast.error('Could not update like')
+  }
+}
+
+const shareDiscussion = async () => {
+  if (!discussion.value) return
+  const sharePayload = {
+    title: discussion.value.title,
+    text: discussion.value.content?.slice(0, 140) || discussion.value.title,
+    url: window.location.href
+  }
+
+  if (navigator.share) {
+    try {
+      await navigator.share(sharePayload)
+    } catch (err) {
+      // user cancelled, ignore
+    }
+    return
+  }
+
+  try {
+    await navigator.clipboard.writeText(sharePayload.url)
+    toast.success('Link copied to clipboard')
+  } catch (err) {
+    toast.error('Could not copy link')
+  }
+}
+
+const replyingTo = ref(null)
+
 const postReply = async () => {
   if (!replyContent.value.trim()) return
   
   try {
-    await api.post(`/forum/discussions/${route.params.id}/replies`, { content: replyContent.value })
+    const payload = { 
+      content: replyContent.value,
+      parentId: replyingTo.value ? replyingTo.value.id : undefined
+    }
+    
+    await api.post(`/forum/discussions/${route.params.id}/replies`, payload)
     replyContent.value = ''
+    replyingTo.value = null // Reset after posting
     await load()
     toast.success('Reply posted')
   } catch (error) {
     console.error('Failed to post reply:', error)
     toast.error('Failed to post reply')
   }
+}
+
+const cancelReplyTo = () => {
+  replyingTo.value = null
 }
 
 const startEditDiscussion = () => {
@@ -267,20 +325,19 @@ const deleteDiscussion = async () => {
 }
 
 const startEditReply = (reply) => {
-  editReplyContent.value = reply.content
   editingReplyId.value = reply.id
 }
 
 const cancelEditReply = () => {
   editingReplyId.value = null
-  editReplyContent.value = ''
 }
 
-const saveReply = async (replyId) => {
+const saveReplyEdit = async ({ id, content }) => {
   try {
-    await api.put(`/forum/replies/${replyId}`, { content: editReplyContent.value })
-    const reply = replies.value.find(r => r.id === replyId)
-    if (reply) reply.content = editReplyContent.value
+    await api.put(`/forum/replies/${id}`, { content })
+    // Simple optimistic update in flat list and rebuild tree, or just reload
+    // Reload is safer for consistency
+    await load() 
     editingReplyId.value = null
     toast.success('Reply updated')
   } catch (error) {
@@ -293,7 +350,7 @@ const deleteReply = async (replyId) => {
   if (!confirm('Are you sure you want to delete this reply?')) return
   try {
     await api.delete(`/forum/replies/${replyId}`)
-    replies.value = replies.value.filter(r => r.id !== replyId)
+    await load() // Reload to clean up tree
     toast.success('Reply deleted')
   } catch (error) {
     console.error('Failed to delete reply:', error)
@@ -304,6 +361,24 @@ const deleteReply = async (replyId) => {
 const scrollToReply = () => {
   composer.value?.scrollIntoView({ behavior: 'smooth' })
 }
+
+const replyToReply = (reply) => {
+  replyingTo.value = reply
+  scrollToReply()
+}
+
+const toggleReplyLike = async (reply) => {
+  if (!requireLogin()) return
+  try {
+    const res = await api.post(`/forum/replies/${reply.id}/like`)
+    reply.likedByUser = res.liked
+    reply.likesCount = res.likes
+  } catch (error) {
+    console.error('Failed to like reply:', error)
+    toast.error('Could not update like')
+  }
+}
+
 
 onMounted(load)
 </script>
@@ -557,6 +632,11 @@ onMounted(load)
   color: rgb(var(--color-primary));
 }
 
+.action-btn.active {
+  color: rgb(var(--color-primary));
+  background: rgba(var(--color-primary), 0.08);
+}
+
 .action-btn.sm {
   padding: 0.25rem 0.75rem;
   font-size: 0.875rem;
@@ -577,6 +657,9 @@ onMounted(load)
 
 .reply-card {
   margin-bottom: 1.5rem;
+  margin-left: 1.5rem;
+  border-left: 3px solid rgba(var(--color-primary), 0.12);
+  padding-left: 1rem;
 }
 
 .reply-card .post-sidebar {

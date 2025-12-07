@@ -25,6 +25,7 @@ export const listEvents = async (req: Request, res: Response, next: NextFunction
     const { search, category, sort, limit = '10', offset = '0' } = req.query as Record<string, string>;
     const take = Number(limit) || 10;
     const skip = Number(offset) || 0;
+    const currentUserId = req.user?.id;
 
     const where: any = {};
     if (search) {
@@ -44,8 +45,23 @@ export const listEvents = async (req: Request, res: Response, next: NextFunction
       prisma.event.count({ where })
     ]);
 
+    const formattedEvents = events.map((event) => {
+      const attendeeCount = event.registrations.filter((r) => r.status === 'registered').length;
+      const userRegistration = currentUserId
+        ? event.registrations.find((r) => r.userId === currentUserId)
+        : null;
+      const { registrations: _registrations, ...rest } = event as any;
+
+      return {
+        ...rest,
+        attendees: attendeeCount,
+        attendeeCount,
+        status: userRegistration?.status || null
+      };
+    });
+
     res.set('Cache-Control', 'public, max-age=300');
-    res.json({ events, total, page: Math.floor(skip / take) + 1, limit: take });
+    res.json({ events: formattedEvents, total, page: Math.floor(skip / take) + 1, limit: take });
   } catch (error) {
     next(error);
   }
@@ -59,10 +75,23 @@ export const getEvent = async (req: Request, res: Response, next: NextFunction) 
     });
     if (!event) throw new AppError(404, 'Event not found');
 
-    const isRegistered = req.user ? event.registrations.some((r) => r.userId === req.user!.id) : false;
-    const attendees = event.registrations.map((r) => formatUser(r.user));
+    const registrations = event.registrations || [];
+    const registered = registrations.filter((r) => r.status === 'registered');
+    const interested = registrations.filter((r) => r.status === 'interested');
+    const userRegistration = req.user ? registrations.find((r) => r.userId === req.user!.id) : null;
+    const isRegistered = userRegistration?.status === 'registered';
 
-    res.json({ event, isRegistered, attendees });
+    const attendees = registered.map((r) => formatUser(r.user));
+    const interestedUsers = interested.map((r) => formatUser(r.user));
+    const { registrations: _ignored, ...eventData } = event as any;
+
+    res.json({
+      event: { ...eventData, attendeeCount: attendees.length, status: userRegistration?.status || null },
+      isRegistered,
+      attendees,
+      interested: interestedUsers,
+      userStatus: userRegistration?.status || null
+    });
   } catch (error) {
     next(error);
   }
@@ -70,9 +99,10 @@ export const getEvent = async (req: Request, res: Response, next: NextFunction) 
 
 export const registerForEvent = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = req.user!.id;
+    if (!req.user) throw new AppError(401, 'Authentication required');
+    const userId = req.user.id;
     const eventId = req.params.id;
-    const status = (req.body.status as string) || 'registered';
+    const { status = 'registered' } = req.body || {};
 
     const registration = await prisma.$transaction(async (tx) => {
       const event = await tx.event.findUnique({
@@ -121,7 +151,7 @@ export const unregisterForEvent = async (req: Request, res: Response, next: Next
 export const listAttendees = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const registrations = await prisma.eventRegistration.findMany({
-      where: { eventId: req.params.id },
+      where: { eventId: req.params.id, status: 'registered' },
       include: { user: true }
     });
     res.json({ attendees: registrations.map((r) => formatUser(r.user)) });

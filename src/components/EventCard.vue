@@ -33,8 +33,17 @@
         <button class="event-card__button event-card__button--outline" @click.stop="handleViewDetails">
           View Details
         </button>
-        <button class="event-card__button event-card__button--primary" @click.stop="handleRegister">
-          Register
+        <button
+          class="event-card__button event-card__button--primary"
+          :class="{
+            'event-card__button--registered': status === 'registered',
+            'event-card__button--interested': status === 'interested'
+          }"
+          @click.stop="handleRegister"
+        >
+          <Check v-if="status === 'registered'" :size="16" />
+          <Star v-else-if="status === 'interested'" :size="16" />
+          <span>{{ status === 'registered' ? 'Registered' : status === 'interested' ? 'Interested' : 'Register' }}</span>
         </button>
       </div>
     </div>
@@ -42,7 +51,7 @@
 </template>
 
 <script>
-import { Calendar, Clock, MapPin, Users, ArrowRight } from 'lucide-vue-next'
+import { Calendar, Clock, MapPin, Users, Check, Star } from 'lucide-vue-next'
 import ImageWithFallback from './ImageWithFallback.vue'
 
 export default {
@@ -53,7 +62,8 @@ export default {
     Clock,
     MapPin,
     Users,
-    ArrowRight
+    Check,
+    Star
   },
   props: {
     title: {
@@ -88,7 +98,15 @@ export default {
       type: String,
       required: true
     },
+    status: {
+      type: String,
+      default: null
+    },
     onRegister: {
+      type: Function,
+      default: () => {}
+    },
+    onViewDetails: {
       type: Function,
       default: () => {}
     }
@@ -232,5 +250,27 @@ export default {
 .event-card__button--primary:hover {
   background: rgb(var(--color-primary-dark));
   border-color: rgb(var(--color-primary-dark));
+}
+
+.event-card__button--registered {
+  background: #16a34a; /* Solid green */
+  border-color: #16a34a;
+  color: white;
+}
+
+.event-card__button--registered:hover {
+  background: #15803d; /* Darker green */
+  border-color: #15803d;
+}
+
+.event-card__button--interested {
+  background: #f59e0b; /* Solid amber */
+  border-color: #f59e0b;
+  color: white;
+}
+
+.event-card__button--interested:hover {
+  background: #d97706; /* Darker amber */
+  border-color: #d97706;
 }
 </style>

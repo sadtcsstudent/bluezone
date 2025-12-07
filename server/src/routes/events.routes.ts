@@ -16,7 +16,7 @@ import { readLimiter, writeLimiter } from '../middleware/rateLimit.middleware';
 
 const router = Router();
 
-router.get('/', readLimiter, listEvents);
+router.get('/', readLimiter, maybeAuthenticate, listEvents);
 router.post('/', writeLimiter, authenticate, validate(createEventSchema), createEvent);
 router.get('/:id', readLimiter, maybeAuthenticate, getEvent);
 router.get('/:id/attendees', readLimiter, listAttendees);

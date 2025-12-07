@@ -87,7 +87,8 @@ export const adminCreateEvent = async (req: Request, res: Response, next: NextFu
     res.status(201).json({ event });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const message = error.errors.map((err) => err.message).join(', ') || 'Invalid event data';
+      const issues = (error as any).issues || (error as any).errors;
+      const message = issues?.map((err: any) => err.message).join(', ') || 'Invalid event data';
       return next(new AppError(400, message));
     }
     next(error);
@@ -124,7 +125,8 @@ export const adminUpdateEvent = async (req: Request, res: Response, next: NextFu
     res.json({ event });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const message = error.errors.map((err) => err.message).join(', ') || 'Invalid event data';
+      const issues = (error as any).issues || (error as any).errors;
+      const message = issues?.map((err: any) => err.message).join(', ') || 'Invalid event data';
       return next(new AppError(400, message));
     }
     next(error);

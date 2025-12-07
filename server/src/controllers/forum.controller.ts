@@ -69,51 +69,145 @@ export const createDiscussion = async (req: Request, res: Response, next: NextFu
 
 export const getDiscussion = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const include = {
-      author: true,
-      replies: { include: { author: true }, orderBy: { createdAt: 'asc' } },
-      likes: { select: { userId: true } },
-      _count: { select: { likes: true } }
-    };
-
     const discussion = await prisma.$transaction(async (tx) => {
       const existing = await tx.discussion.findUnique({ where: { id: req.params.id } });
       if (!existing) throw new AppError(404, 'Discussion not found');
 
-      return tx.discussion.update({
+      // Increment views
+      await tx.discussion.update({
         where: { id: req.params.id },
-        data: { views: { increment: 1 } },
-        include
+        data: { views: { increment: 1 } }
+      });
+
+      // Fetch with full relations (reply likes fetched separately)
+      return tx.discussion.findUniqueOrThrow({
+        where: { id: req.params.id },
+        include: {
+          author: true,
+          replies: {
+            include: {
+              author: true
+            },
+            orderBy: { createdAt: 'asc' }
+          },
+          likes: { select: { userId: true } }
+        }
       });
     });
 
-    const { likes, _count, ...rest } = discussion;
+    const { likes, replies, ...rest } = discussion;
     const likedByUser = req.user ? likes.some((like) => like.userId === req.user!.id) : false;
+
+    const replyIds = replies.map((r) => r.id);
+    const replyLikes = replyIds.length
+      ? await prisma.replyLike.findMany({
+        where: { replyId: { in: replyIds } },
+        select: { replyId: true, userId: true }
+      })
+      : [];
+
+    const processedReplies = replies.map((reply: any) => {
+      const likesForReply = replyLikes.filter((l) => l.replyId === reply.id);
+      const likesCount = likesForReply.length;
+      const likedByUser = req.user ? likesForReply.some((l) => l.userId === req.user!.id) : false;
+      return {
+        ...reply,
+        likedByUser,
+        likesCount
+      };
+    });
+
     res.json({
-      discussion: { ...rest, likedByUser, likesCount: _count.likes },
-      replies: discussion.replies
+      discussion: { ...rest, likedByUser, likesCount: likes.length },
+      replies: processedReplies
     });
   } catch (error) {
     next(error);
   }
 };
 
+export const likeReply = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const replyId = req.params.id;
+    const userId = req.user!.id;
+
+    const reply = await prisma.reply.findUnique({
+      where: { id: replyId },
+      select: { id: true, content: true, authorId: true, discussionId: true }
+    });
+    if (!reply) throw new AppError(404, 'Reply not found');
+
+    const existingLike = await prisma.replyLike.findUnique({
+      where: { replyId_userId: { replyId, userId } }
+    });
+
+    if (existingLike) {
+      await prisma.replyLike.delete({ where: { replyId_userId: { replyId, userId } } });
+    } else {
+      await prisma.replyLike.create({
+        data: { replyId, userId }
+      });
+
+      if (reply.authorId !== userId) {
+        const likerName = req.user?.name || 'Someone';
+        const existingNotification = await prisma.notification.findFirst({
+          where: { userId: reply.authorId, type: 'reply_like', link: reply.discussionId }
+        });
+
+        if (!existingNotification) {
+          await prisma.notification.create({
+            data: {
+              userId: reply.authorId,
+              type: 'reply_like',
+              title: 'Your reply was liked',
+              content: `${likerName} liked your reply`,
+              link: reply.discussionId
+            }
+          });
+        }
+      }
+    }
+
+    const likes = await prisma.replyLike.count({ where: { replyId } });
+    res.json({ success: true, liked: !existingLike, likes });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 export const addReply = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { content } = req.body;
+    const { content, parentId } = req.body;
+    console.log('[addReply] Request:', {
+      body: req.body,
+      params: req.params,
+      userId: req.user?.id
+    });
+
+    if (!content) {
+      throw new AppError(400, 'Content is required');
+    }
+
     const discussion = await prisma.discussion.findUnique({ where: { id: req.params.id } });
     if (!discussion) throw new AppError(404, 'Discussion not found');
+
+    console.log('[addReply] Creating reply for user:', req.user!.id);
 
     const reply = await prisma.reply.create({
       data: {
         content,
         authorId: req.user!.id,
-        discussionId: req.params.id
+        discussionId: req.params.id,
+        parentId: req.body.parentId || null
       },
       include: { author: true }
     });
+
+    console.log('[addReply] Success:', reply.id);
     res.status(201).json({ reply });
   } catch (error) {
+    console.error('[addReply] Error:', error);
     next(error);
   }
 };

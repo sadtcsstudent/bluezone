@@ -127,3 +127,16 @@ export const supportInitiative = async (req: Request, res: Response, next: NextF
     next(error);
   }
 };
+
+export const deleteInitiative = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (req.user?.role !== 'admin') {
+      throw new AppError(403, 'Unauthorized');
+    }
+
+    await prisma.initiative.delete({ where: { id: req.params.id } });
+    res.json({ success: true });
+  } catch (error) {
+    next(error);
+  }
+};

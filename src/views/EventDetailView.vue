@@ -22,6 +22,9 @@
             <span v-if="event.status === 'registered'" class="badge status-registered">
               <Check :size="14" /> Registered
             </span>
+            <span v-else-if="event.status === 'interested'" class="badge status-interested">
+              <Star :size="14" /> Interested
+            </span>
           </div>
           
           <h1 class="hero-title">{{ event.title }}</h1>
@@ -82,6 +85,28 @@
                 </div>
               </div>
             </section>
+
+            <section class="section" v-if="interested.length">
+              <div class="section-header">
+                <h2>Interested</h2>
+                <span class="attendee-count">{{ interested.length }} interested</span>
+              </div>
+              
+              <div class="attendees-grid">
+                <div v-for="a in interested.slice(0, 8)" :key="a.id" class="attendee-card">
+                  <div class="attendee-avatar">
+                    <img v-if="a.avatar" :src="a.avatar" :alt="a.name" />
+                    <div v-else class="avatar-placeholder">
+                      {{ (a.name || a.email || '?')[0].toUpperCase() }}
+                    </div>
+                  </div>
+                  <span class="attendee-name">{{ a.name || a.email.split('@')[0] }}</span>
+                </div>
+                <div v-if="interested.length > 8" class="attendee-more">
+                  <span>+{{ interested.length - 8 }}</span>
+                </div>
+              </div>
+            </section>
           </div>
 
           <!-- Right Column (Sidebar) -->
@@ -125,7 +150,7 @@
                   :class="{ 'active': event.status === 'interested' }"
                 >
                   <Star :size="18" />
-                  <span>{{ event.status === 'interested' ? 'Interested' : 'Mark as Interested' }}</span>
+                  <span>{{ event.status === 'interested' ? 'Remove Interest' : 'Mark as Interested' }}</span>
                 </button>
               </div>
             </div>
@@ -164,6 +189,7 @@ const authStore = useAuthStore()
 const toast = useToastStore()
 const event = ref(null)
 const attendees = ref([])
+const interested = ref([])
 const loading = ref(true)
 
 const formatDate = (dateString) => {
@@ -179,9 +205,19 @@ const load = async () => {
   loading.value = true
   try {
     const data = await api.get(`/events/${route.params.id}`)
-    const isRegistered = data.isRegistered ?? ((data.event?.registrations || []).some((r) => r.userId === authStore.user?.id))
-    event.value = { ...data.event, status: isRegistered ? 'registered' : null }
-    attendees.value = data.attendees || data.event?.registrations?.map((r) => r.user).filter(Boolean) || []
+    const userStatus = data.userStatus || (data.isRegistered ? 'registered' : null)
+
+    event.value = { ...data.event, status: userStatus || null }
+    
+    // Safeguard: Ensure no overlap between attendees and interested lists
+    const rawInterested = data.interested || []
+    const interestedIds = new Set(rawInterested.map(u => u.id))
+    const rawAttendees = data.attendees || []
+    
+    // Filter out anyone in interested list from attendees list (strict separation)
+    attendees.value = rawAttendees.filter(a => !interestedIds.has(a.id))
+    interested.value = rawInterested
+
   } catch (error) {
     console.error('Failed to load event:', error)
     toast.error('Failed to load event details')
@@ -198,22 +234,30 @@ const requireLogin = () => {
 
 const register = async (status) => {
   if (!requireLogin()) return
+  if (status === 'interested' && event.value?.status === 'interested') {
+    await unregister(true, 'Interest removed')
+    return
+  }
   try {
     await api.post(`/events/${route.params.id}/register`, { status })
+    toast.success(status === 'interested' ? 'Marked as interested' : 'Registered for event')
     await load()
   } catch (error) {
     console.error('Registration failed:', error)
+    toast.error('Could not update your registration')
   }
 }
 
-const unregister = async () => {
+const unregister = async (skipConfirm = false, successMessage = 'You have been unregistered') => {
   if (!requireLogin()) return
-  if (!confirm('Are you sure you want to unregister?')) return
+  if (!skipConfirm && !confirm('Are you sure you want to unregister?')) return
   try {
     await api.delete(`/events/${route.params.id}/register`)
+    toast.success(successMessage)
     await load()
   } catch (error) {
     console.error('Unregistration failed:', error)
+    toast.error('Could not unregister')
   }
 }
 
@@ -362,6 +406,14 @@ onMounted(load)
 
 .badge.status-registered {
   background: #22c55e;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.badge.status-interested {
+  background: #f59e0b;
   color: white;
   display: flex;
   align-items: center;

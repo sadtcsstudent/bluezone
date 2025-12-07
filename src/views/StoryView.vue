@@ -169,7 +169,7 @@
     </section>
 
     <!-- Join Us -->
-    <section class="join-us-section">
+    <section class="join-us-section" v-if="!isLoggedIn">
       <div class="join-us-container">
         <h2 class="join-us-title">Be Part of the Movement</h2>
         <p class="join-us-text">
@@ -187,6 +187,8 @@
 
 <script>
 import { Heart, Users, Sprout, Target, Eye, Compass } from 'lucide-vue-next'
+import { mapState } from 'pinia'
+import { useAuthStore } from '@/stores/auth'
 import ImageWithFallback from '../components/ImageWithFallback.vue'
 
 export default {
@@ -199,6 +201,9 @@ export default {
     Target,
     Eye,
     Compass
+  },
+  computed: {
+    ...mapState(useAuthStore, ['isLoggedIn'])
   },
   methods: {
     handleJoin() {

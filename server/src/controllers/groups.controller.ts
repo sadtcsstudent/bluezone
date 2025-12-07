@@ -34,11 +34,11 @@ export const listGroups = async (req: Request, res: Response, next: NextFunction
     const { search } = req.query as Record<string, string>;
     const where = search
       ? {
-          OR: [
-            { name: { contains: search, mode: 'insensitive' as const } },
-            { description: { contains: search, mode: 'insensitive' as const } }
-          ]
-        }
+        OR: [
+          { name: { contains: search, mode: 'insensitive' as const } },
+          { description: { contains: search, mode: 'insensitive' as const } }
+        ]
+      }
       : {};
 
     const groups = await prisma.group.findMany({ where, include: { members: true } });
@@ -86,7 +86,7 @@ export const updateGroup = async (req: Request, res: Response, next: NextFunctio
     res.json({ group });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const message = error.errors.map((err) => err.message).join(', ') || 'Invalid group data';
+      const message = (error as any).errors.map((err: any) => err.message).join(', ') || 'Invalid group data';
       return next(new AppError(400, message));
     }
     next(error);

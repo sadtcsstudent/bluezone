@@ -17,7 +17,7 @@
               Join us in creating a thriving ecosystem where people connect, learn,
               and grow together in the beautiful Twente region.
             </p>
-            <div class="hero__actions">
+            <div class="hero__actions" v-if="!isLoggedIn">
               <button class="btn btn--primary" @click="handleNavigate('signup')">
                 <span>Join Our Community</span>
                 <ArrowRight :size="20" />
@@ -112,9 +112,11 @@
         <div class="events__grid">
           <EventCard
             v-for="(event, index) in upcomingEvents"
-            :key="index"
+            :key="event.id || index"
             v-bind="event"
-            :on-view-details="() => handleNavigate('events')"
+            :on-view-details="() => handleViewDetails(event)"
+            :on-register="() => handleRegister(event)"
+            :status="event.status"
           />
         </div>
         <button class="events__view-all events__view-all--mobile" @click="handleNavigate('events')">
@@ -124,7 +126,7 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="cta">
+    <section class="cta" v-if="!isLoggedIn">
       <div class="cta__container">
         <h2 class="cta__title">Ready to Join Our Community?</h2>
         <p class="cta__description">
@@ -147,6 +149,10 @@
 
 <script>
 import { ArrowRight, Users, MapPin, Sprout, Heart, Leaf } from 'lucide-vue-next'
+import { mapState } from 'pinia'
+import { useAuthStore } from '@/stores/auth'
+import { useToastStore } from '@/stores/toast'
+import api from '@/services/api'
 import EventCard from '../components/EventCard.vue'
 import ImageWithFallback from '../components/ImageWithFallback.vue'
 
@@ -162,46 +168,114 @@ export default {
     Heart,
     Leaf
   },
+  computed: {
+    ...mapState(useAuthStore, ['isLoggedIn'])
+  },
   data() {
     return {
-      upcomingEvents: [
-        {
-          title: 'Community Garden Workshop',
-          date: 'December 7, 2025',
-          time: '10:00 - 13:00',
-          location: 'Enschede Community Garden',
-          attendees: 24,
-          imageUrl: 'https://images.unsplash.com/photo-1513906029980-32d13afe6d8c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb21tdW5pdHklMjBnYXJkZW4lMjBwZW9wbGV8ZW58MXx8fHwxNzY0NDMzODQyfDA&ixlib=rb-4.1.0&q=80&w=1080',
-          description: 'Learn sustainable gardening techniques and connect with fellow gardeners in our community.',
-          category: 'Gardening',
-        },
-        {
-          title: 'Healthy Cooking Class',
-          date: 'December 10, 2025',
-          time: '18:00 - 20:30',
-          location: 'De Kookplaats, Hengelo',
-          attendees: 18,
-          imageUrl: 'https://images.unsplash.com/photo-1686657429079-95d763456dbd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoZWFsdGh5JTIwbG9jYWwlMjBmb29kfGVufDF8fHx8MTc2NDQ5ODgwMnww&ixlib=rb-4.1.0&q=80&w=1080',
-          description: 'Discover delicious and nutritious recipes using local, seasonal ingredients.',
-          category: 'Food & Nutrition',
-        },
-        {
-          title: 'Nature Walk & Meditation',
-          date: 'December 14, 2025',
-          time: '09:00 - 11:00',
-          location: 'Lonnekerberg Nature Reserve',
-          attendees: 32,
-          imageUrl: 'https://images.unsplash.com/photo-1734596438089-ef300bc02fb0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxuYXR1cmUlMjB3ZWxsYmVpbmd8ZW58MXx8fHwxNzY0NDk4ODAyfDA&ixlib=rb-4.1.0&q=80&w=1080',
-          description: 'Join us for a peaceful morning walk in nature followed by a guided meditation session.',
-          category: 'Wellbeing',
-        },
-      ]
+      authStore: useAuthStore(),
+      upcomingEvents: [],
+      loading: false
     }
+  },
+  async created() {
+    await this.loadEvents()
   },
   methods: {
     handleNavigate(page) {
       console.log('Navigate to:', page)
       this.$router.push({ name: page })
+    },
+    async loadEvents() {
+      this.loading = true
+      try {
+        // Fetch 3 upcoming events
+        const data = await api.get('/events?limit=3')
+        
+        const normalizeEvent = (event) => {
+          const attendeeCount = event.attendees ?? event.attendeeCount ?? (
+            event.registrations ? event.registrations.filter((r) => r.status === 'registered').length : 0
+          )
+          return {
+            ...event,
+            attendees: attendeeCount,
+            attendeeCount,
+            status: event.status || null
+          }
+        }
+        
+        this.upcomingEvents = (data.events || []).map(normalizeEvent)
+      } catch (err) {
+        console.error('Failed to load home page events', err)
+      } finally {
+        this.loading = false
+      }
+    },
+    requireLogin() {
+      if (this.authStore?.isLoggedIn && this.authStore?.user) return true
+      this.$router.push({ name: 'login', query: { redirect: this.$route.fullPath } })
+      return false
+    },
+    handleViewDetails(event) {
+      this.$router.push({ name: 'event-detail', params: { id: event.id } })
+    },
+    async handleRegister(event) {
+      if (!this.requireLogin()) return
+
+      // Logic for toggling Interest
+      if (event.status === 'interested') {
+        if (!confirm(`Remove interest for ${event.title}?`)) return
+        await this.performUnregister(event, 'Interest removed')
+        return
+      }
+
+      // Logic for Unregistering (if already registered)
+      if (event.status === 'registered') {
+        if (!confirm(`Unregister from ${event.title}?`)) return
+        await this.performUnregister(event, 'Successfully unregistered')
+        return
+      }
+      
+      if (!confirm(`Register for ${event.title}?`)) return
+      
+      const toast = useToastStore()
+      try {
+        await api.post(`/events/${event.id}/register`, {})
+        toast.success('Successfully registered!')
+        this.updateEventStatus(event, 'registered')
+      } catch (err) {
+        console.error('Registration failed', err)
+        toast.error('Registration failed')
+      }
+    },
+    async performUnregister(event, successMsg) {
+       const toast = useToastStore()
+       try {
+         await api.delete(`/events/${event.id}/register`)
+         toast.success(successMsg)
+         this.updateEventStatus(event, null)
+       } catch (err) {
+         console.error('Unregister failed', err)
+         toast.error('Could not update status')
+       }
+    },
+    updateEventStatus(event, newStatus) {
+        const index = this.upcomingEvents.findIndex((e) => e.id === event.id)
+        if (index !== -1) {
+          const current = this.upcomingEvents[index]
+          
+          let increment = 0
+          if (newStatus === 'registered' && current.status !== 'registered') increment = 1
+          if (newStatus !== 'registered' && current.status === 'registered') increment = -1
+          
+          const updated = {
+            ...current,
+            status: newStatus,
+            attendees: (current.attendees || 0) + increment,
+            attendeeCount: (current.attendeeCount || current.attendees || 0) + increment
+          }
+          this.upcomingEvents.splice(index, 1, updated)
+        }
     }
   }
 }

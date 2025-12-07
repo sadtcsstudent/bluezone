@@ -1,3 +1,4 @@
+```
 <template>
   <div class="map-page">
     <div class="map-container">
@@ -63,35 +64,7 @@
 
       <!-- Map Container -->
       <div class="map-canvas">
-        <div class="map-background">
-          <svg class="map-grid" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <defs>
-              <pattern id="grid" width="4" height="4" patternUnits="userSpaceOnUse">
-                <path d="M 4 0 L 0 0 0 4" fill="none" stroke="rgba(var(--color-primary), 0.1)" stroke-width="0.1" />
-              </pattern>
-            </defs>
-            <rect width="100" height="100" fill="url(#grid)" />
-          </svg>
-        </div>
-
-        <!-- Map Pins -->
-        <button
-          v-for="initiative in filteredInitiatives"
-          :key="initiative.id"
-          @click="selectedInitiative = initiative"
-          class="map-pin"
-          :style="{
-            left: initiative.coordinates.x + '%',
-            top: initiative.coordinates.y + '%'
-          }"
-        >
-          <div :class="['pin-icon', `pin-icon--${initiative.type}`]">
-            <component :is="typeIcons[initiative.type]" :size="24" />
-          </div>
-          <div class="pin-tooltip">
-            <span>{{ initiative.name }}</span>
-          </div>
-        </button>
+        <div id="map" class="leaflet-map-container"></div>
 
         <!-- Legend -->
         <div class="map-legend">
@@ -183,6 +156,8 @@
 import { MapPin, X, ExternalLink, Calendar, Users, Leaf, ShoppingBasket, Heart, Search } from 'lucide-vue-next'
 import api from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 
 export default {
   name: 'MapView',
@@ -209,7 +184,9 @@ export default {
         group: Users,
       },
       initiatives: [],
-      loading: false
+      loading: false,
+      map: null,
+      markers: []
     }
   },
   setup() {
@@ -218,6 +195,23 @@ export default {
   },
   async created() {
     await this.loadInitiatives()
+  },
+  mounted() {
+    this.initMap();
+  },
+  beforeUnmount() {
+    if (this.map) {
+      this.map.remove();
+      this.map = null;
+    }
+  },
+  watch: {
+    filteredInitiatives: {
+      handler() {
+        this.updateMapMarkers();
+      },
+      deep: true
+    }
   },
   computed: {
     filteredInitiatives() {
@@ -254,9 +248,81 @@ export default {
         }))
 
         this.initiatives = initiatives.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+        this.updateMapMarkers();
       } catch (error) {
         console.error('Failed to load initiatives', error)
       }
+    },
+    initMap() {
+      // Enschede Coordinates
+      const lat = 52.22153;
+      const lng = 6.89366;
+      const zoom = 13;
+
+      this.map = L.map('map').setView([lat, lng], zoom);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(this.map);
+    },
+    updateMapMarkers() {
+      if (!this.map) return;
+
+      // Clear existing markers
+      this.markers.forEach(marker => this.map.removeLayer(marker));
+      this.markers = [];
+
+      this.filteredInitiatives.forEach(initiative => {
+        // Map 0-100 x/y to Lat/Lon box around Enschede
+        // Min Lat: 52.20, Max Lat: 52.24 (approx 5km height)
+        // Min Lng: 6.87, Max Lng: 6.92 (approx 5km width)
+        
+        // Y: 0% -> 52.24 (Top/North), 100% -> 52.20 (Bottom/South)
+        const lat = 52.24 - (initiative.coordinates.y / 100) * 0.04;
+        
+        // X: 0% -> 6.87 (Left/West), 100% -> 6.92 (Right/East)
+        const lng = 6.87 + (initiative.coordinates.x / 100) * 0.05;
+
+        // Custom Icon using CSS classes
+        const getMarkerIcon = (type) => {
+          const props = 'width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
+          switch (type) {
+            case 'garden': // Leaf
+              return `<svg xmlns="http://www.w3.org/2000/svg" ${props}><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.5 2 4.5"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>`;
+            case 'market': // ShoppingBasket
+              return `<svg xmlns="http://www.w3.org/2000/svg" ${props}><path d="m5 11 4-7"/><path d="m19 11-4-7"/><path d="M2 11h20"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8c.9 0 1.8-.7 2-1.6l1.7-7.4"/><path d="m9 11 1 9"/></svg>`;
+            case 'event': // Calendar
+              return `<svg xmlns="http://www.w3.org/2000/svg" ${props}><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>`;
+            case 'group': // Users
+              return `<svg xmlns="http://www.w3.org/2000/svg" ${props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
+            default: // MapPin
+              return `<svg xmlns="http://www.w3.org/2000/svg" ${props}><path d="M12 12.2A4 4 0 0 0 8 8a4 4 0 0 0 8 0 4 4 0 0 0-4-4v0A4 4 0 0 0 8 8z"/><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
+          }
+        };
+
+        const iconHtml = `<div class="pin-icon pin-icon--${initiative.type}">
+          <div style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
+            ${getMarkerIcon(initiative.type)}
+          </div>
+        </div>`;
+
+        const customIcon = L.divIcon({
+          className: 'custom-map-marker',
+          html: iconHtml,
+          iconSize: [48, 48],
+          iconAnchor: [24, 24],
+          tooltipAnchor: [0, -24]
+        });
+
+        const marker = L.marker([lat, lng], { icon: customIcon })
+          .addTo(this.map)
+          .bindTooltip(initiative.name)
+          .on('click', () => {
+             this.selectedInitiative = initiative;
+          });
+
+        this.markers.push(marker);
+      });
     },
     async toggleSave() {
       if (!this.selectedInitiative) return
@@ -446,35 +512,24 @@ export default {
   height: 600px;
 }
 
-.map-background {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg,
-    rgba(var(--color-primary), 0.05) 0%,
-    transparent 50%,
-    rgba(var(--color-accent), 0.05) 100%
-  );
-}
-
-.map-grid {
+.leaflet-map-container {
   width: 100%;
   height: 100%;
-  opacity: 0.1;
+  z-index: 1;
 }
 
-/* Map Pins */
-.map-pin {
-  position: absolute;
-  transform: translate(-50%, -100%);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  z-index: 10;
+/* Reusing pin styles for Leaflet custom icons */
+
+/* Ensure the wrapper div from Leaflet has no background/border if it picked up defaults */
+:deep(.custom-map-marker) {
+  background: none !important;
+  border: none !important;
 }
 
+/* The .pin-icon class is used within the L.divIcon HTML */
 .pin-icon {
-  width: 3rem;
-  height: 3rem;
+  width: 48px; /* Use px instead of rem to match JS */
+  height: 48px; /* Use px instead of rem to match JS */
   border-radius: 9999px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   display: flex;
@@ -484,10 +539,7 @@ export default {
   transition: transform 0.2s ease;
 }
 
-.map-pin:hover .pin-icon {
-  transform: scale(1.1);
-}
-
+/* Specific colors for pin types */
 .pin-icon--garden {
   background: rgb(var(--color-primary));
 }
@@ -504,25 +556,19 @@ export default {
   background: rgb(var(--color-primary-dark));
 }
 
-.pin-tooltip {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-top: 0.5rem;
-  padding: 0.5rem 0.75rem;
+/* Leaflet tooltip styling */
+.leaflet-tooltip {
   background: white;
   border-radius: 0.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
   font-size: 0.875rem;
+  color: rgb(var(--color-text));
+  border: none;
+  padding: 0.5rem 0.75rem;
 }
 
-.map-pin:hover .pin-tooltip {
-  opacity: 1;
+.leaflet-tooltip-bottom:before {
+  border-bottom-color: white;
 }
 
 /* Legend */
@@ -538,6 +584,7 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  z-index: 1000; /* Ensure above Leaflet */
 }
 
 .legend-item {
@@ -579,7 +626,7 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  z-index: 50;
+  z-index: 9999; /* High z-index for modal */
 }
 
 .modal-content {
@@ -742,3 +789,4 @@ export default {
   border-color: rgb(var(--color-primary));
 }
 </style>
+```

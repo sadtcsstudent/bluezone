@@ -39,16 +39,25 @@
                   Forgot password?
                 </RouterLink>
               </div>
-              <div class="input-wrapper">
+              <div class="input-wrapper password-wrapper">
                 <Lock class="input-icon" :size="20" />
                 <input
                   id="password"
-                  type="password"
+                  :type="showPassword ? 'text' : 'password'"
                   v-model="password"
                   placeholder="Enter your password"
                   required
                   class="form-input"
                 />
+                <button
+                  type="button"
+                  class="toggle-visibility"
+                  @click="showPassword = !showPassword"
+                  :aria-pressed="showPassword"
+                  :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                >
+                  {{ showPassword ? 'Hide' : 'Show' }}
+                </button>
               </div>
             </div>
 
@@ -128,6 +137,7 @@ export default {
     return {
       email: '',
       password: '',
+      showPassword: false,
       rememberMe: false,
       error: null
     }
@@ -250,6 +260,18 @@ export default {
 
 .input-wrapper {
   position: relative;
+}
+
+.password-wrapper .toggle-visibility {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: rgb(var(--color-text-secondary));
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .input-icon {

@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 const getSocketBase = () => {
   const apiBase = import.meta.env.VITE_API_URL;
   if (apiBase && apiBase.startsWith('http')) {
-    return apiBase.replace(/\/api$/, '');
+    return apiBase.replace(/\/api\/?$/, '');
   }
   return window.location.origin;
 };
