@@ -38,10 +38,11 @@ export const authSchemas = {
 };
 
 const setAuthCookie = (res: Response, token: string, rememberMe?: boolean) => {
+  const isProd = process.env.NODE_ENV === 'production';
   res.cookie('token', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax', // allow cross-site cookie in production
     maxAge: (rememberMe ? 7 : 1) * 24 * 60 * 60 * 1000
   });
 };
@@ -144,7 +145,12 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 };
 
 export const logout = async (_req: Request, res: Response) => {
-  res.clearCookie('token');
+  const isProd = process.env.NODE_ENV === 'production';
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax'
+  });
   res.json({ success: true });
 };
 
