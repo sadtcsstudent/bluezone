@@ -14,10 +14,11 @@ export const csrfProtection = (req: Request, res: Response, next: NextFunction) 
         // Generate new token if not present
         if (!req.cookies[CSRF_COOKIE_NAME]) {
             const token = crypto.randomBytes(32).toString('hex');
+            const isProd = process.env.NODE_ENV === 'production';
             res.cookie(CSRF_COOKIE_NAME, token, {
                 httpOnly: false, // Allow frontend to read it
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax'
+                secure: isProd,
+                sameSite: isProd ? 'none' : 'lax' // allow cross-site in production
             });
         }
         return next();
