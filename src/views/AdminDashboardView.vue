@@ -4,7 +4,7 @@
       <!-- Sidebar -->
       <aside class="admin-sidebar">
         <div class="sidebar-header">
-          <h2>Admin Panel</h2>
+          <h2>{{ $t('admin.panel') }}</h2>
         </div>
         <nav class="admin-nav">
           <button 
@@ -25,8 +25,8 @@
         <!-- Overview Tab -->
         <div v-if="activeTab === 'overview'" class="admin-panel">
           <div class="panel-header">
-            <h2>Overview</h2>
-            <p>Platform statistics and health</p>
+            <h2>{{ $t('admin.overview') }}</h2>
+            <p>{{ $t('admin.stats.platformHealth') }}</p>
           </div>
 
           <div class="stats-grid">
@@ -35,7 +35,7 @@
                 <Users :size="24" />
               </div>
               <div class="stat-info">
-                <h3>Total Users</h3>
+                <h3>{{ $t('admin.stats.totalUsers') }}</h3>
                 <p class="stat-value">{{ stats.users || 0 }}</p>
               </div>
             </div>
@@ -75,7 +75,7 @@
             <h2>User Management</h2>
             <div class="search-input">
               <Search :size="16" />
-              <input v-model="userSearch" type="text" placeholder="Search users..." />
+              <input v-model="userSearch" type="text" :placeholder="$t('admin.usersTab.searchPlaceholder')" />
             </div>
             <button 
               v-if="selectedUsers.length > 0" 
@@ -99,11 +99,11 @@
                       @change="toggleAllUsers"
                     />
                   </th>
-                  <th>User</th>
-                  <th>Role</th>
-                  <th>Status</th>
-                  <th>Joined</th>
-                  <th>Actions</th>
+                  <th>{{ $t('admin.usersTab.table.user') }}</th>
+                  <th>{{ $t('admin.usersTab.table.role') }}</th>
+                  <th>{{ $t('admin.usersTab.table.status') }}</th>
+                  <th>{{ $t('admin.usersTab.table.joined') }}</th>
+                  <th>{{ $t('admin.usersTab.table.actions') }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -178,16 +178,16 @@
         <!-- Events Tab -->
         <div v-if="activeTab === 'events'" class="admin-panel">
           <div class="panel-header">
-            <h2>Event Management</h2>
+            <h2>{{ $t('admin.eventsTab.manageEvents') }}</h2>
             <button class="btn btn--primary" @click="openCreateEvent">
               <Plus :size="16" />
-              Create Event
+              {{ $t('admin.eventsTab.createEvent') }}
             </button>
           </div>
 
           <div class="empty-state" v-if="events.length === 0">
             <Calendar :size="48" />
-            <h3>No events found</h3>
+            <h3>{{ $t('admin.eventsTab.noEvents') }}</h3>
           </div>
 
           <div class="events-list">
@@ -197,13 +197,132 @@
                  <p>{{ new Date(event.date).toLocaleDateString() }} • {{ event.location }}</p>
                </div>
                <div class="event-actions">
-                 <button class="btn btn--sm btn--outline" @click="openEditEvent(event)">Edit</button>
-                 <button class="btn btn--sm btn--danger" @click="deleteEvent(event.id)">Delete</button>
+                 <button class="btn btn--sm btn--outline" @click="openEditEvent(event)">{{ $t('common.edit') }}</button>
+                 <button class="btn btn--sm btn--danger" @click="deleteEvent(event.id)">{{ $t('common.delete') }}</button>
                </div>
              </div>
           </div>
           <div class="load-more-row" v-if="events.length < eventsTotal">
-            <button class="btn btn--outline" @click="fetchEvents()">Load more events</button>
+            <button class="btn btn--outline" @click="fetchEvents()">{{ $t('admin.eventsTab.loadMore') }}</button>
+          </div>
+        </div>
+
+        <!-- Polls Tab -->
+        <div v-if="activeTab === 'polls'" class="admin-panel">
+          <div class="panel-header">
+            <div>
+              <h2>{{ $t('admin.pollsTab.pollsManager') }}</h2>
+              <p>{{ $t('admin.pollsTab.subtitle') }}</p>
+            </div>
+            <button class="btn btn--primary btn--sm" @click="resetPollForm">
+              <Plus :size="16" />
+              New Poll
+            </button>
+          </div>
+
+          <div class="polls-grid">
+            <div class="poll-form-card">
+              <div class="form-group">
+                <label>Question</label>
+                <input v-model="pollForm.question" placeholder="What would you like to ask?" />
+              </div>
+
+              <div class="form-group">
+                <label>Options</label>
+                <div
+                  v-for="(option, index) in pollForm.options"
+                  :key="option.id || index"
+                  class="poll-option-input"
+                >
+                  <input v-model="option.text" placeholder="Option text" />
+                  <button
+                    v-if="pollForm.options.length > 2"
+                    type="button"
+                    class="btn btn--ghost btn--sm"
+                    @click="removePollOption(index)"
+                  >
+                    Remove
+                  </button>
+                </div>
+                <button type="button" class="btn btn--outline btn--sm" @click="addPollOption">
+                  <Plus :size="14" />
+                  Add option
+                </button>
+              </div>
+
+              <div class="checkbox-group" style="display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem 0;">
+                <label class="checkbox-row" style="display: flex; align-items: center; gap: 0.5rem;">
+                  <input type="checkbox" v-model="pollForm.active" />
+                  <span>Active</span>
+                </label>
+                <label class="checkbox-row" style="display: flex; align-items: center; gap: 0.5rem;">
+                  <input type="checkbox" v-model="pollForm.allowMultiple" />
+                  <span>Multi-Select</span>
+                </label>
+                <label class="checkbox-row" style="display: flex; align-items: center; gap: 0.5rem;">
+                  <input type="checkbox" v-model="pollForm.allowChangeVote" />
+                  <span>Allow Vote Change</span>
+                </label>
+              </div>
+
+              <div class="modal-actions">
+                <button type="button" class="btn btn--ghost" @click="resetPollForm">Clear</button>
+                <button
+                  type="button"
+                  class="btn btn--primary"
+                  :disabled="pollSaving"
+                  @click="savePoll"
+                >
+                  {{ pollSaving ? 'Saving...' : (editingPollId ? 'Update Poll' : 'Create Poll') }}
+                </button>
+              </div>
+            </div>
+
+            <div class="poll-list">
+              <div v-if="pollsLoading" class="empty-state">
+                <MessageSquare :size="32" />
+                <p>Loading polls...</p>
+              </div>
+              <div v-else-if="polls.length === 0" class="empty-state">
+                <MessageSquare :size="48" />
+                <h3>No polls yet</h3>
+                <p>Start a new poll to gather quick feedback.</p>
+              </div>
+              <div v-else class="poll-card" v-for="poll in polls" :key="poll.id">
+                <div class="poll-card__header">
+                  <div>
+                    <div class="status-pill" :class="poll.active ? 'active' : 'inactive'">
+                      {{ poll.active ? 'Active' : 'Paused' }}
+                    </div>
+                    <h3>{{ poll.question }}</h3>
+                    <p class="meta">
+                      {{ new Date(poll.createdAt).toLocaleDateString() }} • {{ poll.totalVotes }} vote{{ poll.totalVotes === 1 ? '' : 's' }}
+                    </p>
+                    <div class="poll-badges" style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                        <span v-if="poll.allowMultiple" class="badge" style="background: #e0f2fe; color: #0284c7; padding: 0.1rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">Multi</span>
+                        <span v-if="poll.allowChangeVote" class="badge" style="background: #dcfce7; color: #16a34a; padding: 0.1rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">Changeable</span>
+                    </div>
+                  </div>
+                  <div class="poll-actions">
+                    <button class="btn btn--sm btn--outline" @click="editPoll(poll)">Edit</button>
+                    <button
+                      class="btn btn--sm"
+                      :class="poll.active ? 'btn--ghost' : 'btn--primary'"
+                      @click="togglePollStatus(poll)"
+                    >
+                      {{ poll.active ? 'Pause' : 'Activate' }}
+                    </button>
+                    <button class="btn btn--sm btn--danger" @click="deletePoll(poll)">Delete</button>
+                  </div>
+                </div>
+                <div class="poll-options-list">
+                  <div class="poll-option-row" v-for="option in poll.options" :key="option.id">
+                    <span>{{ option.text }}</span>
+                    <span class="meta">{{ option.voteCount }} votes ({{ option.percentage }}%)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -408,9 +527,10 @@
 import { onMounted, ref, computed, watch } from 'vue'
 import {
   LayoutDashboard, Users, Calendar, Mail, Leaf,
-  Search, Ban, Trash2, Plus, MessageSquare, Unlock, MapPin
+  Search, Ban, Trash2, Plus, MessageSquare, Unlock, MapPin, PieChart
 } from 'lucide-vue-next'
 import api from '@/services/api'
+import { useToastStore } from '@/stores/toast'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
@@ -425,6 +545,17 @@ const initiativesShown = ref(10)
 const discussions = ref([])
 const discussionsTotal = ref(0)
 const discussionsOffset = ref(0)
+const polls = ref([])
+const pollsLoading = ref(false)
+const pollForm = ref({
+  question: '',
+  active: true,
+  allowMultiple: false,
+  allowChangeVote: false,
+  options: [{ text: '' }, { text: '' }]
+})
+const editingPollId = ref(null)
+const pollSaving = ref(false)
 const userSearch = ref('')
 const showCreateEvent = ref(false)
 const isEditing = ref(false)
@@ -456,6 +587,7 @@ const tabs = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
   { id: 'users', label: 'Users', icon: Users },
   { id: 'events', label: 'Events', icon: Calendar },
+  { id: 'polls', label: 'Polls', icon: PieChart },
   { id: 'initiatives', label: 'Initiatives', icon: Leaf },
   { id: 'moderation', label: 'Moderation', icon: MessageSquare },
   { id: 'newsletter', label: 'Newsletter', icon: Mail }
@@ -518,12 +650,137 @@ const fetchDiscussions = async (reset = false) => {
   }
 }
 
+const fetchPolls = async () => {
+  pollsLoading.value = true
+  try {
+    const data = await api.get('/polls/manage')
+    polls.value = data.polls || []
+  } catch (err) {
+    console.error('Failed to load polls', err)
+    alert('Failed to load polls')
+  } finally {
+    pollsLoading.value = false
+  }
+}
+
+const resetPollForm = () => {
+  pollForm.value = {
+    question: '',
+    active: true,
+    allowMultiple: false,
+    allowChangeVote: false,
+    options: [{ text: '' }, { text: '' }]
+  }
+  editingPollId.value = null
+}
+
+const addPollOption = () => {
+  pollForm.value.options.push({ text: '' })
+}
+
+const removePollOption = (index) => {
+  if (pollForm.value.options.length <= 2) {
+    alert('Polls need at least two options')
+    return
+  }
+  pollForm.value.options.splice(index, 1)
+}
+
+const editPoll = (poll) => {
+  editingPollId.value = poll.id
+  pollForm.value = {
+    question: poll.question,
+    active: poll.active,
+    allowMultiple: poll.allowMultiple || false,
+    allowChangeVote: poll.allowChangeVote || false,
+    options: poll.options.map((opt) => ({ id: opt.id, text: opt.text }))
+  }
+}
+
+const savePoll = async () => {
+  const question = (pollForm.value.question || '').trim()
+  const options = pollForm.value.options
+    .map((opt) => ({ ...opt, text: (opt.text || '').trim() }))
+    .filter((opt) => opt.text)
+
+  if (!question) {
+    alert('Please add a poll question')
+    return
+  }
+
+  if (options.length < 2) {
+    alert('Add at least two options')
+    return
+  }
+
+  pollSaving.value = true
+  try {
+    const payload = { 
+      question, 
+      active: pollForm.value.active, 
+      allowMultiple: pollForm.value.allowMultiple,
+      allowChangeVote: pollForm.value.allowChangeVote,
+      options 
+    }
+    if (editingPollId.value) {
+      const res = await api.put(`/polls/${editingPollId.value}`, payload)
+      const idx = polls.value.findIndex((p) => p.id === editingPollId.value)
+      if (idx !== -1 && res.poll) {
+        polls.value.splice(idx, 1, res.poll)
+      }
+    } else {
+      const res = await api.post('/polls', payload)
+      if (res.poll) {
+        polls.value = [res.poll, ...polls.value]
+      }
+    }
+    await fetchPolls()
+    resetPollForm()
+  } catch (err) {
+    console.error('Failed to save poll', err)
+    alert('Failed to save poll')
+  } finally {
+    pollSaving.value = false
+  }
+}
+
+const togglePollStatus = async (poll) => {
+  try {
+    const res = await api.put(`/polls/${poll.id}`, { active: !poll.active })
+    if (res.poll) {
+      const idx = polls.value.findIndex((p) => p.id === poll.id)
+      if (idx !== -1) polls.value.splice(idx, 1, res.poll)
+    } else {
+      poll.active = !poll.active
+    }
+  } catch (err) {
+    console.error('Failed to update poll', err)
+    alert('Failed to update poll status')
+  }
+}
+
+const deletePoll = async (poll) => {
+  if (!confirm('Delete this poll?')) return
+  try {
+    await api.delete(`/polls/${poll.id}`)
+    polls.value = polls.value.filter((p) => p.id !== poll.id)
+    if (editingPollId.value === poll.id) resetPollForm()
+  } catch (err) {
+    console.error('Failed to delete poll', err)
+    alert('Failed to delete poll')
+  }
+}
+
 watch(activeTab, (newTab) => {
   if (newTab === 'moderation') {
     fetchDiscussions(true)
   }
   if (newTab === 'events') {
     fetchEvents(true)
+  }
+  if (newTab === 'polls') {
+    resetPollForm()
+    fetchPolls()
   }
 })
 
@@ -673,32 +930,47 @@ const uploadEventImage = async () => {
 }
 
 const saveEvent = async () => {
-  try {
-    const payload = { ...newEvent.value }
-    if (selectedImage.value) {
-      payload.imageUrl = await uploadEventImage()
+    // Validation
+    if (!newEvent.value.title.trim()) {
+      useToastStore().error('Event title is required')
+      return
+    }
+    if (!newEvent.value.date) {
+      useToastStore().error('Event date is required')
+      return
+    }
+    if (!newEvent.value.location.trim()) {
+      useToastStore().error('Event location is required')
+      return
     }
 
-    if (isEditing.value && editingId.value) {
-      await api.put(`/admin/events/${editingId.value}`, payload)
-      alert('Event updated')
-    } else {
-      await api.post('/admin/events', payload)
-      alert('Event created')
+    try {
+      const payload = { ...newEvent.value }
+      if (selectedImage.value) {
+        payload.imageUrl = await uploadEventImage()
+      }
+
+      if (isEditing.value && editingId.value) {
+        await api.put(`/admin/events/${editingId.value}`, payload)
+        useToastStore().success('Event updated successfully')
+      } else {
+        await api.post('/admin/events', payload)
+        useToastStore().success('Event created successfully')
+      }
+      
+      showCreateEvent.value = false
+      newEvent.value = { title: '', date: '', location: '', description: '', category: 'General', imageUrl: '' }
+      selectedImage.value = null
+      imagePreview.value = null
+      editingId.value = null
+      isEditing.value = false
+      
+      await fetchEvents(true)
+    } catch (err) {
+      console.error('Failed to save event', err)
+      const message = err.response?.data?.message || err.message || 'Failed to save event'
+      useToastStore().error(message)
     }
-    
-    showCreateEvent.value = false
-    newEvent.value = { title: '', date: '', location: '', description: '', category: 'General', imageUrl: '' }
-    selectedImage.value = null
-    imagePreview.value = null
-    editingId.value = null
-    isEditing.value = false
-    
-    await fetchEvents(true)
-  } catch (err) {
-    console.error('Failed to save event', err)
-    alert('Failed to save event: ' + (err.response?.data?.message || err.message))
-  }
 }
 
 const deleteEvent = async (id) => {
@@ -904,35 +1176,38 @@ const searchAddress = async () => {
 }
 
 const saveInitiative = async () => {
-  try {
-    if (isEditingInitiative.value && editingInitiativeId.value) {
-       await api.put(`/initiatives/${editingInitiativeId.value}`, {
-        ...newInitiative.value,
-        location: newInitiative.value.location || 'Enschede Area'
-       })
-       alert('Initiative updated successfully')
-    } else {
-       await api.post('/initiatives', {
-        ...newInitiative.value,
-        location: newInitiative.value.location || 'Enschede Area'
-       })
-       alert('Initiative created successfully')
+    // Validation
+    if (!newInitiative.value.name.trim()) {
+      useToastStore().error('Initiative name is required')
+      return
+    }
+    if (!newInitiative.value.description.trim() || newInitiative.value.description.length < 10) {
+      useToastStore().error('Description must be at least 10 characters')
+      return
     }
 
-    closeCreateInitiative()
-    // Reload
-    const initData = await api.get('/initiatives')
-    initiatives.value = initData.initiatives || []
-    
-    // Reset
-    openCreateInitiative()
-    closeCreateInitiative()
-    
-  } catch (err) {
-    console.error('Failed to save initiative', err)
-    alert('Failed to save initiative')
+    try {
+      if (isEditingInitiative.value && editingInitiativeId.value) {
+         await api.put(`/initiatives/${editingInitiativeId.value}`, {
+          ...newInitiative.value,
+          location: 'Enschede Area' // Keeping it simple as per original
+         })
+         useToastStore().success('Initiative updated successfully')
+      } else {
+         await api.post('/initiatives', {
+          ...newInitiative.value,
+          location: 'Enschede Area'
+         })
+         useToastStore().success('Initiative created successfully')
+      }
+      showCreateInitiative.value = false
+      setTimeout(() => load(), 500) // Refresh data
+    } catch (err) {
+      console.error('Failed to save initiative', err)
+      useToastStore().error('Failed to save initiative')
+    }
   }
-}
+
 
 const deleteInitiative = async (id) => {
   if (!confirm('Are you sure you want to delete this initiative?')) return
@@ -1372,6 +1647,116 @@ input, textarea {
   color: rgb(var(--color-text-secondary));
 }
 
+.polls-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 992px) {
+  .polls-grid {
+    grid-template-columns: 1fr 1.2fr;
+  }
+}
+
+.poll-form-card {
+  border: 1px solid rgb(var(--color-border));
+  border-radius: 1rem;
+  padding: 1.25rem;
+  background: rgb(var(--color-background));
+  display: grid;
+  gap: 1rem;
+}
+
+.poll-option-input {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.poll-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.poll-card {
+  border: 1px solid rgb(var(--color-border));
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: white;
+}
+
+.poll-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.poll-card__header h3 {
+  margin: 0.25rem 0;
+}
+
+.poll-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.poll-options-list {
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.poll-option-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgb(var(--color-border));
+}
+
+.poll-option-row:last-child {
+  border-bottom: none;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  width: fit-content;
+}
+
+.status-pill.active {
+  background: rgba(var(--color-primary), 0.1);
+  color: rgb(var(--color-primary));
+}
+
+.status-pill.inactive {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.checkbox-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.vote-chip {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  background: rgb(var(--color-background));
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
 @media (max-width: 768px) {
   .admin-container {
     grid-template-columns: 1fr;
@@ -1398,6 +1783,19 @@ input, textarea {
     width: 100%;
     display: flex;
     justify-content: flex-end;
+  }
+  
+  .poll-card__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .poll-actions {
+    justify-content: flex-start;
+  }
+
+  .polls-grid {
+    grid-template-columns: 1fr;
   }
 }
 

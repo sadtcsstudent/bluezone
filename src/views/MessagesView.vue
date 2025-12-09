@@ -4,7 +4,7 @@
       <!-- Sidebar -->
       <aside class="conversations-sidebar" :class="{ 'hidden-mobile': activeId }">
         <div class="sidebar-header">
-          <h2>Messages</h2>
+          <h2>{{ $t('messages.title') }}</h2>
           <button class="icon-btn" @click="showNewConversation = true">
             <Edit :size="20" />
           </button>
@@ -12,7 +12,7 @@
         
         <div class="search-bar">
           <Search :size="18" class="search-icon" />
-          <input v-model="searchQuery" type="text" placeholder="Search messages..." />
+          <input v-model="searchQuery" type="text" :placeholder="$t('messages.searchPlaceholder')" />
         </div>
 
         <div class="conversations-list">
@@ -82,7 +82,7 @@
               <div class="header-info">
                 <h3>{{ getRecipient(activeConversation)?.name || getRecipient(activeConversation)?.email }}</h3>
                 <span class="status-text">
-                  {{ isOnline(getRecipient(activeConversation)?.userId) ? 'Online' : 'Offline' }}
+                  {{ isOnline(getRecipient(activeConversation)?.userId) ? $t('messages.online') : $t('messages.offline') }}
                 </span>
               </div>
             </div>

@@ -1,13 +1,13 @@
 <template>
   <div class="notification-dropdown">
     <div class="dropdown-header">
-      <h3>Notifications</h3>
+      <h3>{{ $t('components.notifications.title') }}</h3>
       <button 
         v-if="unreadCount > 0" 
         @click="markAllRead" 
         class="mark-all-btn"
       >
-        Mark all as read
+        {{ $t('components.notifications.markAllRead') }}
       </button>
     </div>
 
@@ -17,7 +17,7 @@
 
     <div v-else-if="notifications.length === 0" class="empty-state">
       <BellOff :size="32" />
-      <p>No notifications yet</p>
+      <p>{{ $t('components.notifications.empty') }}</p>
     </div>
 
     <div v-else class="notification-list">

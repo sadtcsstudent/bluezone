@@ -6,13 +6,11 @@
         <div class="story-hero-content">
           <div class="story-badge">
             <Heart :size="16" class="story-badge-icon" />
-            <span class="story-badge-text">Our Story</span>
+            <span class="story-badge-text">{{ $t('story.badge') }}</span>
           </div>
-          <h1>Building a Healthier, More Connected Twente</h1>
+          <h1>{{ $t('story.title') }}</h1>
           <p class="story-hero-subtitle">
-            Blue Zone Twente is a living laboratory and learning network where
-            community members come together to create lasting change through
-            healthy living, social connection, and sustainable practices.
+            {{ $t('story.subtitle') }}
           </p>
         </div>
       </div>
@@ -23,22 +21,15 @@
       <div class="origin-container">
         <div class="origin-grid">
           <div class="origin-content">
-            <h2>How It All Began</h2>
+            <h2>{{ $t('story.originTitle') }}</h2>
             <p class="origin-text">
-              In 2023, a group of passionate residents, health professionals, and
-              sustainability advocates came together with a shared vision: to transform
-              Twente into a region where people live longer, healthier, and happier lives.
+              {{ $t('story.originText1') }}
             </p>
             <p class="origin-text">
-              Inspired by the world's Blue Zones—regions where people live measurably
-              longer lives—we set out to create our own blueprint for wellbeing. We
-              recognized that true health goes beyond individual choices; it's shaped
-              by our communities, environments, and connections.
+              {{ $t('story.originText2') }}
             </p>
             <p class="origin-text">
-              From community gardens to walking groups, from local food initiatives
-              to neighborhood gatherings, Blue Zone Twente has grown into a movement
-              of over 1,200 members across the region.
+              {{ $t('story.originText3') }}
             </p>
           </div>
           <div class="origin-image-wrapper">
@@ -61,11 +52,9 @@
             <div class="mvv-icon mvv-icon--primary">
               <Target :size="32" />
             </div>
-            <h2>Our Mission</h2>
+            <h2>{{ $t('story.missionTitle') }}</h2>
             <p class="mvv-text">
-              To create a thriving ecosystem where residents of Twente can easily
-              access resources, connect with like-minded individuals, and participate
-              in initiatives that promote healthy, social, and sustainable living for all.
+              {{ $t('story.missionText') }}
             </p>
           </div>
 
@@ -74,11 +63,9 @@
             <div class="mvv-icon mvv-icon--secondary">
               <Eye :size="32" />
             </div>
-            <h2>Our Vision</h2>
+            <h2>{{ $t('story.visionTitle') }}</h2>
             <p class="mvv-text">
-              A Twente where every community is a Blue Zone—where people naturally
-              make healthy choices, where neighbors know and support each other, and
-              where sustainable practices are woven into the fabric of daily life.
+              {{ $t('story.visionText') }}
             </p>
           </div>
 
@@ -87,34 +74,30 @@
             <div class="mvv-icon mvv-icon--accent">
               <Compass :size="32" />
             </div>
-            <h2>Our Values</h2>
+            <h2>{{ $t('story.valuesTitle') }}</h2>
             <div class="values-grid">
               <div class="value-card">
-                <h4>Community First</h4>
+                <h4>{{ $t('story.values.communityFirst.title') }}</h4>
                 <p class="value-text">
-                  We believe in the power of collective action and mutual support.
-                  Together, we're stronger.
+                  {{ $t('story.values.communityFirst.text') }}
                 </p>
               </div>
               <div class="value-card">
-                <h4>Inclusivity</h4>
+                <h4>{{ $t('story.values.inclusivity.title') }}</h4>
                 <p class="value-text">
-                  Everyone is welcome. We celebrate diversity and create spaces
-                  where all voices are heard.
+                  {{ $t('story.values.inclusivity.text') }}
                 </p>
               </div>
               <div class="value-card">
-                <h4>Transparency</h4>
+                <h4>{{ $t('story.values.transparency.title') }}</h4>
                 <p class="value-text">
-                  We share knowledge openly, communicate honestly, and build trust
-                  through clarity.
+                  {{ $t('story.values.transparency.text') }}
                 </p>
               </div>
               <div class="value-card">
-                <h4>Sustainability</h4>
+                <h4>{{ $t('story.values.sustainability.title') }}</h4>
                 <p class="value-text">
-                  We're committed to practices that nurture both people and planet
-                  for generations to come.
+                  {{ $t('story.values.sustainability.text') }}
                 </p>
               </div>
             </div>
@@ -127,10 +110,9 @@
     <section class="what-we-do-section">
       <div class="what-we-do-container">
         <div class="what-we-do-header">
-          <h2>What We Do</h2>
+          <h2>{{ $t('story.whatWeDo.title') }}</h2>
           <p class="what-we-do-subtitle">
-            Blue Zone Twente operates as a living laboratory where ideas are tested,
-            shared, and scaled across our communities.
+            {{ $t('story.whatWeDo.subtitle') }}
           </p>
         </div>
         <div class="what-we-do-grid">
@@ -138,30 +120,27 @@
             <div class="activity-icon">
               <Users :size="24" />
             </div>
-            <h4>Connect</h4>
+            <h4>{{ $t('story.whatWeDo.connect.title') }}</h4>
             <p class="activity-text">
-              Regular events, forums, and gatherings that bring people together
-              around shared interests.
+              {{ $t('story.whatWeDo.connect.text') }}
             </p>
           </div>
           <div class="activity-card">
             <div class="activity-icon">
               <Sprout :size="24" />
             </div>
-            <h4>Learn</h4>
+            <h4>{{ $t('story.whatWeDo.learn.title') }}</h4>
             <p class="activity-text">
-              Workshops, newsletters, and resources on health, nutrition,
-              sustainability, and community building.
+              {{ $t('story.whatWeDo.learn.text') }}
             </p>
           </div>
           <div class="activity-card">
             <div class="activity-icon">
               <Heart :size="24" />
             </div>
-            <h4>Act</h4>
+            <h4>{{ $t('story.whatWeDo.act.title') }}</h4>
             <p class="activity-text">
-              Support for local initiatives, from community gardens to food
-              cooperatives to walking groups.
+              {{ $t('story.whatWeDo.act.text') }}
             </p>
           </div>
         </div>
@@ -171,14 +150,12 @@
     <!-- Join Us -->
     <section class="join-us-section" v-if="!isLoggedIn">
       <div class="join-us-container">
-        <h2 class="join-us-title">Be Part of the Movement</h2>
+        <h2 class="join-us-title">{{ $t('story.joinMovement.title') }}</h2>
         <p class="join-us-text">
-          Whether you're interested in healthier eating, meeting neighbors, or
-          contributing to sustainability initiatives, there's a place for you in
-          Blue Zone Twente.
+          {{ $t('story.joinMovement.text') }}
         </p>
         <button @click="handleJoin" class="join-us-btn">
-          Join Our Community
+          {{ $t('story.joinBtn') }}
         </button>
       </div>
     </section>

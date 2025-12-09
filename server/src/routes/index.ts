@@ -11,6 +11,7 @@ import notificationsRoutes from './notifications.routes';
 import adminRoutes from './admin.routes';
 import uploadRoutes from './upload.routes';
 import companyRoutes from './company.routes';
+import pollsRoutes from './polls.routes';
 
 const router = Router();
 
@@ -26,5 +27,6 @@ router.use('/notifications', notificationsRoutes);
 router.use('/admin', adminRoutes);
 router.use('/upload', uploadRoutes);
 router.use('/company', companyRoutes);
+router.use('/polls', pollsRoutes);
 
 export default router;

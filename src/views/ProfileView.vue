@@ -23,22 +23,22 @@
           />
           <div class="profile-details">
             <h1>{{ profile.name }}</h1>
-            <p class="profile-meta">Member since {{ memberSince }}</p>
+            <p class="profile-meta">{{ $t('profilePage.memberSince') }} {{ memberSince }}</p>
             <p class="profile-location">{{ profile.location }}</p>
           </div>
         </div>
         <div class="profile-actions">
           <button class="btn btn--outline-primary" @click="openEditModal">
             <Edit :size="16" />
-            <span>Edit Profile</span>
+            <span>{{ $t('profilePage.editProfile') }}</span>
           </button>
           <button v-if="profile.role === 'admin'" class="btn btn--primary" @click="navigate('admin')">
             <LayoutDashboard :size="16" />
-            <span>Admin Panel</span>
+            <span>{{ $t('profilePage.adminPanel') }}</span>
           </button>
           <button v-if="profile.role === 'company'" class="btn btn--primary" @click="navigate('company-dashboard')">
             <LayoutDashboard :size="16" />
-            <span>Company Dashboard</span>
+            <span>{{ $t('profilePage.companyDashboard') }}</span>
           </button>
           <button class="btn btn--icon" @click="navigate('settings')">
             <Settings :size="20" />
@@ -51,18 +51,18 @@
         <aside class="profile-sidebar">
           <!-- Quick Stats -->
           <div class="sidebar-card">
-            <h3>Quick Stats</h3>
+            <h3>{{ $t('profilePage.quickStats') }}</h3>
             <div class="stats-list">
               <div class="stat-item">
-                <span class="stat-label">Events Attended</span>
+                <span class="stat-label">{{ $t('profilePage.eventsAttended') }}</span>
                 <span class="stat-value">{{ stats.eventsAttended }}</span>
               </div>
               <div class="stat-item">
-                <span class="stat-label">Groups Joined</span>
+                <span class="stat-label">{{ $t('profilePage.groupsJoined') }}</span>
                 <span class="stat-value">{{ stats.groupsJoined }}</span>
               </div>
               <div class="stat-item">
-                <span class="stat-label">Forum Posts</span>
+                <span class="stat-label">{{ $t('profilePage.forumPosts') }}</span>
                 <span class="stat-value">{{ stats.forumPosts }}</span>
               </div>
             </div>
@@ -71,7 +71,7 @@
           <!-- Interests -->
           <div class="sidebar-card">
             <div class="card-header">
-              <h3>My Interests</h3>
+              <h3>{{ $t('profilePage.myInterests') }}</h3>
               <button class="icon-btn" @click="openEditModal">
                 <Edit :size="16" />
               </button>
@@ -91,11 +91,11 @@
           <div class="sidebar-card">
             <button class="action-btn" @click="navigate('settings')">
               <Settings :size="20" />
-              <span>Account Settings</span>
+              <span>{{ $t('profilePage.accountSettings') }}</span>
             </button>
             <button @click="handleLogout" class="action-btn action-btn--danger">
               <LogOut :size="20" />
-              <span>Log Out</span>
+              <span>{{ $t('profilePage.logOut') }}</span>
             </button>
           </div>
         </aside>

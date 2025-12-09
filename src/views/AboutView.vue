@@ -1,7 +1,7 @@
 <template>
   <div class="about">
-    <h1>About This Project</h1>
-    <p>This is a Vue.js 3 project built with Vite and Yarn.</p>
+    <h1>{{ $t('about.title') }}</h1>
+    <p>{{ $t('about.description') }}</p>
     <ul>
       <li>Vue.js 3</li>
       <li>Vue Router 4</li>

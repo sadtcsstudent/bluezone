@@ -5,11 +5,11 @@
       <div class="forum-header">
         <div class="forum-badge">
           <MessageCircle :size="16" class="badge-icon" />
-          <span class="badge-text">Community Forum</span>
+          <span class="badge-text">{{ $t('forum.badge') }}</span>
         </div>
-        <h1>Join the Conversation</h1>
+        <h1>{{ $t('forum.headerTitle') }}</h1>
         <p class="forum-subtitle">
-          Connect with fellow community members, share experiences, and learn from each other.
+          {{ $t('forum.headerSubtitle') }}
         </p>
       </div>
 
@@ -20,13 +20,13 @@
           <input
             type="text"
             v-model="searchQuery"
-            placeholder="Search discussions..."
+            :placeholder="$t('forum.searchPlaceholder')"
             class="search-input"
           />
         </div>
         <button class="btn-new-discussion" @click="startNewDiscussion">
           <Plus :size="20" />
-          <span>New Discussion</span>
+          <span>{{ $t('forum.newDiscussion') }}</span>
         </button>
       </div>
 
@@ -35,7 +35,7 @@
         <aside class="forum-sidebar">
           <!-- Categories -->
           <div class="sidebar-card">
-            <h3>Categories</h3>
+            <h3>{{ $t('forum.categories') }}</h3>
             <div class="category-list">
               <button
                 v-for="cat in categories"
@@ -51,7 +51,7 @@
 
           <!-- Trending Topics -->
           <div class="sidebar-card">
-            <h3>Trending Topics</h3>
+            <h3>{{ $t('forum.trending') }}</h3>
             <div class="trending-list">
               <div
                 v-for="(topic, index) in trendingTopics"
@@ -71,12 +71,12 @@
           <div class="results-info">
             <span class="results-count">
               {{ filteredDiscussions.length }}
-              {{ filteredDiscussions.length === 1 ? 'discussion' : 'discussions' }}
+              {{ filteredDiscussions.length === 1 ? $t('forum.discussion_one') : $t('forum.discussion_other') }}
             </span>
             <select v-model="sortBy" class="sort-select">
-              <option value="recent">Most Recent</option>
-              <option value="popular">Most Popular</option>
-              <option value="active">Most Active</option>
+              <option value="recent">{{ $t('forum.sort.recent') }}</option>
+              <option value="popular">{{ $t('forum.sort.popular') }}</option>
+              <option value="active">{{ $t('forum.sort.active') }}</option>
             </select>
           </div>
 
@@ -277,6 +277,21 @@ export default {
     },
     async createDiscussion() {
       if (!this.ensureLoggedIn()) return
+
+      // Validation
+      if (this.newDiscussion.title.trim().length < 5) {
+        useToastStore().error('Title must be at least 5 characters long')
+        return
+      }
+      if (this.newDiscussion.content.trim().length < 10) {
+        useToastStore().error('Description must be at least 10 characters long')
+        return
+      }
+      if (!this.newDiscussion.category) {
+        useToastStore().error('Please select a category')
+        return
+      }
+
       this.creating = true
       const toast = useToastStore()
       try {
@@ -287,7 +302,8 @@ export default {
         toast.success('Discussion created successfully!')
       } catch (error) {
         console.error('Failed to create discussion', error)
-        toast.error('Failed to create discussion')
+        const message = error.message || 'Failed to create discussion'
+        toast.error(message)
       } finally {
         this.creating = false
       }

@@ -1,0 +1,505 @@
+{
+  "nav": {
+    "home": "Home",
+    "story": "Ons Verhaal",
+    "events": "Evenementen",
+    "forum": "Forum",
+    "map": "Kaart",
+    "newsletter": "Nieuwsbrief",
+    "login": "Inloggen",
+    "signup": "Aanmelden",
+    "messages": "Berichten",
+    "profile": "Profiel"
+  },
+  "footer": {
+    "description": "Een levendige gemeenschap gewijd aan gezond, sociaal en duurzaam leven in de prachtige regio Twente.",
+    "quickLinks": "Snelle Links",
+    "community": "Gemeenschap",
+    "contact": "Contact",
+    "blog": "Blog",
+    "resources": "Bronnen",
+    "partnerships": "Partnerschappen",
+    "volunteer": "Vrijwilligerswerk",
+    "copyright": "© {year} Blue Zone Twente. Alle rechten voorbehouden.",
+    "privacyPolicy": "Privacybeleid",
+    "termsOfService": "Servicevoorwaarden",
+    "cookiePolicy": "Cookiebeleid"
+  },
+  "home": {
+    "badge": "Levend Laboratorium • Leernetwerk",
+    "title": "Welkom bij Blue Zone Twente",
+    "description": "Een levendige gemeenschap gewijd aan gezond, sociaal en duurzaam leven. Doe mee aan het creëren van een bloeiend ecosysteem waar mensen verbinden, leren en samen groeien in de prachtige regio Twente.",
+    "joinCommunity": "Word Lid van Onze Gemeenschap",
+    "learnMore": "Meer Informatie",
+    "communityMembers": "Gemeenschapsleden",
+    "coreValues": "Onze Kernwaarden",
+    "coreValuesSubtitle": "Blue Zone Twente is gebouwd op principes die welzijn, gemeenschapsverbinding en duurzaam leven voor iedereen bevorderen.",
+    "communityConnection": "Gemeenschapsverbinding",
+    "communityConnectionDesc": "Het opbouwen van sterke, ondersteunende relaties door gedeelde ervaringen, lokale initiatieven en betekenisvolle interacties.",
+    "healthyLiving": "Gezond Leven",
+    "healthyLivingDesc": "Het bevorderen van fysiek en mentaal welzijn door voeding, beweging, mindfulness en toegang tot gezond lokaal voedsel.",
+    "sustainability": "Duurzaamheid",
+    "sustainabilityDesc": "Het creëren van een regeneratieve toekomst door milieuvriendelijke praktijken, lokale voedselsystemen en milieubeheer.",
+    "communityPulse": "Gemeenschapspols",
+    "hearFromCommunity": "Hoor van de gemeenschap",
+    "communityPulseDesc": "Snelle vragen om te leren wat er nu het meest toe doet. Deel je stem en zie wat de gemeenschap denkt.",
+    "upcomingEvents": "Aankomende Evenementen",
+    "upcomingEventsSubtitle": "Doe mee aan workshops, bijeenkomsten en gemeenschapsactiviteiten",
+    "viewAllEvents": "Bekijk Alle Evenementen",
+    "ctaTitle": "Klaar om Lid te Worden van Onze Gemeenschap?",
+    "ctaDescription": "Word onderdeel van een beweging die zich inzet voor gezondere, meer verbonden en duurzame gemeenschappen in Twente. Samen kunnen we het verschil maken.",
+    "createAccount": "Account Aanmaken",
+    "exploreLocalInitiatives": "Ontdek Lokale Initiatieven"
+  },
+  "login": {
+    "title": "Welkom Terug",
+    "subtitle": "Log in om verbinding te maken met je gemeenschap, deel te nemen aan evenementen en toegang te krijgen tot exclusieve bronnen.",
+    "emailLabel": "E-mailadres",
+    "emailPlaceholder": "jouw.email{'@'}voorbeeld.nl",
+    "passwordLabel": "Wachtwoord",
+    "passwordPlaceholder": "Voer je wachtwoord in",
+    "forgotPassword": "Wachtwoord vergeten?",
+    "rememberMe": "Onthoud mij voor 30 dagen",
+    "loginButton": "Inloggen",
+    "welcomeToast": "Welkom terug!",
+    "errorToast": "Inloggen mislukt. Controleer uw inloggegevens.",
+    "noAccount": "Heb je geen account?",
+    "signupLink": "Aanmelden",
+    "orContinueWith": "Of ga verder met",
+    "show": "Tonen",
+    "hide": "Verbergen"
+  },
+  "signup": {
+    "title": "Word Lid van Onze Gemeenschap",
+    "subtitle": "Maak je account aan en word onderdeel van een beweging voor gezonder, meer verbonden leven in Twente.",
+    "fullName": "Volledige Naam",
+    "fullNamePlaceholder": "Je volledige naam",
+    "emailLabel": "E-mailadres",
+    "emailPlaceholder": "jouw.email{'@'}voorbeeld.nl",
+    "locationLabel": "Locatie in Twente",
+    "locationPlaceholder": "bijv. Enschede, Hengelo, Oldenzaal",
+    "passwordLabel": "Wachtwoord",
+    "passwordPlaceholder": "Maak een sterk wachtwoord",
+    "confirmPasswordLabel": "Bevestig Wachtwoord",
+    "confirmPasswordPlaceholder": "Bevestig je wachtwoord",
+    "interestsLabel": "Interesses (optioneel)",
+    "newsletterLabel": "Abonneer je op onze maandelijkse nieuwsbrief met evenement updates, gezondheidstips en gemeenschapsverhalen",
+    "termsLabel": "Ik ga akkoord met de",
+    "termsOfService": "Servicevoorwaarden",
+    "and": "en",
+    "privacyPolicy": "Privacybeleid",
+    "createAccountButton": "Account Aanmaken",
+    "hasAccount": "Heb je al een account?",
+    "loginLink": "Inloggen",
+    "whatYouGet": "Wat Je Krijgt",
+    "benefit1": "Toegang tot exclusieve gemeenschapsevenementen en workshops",
+    "benefit2": "Verbind met gelijkgestemde buren en vrienden",
+    "benefit3": "Neem deel aan forums en groepsdiscussies",
+    "benefit4": "Maandelijkse nieuwsbrief met gezondheidstips en lokaal nieuws",
+    "benefit5": "Ontdek lokale initiatieven en bronnen voor duurzaam leven",
+    "passwordsNoMatch": "Wachtwoorden komen niet overeen!",
+    "loading": "Account aanmaken...",
+    "successToast": "Account succesvol aangemaakt! Welkom bij BlueZone.",
+    "errorToast": "Account aanmaken mislukt. Probeer het opnieuw.",
+    "validation": {
+      "minLength": "Wachtwoord moet minimaal 8 tekens lang zijn",
+      "number": "Wachtwoord moet minimaal één cijfer bevatten",
+      "special": "Wachtwoord moet minimaal één speciaal teken bevatten"
+    }
+  },
+  "interests": {
+    "gardening": "Tuinieren",
+    "healthyCooking": "Gezond Koken",
+    "walkingGroups": "Wandelgroepen",
+    "yogaMeditation": "Yoga & Meditatie",
+    "sustainability": "Duurzaamheid",
+    "localFood": "Lokaal Voedsel",
+    "communityEvents": "Gemeenschapsevenementen",
+    "volunteering": "Vrijwilligerswerk"
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Er is een fout opgetreden",
+    "success": "Gelukt",
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "confirm": "Bevestigen",
+    "back": "Terug",
+    "next": "Volgende",
+    "submit": "Verzenden"
+  },
+  "about": {
+    "title": "Over Dit Project",
+    "description": "Dit is een Vue.js 3 project gebouwd met Vite en Yarn."
+  },
+  "admin": {
+    "panel": "Beheerpaneel",
+    "overview": "Overzicht",
+    "users": "Gebruikers",
+    "events": "Evenementen",
+    "polls": "Polls",
+    "content": "Content",
+    "stats": {
+      "platformHealth": "Platformstatistieken en gezondheid",
+      "totalUsers": "Totaal Aantal Gebruikers",
+      "activeEvents": "Actieve Evenementen",
+      "forumPosts": "Forumberichten",
+      "reports": "Rapportages",
+      "active": "Actief",
+      "suspended": "Geschorst",
+      "locked": "Vergrendeld"
+    },
+    "usersTab": {
+      "manageUsers": "Beheer Gebruikers",
+      "searchPlaceholder": "Zoek gebruikers...",
+      "filterRole": "Filter op Rol",
+      "deleteSelected": "Verwijder Geselecteerde ({count})",
+      "table": {
+        "user": "Gebruiker",
+        "role": "Rol",
+        "status": "Status",
+        "joined": "Lid sinds",
+        "actions": "Acties"
+      }
+    },
+    "eventsTab": {
+      "manageEvents": "Beheer Evenementen",
+      "createEvent": "Evenement Aanmaken",
+      "editEvent": "Evenement Bewerken",
+      "noEvents": "Geen evenementen gevonden",
+      "loadMore": "Laad meer evenementen"
+    },
+    "pollsTab": {
+      "pollsManager": "Polls Beheer",
+      "subtitle": "Maak snelle polls en zie wat de gemeenschap denkt",
+      "createPoll": "Maak Poll",
+      "activePoll": "Actieve Poll"
+    }
+  },
+  "company": {
+    "dashboard": "Bedrijfsdashboard",
+    "manageInitiatives": "Beheer Initiatieven",
+    "createInitiative": "Initiatief Aanmaken",
+    "myEvents": "Mijn Evenementen",
+    "analytics": "Analytics",
+    "overview": "Overzicht",
+    "statsSubtitle": "Uw bedrijfsstatistieken",
+    "noEvents": "Nog geen evenementen aangemaakt",
+    "noInitiatives": "Nog geen initiatieven aangemaakt",
+    "loadMore": "Laad meer evenementen",
+    "edit": "Bewerken",
+    "delete": "Verwijderen"
+  },
+  "discussion": {
+    "backToForum": "Terug naar Forum",
+    "reply": "Beantwoorden",
+    "edit": "Bewerken",
+    "delete": "Verwijderen",
+    "replies": "Reacties",
+    "writeReply": "Schrijf een reactie...",
+    "postReply": "Plaats Reactie",
+    "authorRole": "Auteur",
+    "share": "Delen",
+    "like": "Vind ik leuk",
+    "likes": "Vind ik leuks"
+  },
+  "eventDetail": {
+    "backToEvents": "Terug naar Evenementen",
+    "date": "Datum",
+    "time": "Tijd",
+    "location": "Locatie",
+    "host": "Georganiseerd door",
+    "register": "Registreer Nu",
+    "registered": "Je bent geregistreerd",
+    "attendees": "Deelnemers",
+    "about": "Over dit evenement"
+  },
+  "eventsPage": {
+    "title": "Gemeenschapsevenementen",
+    "headerTitle": "Aankomende Evenementen",
+    "badge": "Evenementenkalender",
+    "subtitle": "Ontdek workshops, bijeenkomsten en activiteiten in heel Twente",
+    "headerSubtitle": "Doe mee aan bijeenkomsten, workshops en activiteiten die mensen samenbrengen.",
+    "searchPlaceholder": "Zoek evenementen...",
+    "categories": "Categorieën",
+    "all": "Alles",
+    "noEvents": "Geen evenementen gevonden die aan je criteria voldoen.",
+    "listView": "Lijstweergave",
+    "calendarView": "Kalenderweergave"
+  },
+  "forgotPassword": {
+    "title": "Wachtwoord Resetten",
+    "subtitle": "Geen zorgen, we sturen je instructies om te resetten.",
+    "sendLink": "Stuur Reset Link",
+    "successMessage": "Als er een account bestaat voor {email}, hebben we instructies gestuurd.",
+    "backToLogin": "Terug naar Inloggen"
+  },
+  "forum": {
+    "title": "Gemeenschapsforum",
+    "headerTitle": "Doe Mee Aan Het Gesprek",
+    "subtitle": "Praat mee, deel ideeën en kom in contact met buren.",
+    "headerSubtitle": "Verbind met andere leden, deel ervaringen en leer van elkaar.",
+    "startDiscussion": "Start Discussie",
+    "newDiscussion": "Nieuwe Discussie",
+    "searchPlaceholder": "Zoek discussies...",
+    "categories": "Categorieën",
+    "trending": "Populaire Onderwerpen",
+    "noDiscussions": "Geen discussies gevonden.",
+    "sort": {
+      "recent": "Meest Recent",
+      "popular": "Populairste",
+      "active": "Meest Actief"
+    },
+    "discussion_one": "discussie",
+    "discussion_other": "discussies",
+    "createModal": {
+      "title": "Start een Nieuwe Discussie",
+      "topicTitle": "Onderwerp Titel",
+      "category": "Categorie",
+      "content": "Inhoud",
+      "cancel": "Annuleren",
+      "post": "Plaats Discussie"
+    }
+  },
+  "groupDetail": {
+    "backToGroups": "Terug naar Groepen",
+    "members": "Leden",
+    "join": "Word Lid",
+    "leave": "Verlaat Groep",
+    "about": "Over deze groep",
+    "discussions": "Discussies",
+    "events": "Groepsevenementen"
+  },
+  "groups": {
+    "title": "Gemeenschapsgroepen",
+    "discoverTitle": "Ontdek Groepen",
+    "subtitle": "Vind je stam. Verbind met mensen die jouw interesses delen.",
+    "headerSubtitle": "Word lid van gemeenschappen die jouw interesses en passies delen",
+    "searchPlaceholder": "Zoek groepen...",
+    "createGroup": "Groep Aanmaken",
+    "viewGroup": "Bekijk Groep",
+    "noGroups": "Geen groepen gevonden",
+    "noGroupsDesc": "Probeer je zoekopdracht aan te passen of maak een nieuwe groep",
+    "createModal": {
+      "title": "Nieuwe Groep Aanmaken",
+      "name": "Groepsnaam",
+      "category": "Categorie",
+      "selectCategory": "Selecteer een categorie"
+    }
+  },
+  "map": {
+    "title": "Gemeenschapskaart",
+    "subtitle": "Ontdek lokale initiatieven, duurzame plekken en gemeenschapsbronnen.",
+    "searchPlaceholder": "Zoek locaties...",
+    "filter": "Filter",
+    "getDirections": "Routebeschrijving",
+    "badge": "Lokale Kaart",
+    "filters": {
+      "all": "Alle Initiatieven",
+      "garden": "Tuinen",
+      "market": "Markten",
+      "event": "Evenementen",
+      "group": "Groepen"
+    },
+    "legend": {
+      "garden": "Tuinen",
+      "market": "Markten",
+      "event": "Evenementen",
+      "group": "Groepen"
+    }
+  },
+  "messages": {
+    "title": "Berichten",
+    "searchPlaceholder": "Zoek gesprekken...",
+    "noSelection": "Selecteer een gesprek om te beginnen met chatten",
+    "typeMessage": "Typ een bericht...",
+    "send": "Verzenden",
+    "online": "Online",
+    "offline": "Offline",
+    "newConversation": "Nieuw Gesprek"
+  },
+  "newsletterPage": {
+    "badge": "Nieuwsbrief",
+    "title": "Blijf Verbonden",
+    "subtitle": "Ontvang maandelijkse updates over gemeenschapsevenementen, gezondheidstips, lokale initiatieven en inspirerende verhalen uit onze Blue Zone Twente gemeenschap.",
+    "subscribeTitle": "Abonneer op Onze Nieuwsbrief",
+    "subscribeDesc": "Sluit je aan bij meer dan 800 gemeenschapsleden die maandelijkse inspiratie, evenementupdates en praktische tips voor gezond leven ontvangen.",
+    "emailPlaceholder": "Voer je e-mailadres in",
+    "subscribeButton": "Abonneren",
+    "successMessage": "Bedankt voor het abonneren!",
+    "privacyText": "Wij respecteren je privacy.",
+    "unsubscribe": "Uitschrijven",
+    "unsubscribeText": "Schrijf je op elk moment uit.",
+    "benefits": {
+      "title": "Wat Je Krijgt",
+      "highlightTitle": "Evenement Hoogtepunten",
+      "highlightDesc": "Als eerste toegang tot aankomende workshops, bijeenkomsten en gemeenschapsactiviteiten.",
+      "tipsTitle": "Gezondheid & Welzijn Tips",
+      "tipsDesc": "Praktisch advies over voeding, beweging, mindfulness en duurzaam leven.",
+      "storiesTitle": "Gemeenschapsverhalen",
+      "storiesDesc": "Inspirerende verhalen van leden en updates over lokale initiatieven."
+    },
+    "archiveTitle": "Voorgaande Nieuwsbrieven",
+    "download": "Downloaden"
+  },
+  "profilePage": {
+    "memberSince": "Lid sinds",
+    "editProfile": "Profiel Bewerken",
+    "adminPanel": "Beheerpaneel",
+    "companyDashboard": "Bedrijfsdashboard",
+    "accountSettings": "Accountinstellingen",
+    "logOut": "Uitloggen",
+    "quickStats": "Snelle Statistieken",
+    "eventsAttended": "Evenementen Bezocht",
+    "groupsJoined": "Groepen Aangesloten",
+    "forumPosts": "Forumberichten",
+    "myInterests": "Mijn Interesses",
+    "upcomingEvents": "Mijn Aankomende Evenementen",
+    "myGroups": "Mijn Groepen",
+    "savedInitiatives": "Opgeslagen Initiatieven",
+    "viewAll": "Bekijk Alles",
+    "browseMore": "Meer Bekijken",
+    "viewMap": "Bekijk Kaart"
+  },
+  "resetPassword": {
+    "title": "Wachtwoord Resetten",
+    "subtitle": "Voer je nieuwe wachtwoord hieronder in.",
+    "newPassword": "Nieuw Wachtwoord",
+    "button": "Wachtwoord Resetten",
+    "success": "Je wachtwoord is succesvol gereset.",
+    "loginNow": "Nu Inloggen",
+    "updating": "Bijwerken...",
+    "updated": "Wachtwoord Bijgewerkt"
+  },
+  "settings": {
+    "title": "Instellingen",
+    "tabs": {
+      "profile": "Profiel",
+      "account": "Account",
+      "privacy": "Privacy",
+      "notifications": "Meldingen"
+    },
+    "publicProfile": "Openbaar Profiel",
+    "profileDesc": "Beheer hoe anderen jou zien op het platform",
+    "profilePicture": "Profielfoto",
+    "change": "Wijzigen",
+    "saveChanges": "Wijzigingen Opslaan",
+    "accountSecurity": "Accountbeveiliging",
+    "changePassword": "Wachtwoord Wijzigen",
+    "currentPassword": "Huidig Wachtwoord",
+    "deleteAccount": "Account Verwijderen",
+    "dangerZone": "Als je je account verwijdert, is er geen weg terug. Wees zeker van je zaak.",
+    "displayName": "Weergavenaam",
+    "displayNamePlaceholder": "Je volledige naam",
+    "bio": "Bio",
+    "bioPlaceholder": "Vertel ons over jezelf",
+    "location": "Locatie",
+    "locationPlaceholder": "Stad, Land",
+    "interests": "Interesses",
+    "interestsPlaceholder": "Coderen, Design, Muziek (gescheiden door komma's)",
+    "interestsHelp": "Scheid tags met komma's",
+    "saving": "Opslaan...",
+    "imageRequirements": "PNG, JPG tot 5MB",
+    "emailAddress": "E-mailadres"
+  },
+  "story": {
+    "badge": "Ons Verhaal",
+    "title": "Bouwen aan een Gezonder, Meer Verbonden Twente",
+    "subtitle": "Blue Zone Twente is een levend laboratorium en leernetwerk waar gemeenschapsleden samenkomen om blijvende verandering te creëren.",
+    "originTitle": "Hoe Het Begon",
+    "missionTitle": "Onze Missie",
+    "visionTitle": "Onze Visie",
+    "valuesTitle": "Onze Waarden",
+    "originText1": "In 2023 kwamen een groep gepassioneerde bewoners, gezondheidsprofessionals en duurzaamheidsvoorstanders samen met een gedeelde visie: Twente transformeren in een regio waar mensen langer, gezonder en gelukkiger leven.",
+    "originText2": "Geïnspireerd door de Blue Zones van de wereld—regio's waar mensen aantoonbaar langer leven—gingen we op pad om onze eigen blauwdruk voor welzijn te creëren. We erkenden dat ware gezondheid verder gaat dan individuele keuzes; het wordt gevormd door onze gemeenschappen, omgevingen en verbindingen.",
+    "originText3": "Van gemeenschapstuinen tot wandelgroepen, van lokale voedselinitiatieven tot buurtbijeenkomsten, Blue Zone Twente is uitgegroeid tot een beweging van meer dan 1.200 leden in de regio.",
+    "missionText": "Een bloeiend ecosysteem creëren waar inwoners van Twente eenvoudig toegang hebben tot middelen, verbinding kunnen maken met gelijkgestemden en kunnen deelnemen aan initiatieven die gezond, sociaal en duurzaam leven voor iedereen bevorderen.",
+    "visionText": "Een Twente waar elke gemeenschap een Blue Zone is—waar mensen van nature gezonde keuzes maken, waar buren elkaar kennen en steunen, en waar duurzame praktijken verweven zijn in het dagelijks leven.",
+    "values": {
+      "communityFirst": {
+        "title": "Gemeenschap Eerst",
+        "text": "Wij geloven in de kracht van collectieve actie en wederzijdse steun. Samen staan we sterker."
+      },
+      "inclusivity": {
+        "title": "Inclusiviteit",
+        "text": "Iedereen is welkom. We vieren diversiteit en creëren ruimtes waar alle stemmen worden gehoord."
+      },
+      "transparency": {
+        "title": "Transparantie",
+        "text": "We delen kennis openlijk, communiceren eerlijk en bouwen vertrouwen op door duidelijkheid."
+      },
+      "sustainability": {
+        "title": "Duurzaamheid",
+        "text": "We zetten ons in voor praktijken die zowel mensen als de planeet koesteren voor de komende generaties."
+      }
+    },
+    "whatWeDo": {
+      "title": "Wat We Doen",
+      "subtitle": "Blue Zone Twente fungeert als een levend laboratorium waar ideeën worden getest, gedeeld en opgeschaald in onze gemeenschappen.",
+      "connect": {
+        "title": "Verbinden",
+        "text": "Regelmatige evenementen, forums en bijeenkomsten die mensen samenbrengen rond gedeelde belangen."
+      },
+      "learn": {
+        "title": "Leren",
+        "text": "Workshops, nieuwsbrieven en middelen over gezondheid, voeding, duurzaamheid en gemeenschapsopbouw."
+      },
+      "act": {
+        "title": "Handelen",
+        "text": "Ondersteuning voor lokale initiatieven, van gemeenschapstuinen tot voedselcoöperaties tot wandelgroepen."
+      }
+    },
+    "joinMovement": {
+      "title": "Word Onderdeel van de Beweging",
+      "text": "Of je nu geïnteresseerd bent in gezonder eten, buren ontmoeten of bijdragen aan duurzaamheidsinitiatieven, er is een plek voor jou in Blue Zone Twente."
+    }
+  },
+  "poll": {
+    "communityPulse": "Gemeenschapspols",
+    "nextPoll": "Volgende poll",
+    "signInToVote": "Log in om te stemmen",
+    "votes": "stem | stemmen",
+    "noPolls": "Nog geen actieve polls. Kom snel terug!"
+  },
+  "components": {
+    "imageUpload": {
+      "clickToUpload": "Klik of sleep afbeelding hier",
+      "maxSize": "Max 5MB (JPG, PNG, WEBP)",
+      "changeImage": "Afbeelding wijzigen",
+      "errors": {
+        "fileType": "Selecteer een afbeeldingsbestand",
+        "fileSize": "Afbeeldingsgrootte moet kleiner zijn dan 5MB"
+      }
+    },
+    "poll": {
+      "title": "Gemeenschapspols",
+      "nextPoll": "Volgende peiling",
+      "signInToVote": "Log in om te stemmen",
+      "votes": "stem | stemmen",
+      "noPolls": "Nog geen actieve peilingen. Kom binnenkort terug!"
+    },
+    "notifications": {
+      "title": "Meldingen",
+      "markAllRead": "Alles als gelezen markeren",
+      "empty": "Nog geen meldingen"
+    },
+    "eventCard": {
+      "attending": "aanwezigen",
+      "viewDetails": "Bekijk Details",
+      "register": "Registreren",
+      "registered": "Geregistreerd",
+      "interested": "Geïnteresseerd"
+    },
+    "forumCard": {
+      "replies": "reacties"
+    }
+  },
+  "calendar": {
+    "today": "Vandaag",
+    "month": "Maand",
+    "week": "Week",
+    "day": "Dag"
+  }
+}

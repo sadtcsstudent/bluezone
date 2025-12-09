@@ -5,10 +5,9 @@
         <!-- Left Side - Form -->
         <div class="signup-form-wrapper">
           <div class="signup-header">
-            <h1>Join Our Community</h1>
+            <h1>{{ $t('signup.title') }}</h1>
             <p class="signup-subtitle">
-              Create your account and become part of a movement for healthier,
-              more connected living in Twente.
+              {{ $t('signup.subtitle') }}
             </p>
           </div>
 
@@ -16,7 +15,7 @@
             <!-- Name -->
             <div class="form-group">
               <label for="name" class="form-label">
-                Full Name
+                {{ $t('signup.fullName') }}
               </label>
               <div class="input-wrapper">
                 <User class="input-icon" :size="20" />
@@ -24,7 +23,7 @@
                   id="name"
                   type="text"
                   v-model="formData.name"
-                  placeholder="Your full name"
+                  :placeholder="$t('signup.fullNamePlaceholder')"
                   required
                   class="form-input"
                 />
@@ -34,7 +33,7 @@
             <!-- Email -->
             <div class="form-group">
               <label for="email" class="form-label">
-                Email Address
+                {{ $t('signup.emailLabel') }}
               </label>
               <div class="input-wrapper">
                 <Mail class="input-icon" :size="20" />
@@ -42,7 +41,7 @@
                   id="email"
                   type="email"
                   v-model="formData.email"
-                  placeholder="your.email@example.com"
+                  :placeholder="$t('signup.emailPlaceholder')"
                   required
                   class="form-input"
                 />
@@ -52,7 +51,7 @@
             <!-- Location -->
             <div class="form-group">
               <label for="location" class="form-label">
-                Location in Twente
+                {{ $t('signup.locationLabel') }}
               </label>
               <div class="input-wrapper">
                 <MapPin class="input-icon" :size="20" />
@@ -60,7 +59,7 @@
                   id="location"
                   type="text"
                   v-model="formData.location"
-                  placeholder="e.g., Enschede, Hengelo, Oldenzaal"
+                  :placeholder="$t('signup.locationPlaceholder')"
                   class="form-input"
                 />
               </div>
@@ -69,7 +68,7 @@
             <!-- Password -->
             <div class="form-group">
               <label for="password" class="form-label">
-                Password
+                {{ $t('signup.passwordLabel') }}
               </label>
               <div class="input-wrapper">
                 <Lock class="input-icon" :size="20" />
@@ -77,7 +76,7 @@
                   id="password"
                   type="password"
                   v-model="formData.password"
-                  placeholder="Create a strong password"
+                  :placeholder="$t('signup.passwordPlaceholder')"
                   required
                   class="form-input"
                 />
@@ -87,7 +86,7 @@
             <!-- Confirm Password -->
             <div class="form-group">
               <label for="confirmPassword" class="form-label">
-                Confirm Password
+                {{ $t('signup.confirmPasswordLabel') }}
               </label>
               <div class="input-wrapper">
                 <Lock class="input-icon" :size="20" />
@@ -95,7 +94,7 @@
                   id="confirmPassword"
                   type="password"
                   v-model="formData.confirmPassword"
-                  placeholder="Confirm your password"
+                  :placeholder="$t('signup.confirmPasswordPlaceholder')"
                   required
                   class="form-input"
                 />
@@ -105,20 +104,20 @@
             <!-- Interests -->
             <div class="form-group">
               <label class="form-label">
-                Interests (optional)
+                {{ $t('signup.interestsLabel') }}
               </label>
               <div class="interests-wrapper">
                 <button
                   v-for="interest in interestOptions"
-                  :key="interest"
+                  :key="interest.key"
                   type="button"
-                  @click="toggleInterest(interest)"
+                  @click="toggleInterest(interest.key)"
                   :class="[
                     'interest-button',
-                    formData.interests.includes(interest) ? 'interest-button--active' : ''
+                    formData.interests.includes(interest.key) ? 'interest-button--active' : ''
                   ]"
                 >
-                  {{ interest }}
+                  {{ interest.label }}
                 </button>
               </div>
             </div>
@@ -132,8 +131,7 @@
                 class="checkbox-input"
               />
               <label for="newsletter" class="checkbox-label">
-                Subscribe to our monthly newsletter with event updates, health tips,
-                and community stories
+                {{ $t('signup.newsletterLabel') }}
               </label>
             </div>
 
@@ -147,27 +145,28 @@
                 class="checkbox-input"
               />
               <label for="terms" class="checkbox-label">
-                I agree to the
-                <a href="#" class="link">Terms of Service</a>
-                and
-                <a href="#" class="link">Privacy Policy</a>
+                {{ $t('signup.termsLabel') }}
+                <a href="#" class="link">{{ $t('signup.termsOfService') }}</a>
+                {{ $t('signup.and') }}
+                <a href="#" class="link">{{ $t('signup.privacyPolicy') }}</a>
               </label>
             </div>
 
-            <button type="submit" class="btn btn--primary btn--full">
-              <span>Create Account</span>
-              <ArrowRight :size="20" />
+            <button type="submit" class="btn btn--primary btn--full" :disabled="loading">
+              <span>{{ loading ? $t('signup.loading') : $t('signup.createAccountButton') }}</span>
+              <ArrowRight v-if="!loading" :size="20" />
+              <div v-else class="spinner"></div>
             </button>
 
             <div class="login-link">
               <p>
-                Already have an account?
+                {{ $t('signup.hasAccount') }}
                 <button
                   type="button"
                   @click="handleNavigate('login')"
                   class="link-button"
                 >
-                  Log in
+                  {{ $t('signup.loginLink') }}
                 </button>
               </p>
             </div>
@@ -184,14 +183,14 @@
             />
           </div>
           <div class="benefits-card">
-            <h3>What You'll Get</h3>
+            <h3>{{ $t('signup.whatYouGet') }}</h3>
             <ul class="benefits-list">
               <li class="benefit-item">
                 <div class="benefit-icon">
                   <div class="benefit-dot"></div>
                 </div>
                 <span class="benefit-text">
-                  Access to exclusive community events and workshops
+                  {{ $t('signup.benefit1') }}
                 </span>
               </li>
               <li class="benefit-item">
@@ -199,7 +198,7 @@
                   <div class="benefit-dot"></div>
                 </div>
                 <span class="benefit-text">
-                  Connect with like-minded neighbors and friends
+                  {{ $t('signup.benefit2') }}
                 </span>
               </li>
               <li class="benefit-item">
@@ -207,7 +206,7 @@
                   <div class="benefit-dot"></div>
                 </div>
                 <span class="benefit-text">
-                  Participate in forums and group discussions
+                  {{ $t('signup.benefit3') }}
                 </span>
               </li>
               <li class="benefit-item">
@@ -215,7 +214,7 @@
                   <div class="benefit-dot"></div>
                 </div>
                 <span class="benefit-text">
-                  Monthly newsletter with health tips and local news
+                  {{ $t('signup.benefit4') }}
                 </span>
               </li>
               <li class="benefit-item">
@@ -223,7 +222,7 @@
                   <div class="benefit-dot"></div>
                 </div>
                 <span class="benefit-text">
-                  Discover local initiatives and sustainable living resources
+                  {{ $t('signup.benefit5') }}
                 </span>
               </li>
             </ul>
@@ -238,6 +237,7 @@
 import { User, Mail, Lock, ArrowRight, MapPin } from 'lucide-vue-next'
 import ImageWithFallback from '../components/ImageWithFallback.vue'
 import { useAuthStore } from '@/stores/auth'
+import { useToastStore } from '@/stores/toast'
 
 export default {
   name: 'SignupView',
@@ -261,36 +261,75 @@ export default {
         newsletter: true,
         termsAccepted: false
       },
-      interestOptions: [
-        'Gardening',
-        'Healthy Cooking',
-        'Walking Groups',
-        'Yoga & Meditation',
-        'Sustainability',
-        'Local Food',
-        'Community Events',
-        'Volunteering',
+      interestKeys: [
+        'gardening',
+        'healthyCooking',
+        'walkingGroups',
+        'yogaMeditation',
+        'sustainability',
+        'localFood',
+        'communityEvents',
+        'volunteering',
       ],
-      authStore: useAuthStore()
+      authStore: useAuthStore(),
+      toastStore: useToastStore(),
+      loading: false
+    }
+  },
+  computed: {
+    interestOptions() {
+      return this.interestKeys.map(key => ({
+        key,
+        label: this.$t(`interests.${key}`)
+      }))
     }
   },
   methods: {
+    validatePassword(password) {
+      const minLength = 8
+      const hasNumber = /\d/
+      const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/
+      
+      if (password.length < minLength) return this.$t('signup.validation.minLength')
+      if (!hasNumber.test(password)) return this.$t('signup.validation.number')
+      if (!hasSpecial.test(password)) return this.$t('signup.validation.special')
+      return null
+    },
+
     async handleSubmit() {
+      // 1. Validate Password Match
       if (this.formData.password !== this.formData.confirmPassword) {
-        alert('Passwords do not match!')
+        this.toastStore.error('Passwords do not match!')
         return
       }
 
-      await this.authStore.signup({
-        name: this.formData.name,
-        email: this.formData.email,
-        password: this.formData.password,
-        location: this.formData.location,
-        interests: this.formData.interests,
-        newsletter: this.formData.newsletter
-      })
+      // 2. Validate Password Strength
+      const passwordError = this.validatePassword(this.formData.password)
+      if (passwordError) {
+        this.toastStore.error(passwordError)
+        return
+      }
 
-      this.$router.push({ name: 'home' })
+      this.loading = true
+      try {
+        await this.authStore.signup({
+          name: this.formData.name,
+          email: this.formData.email,
+          password: this.formData.password,
+          location: this.formData.location,
+          interests: this.formData.interests,
+          newsletter: this.formData.newsletter
+        })
+        
+        this.toastStore.success(this.$t('signup.successToast'))
+        this.$router.push({ name: 'home' })
+      } catch (error) {
+        // API errors (e.g. "Email already in use")
+        const message = error.message || this.$t('signup.errorToast')
+        this.toastStore.error(message)
+      } finally {
+        this.loading = false
+      }
     },
     handleNavigate(page) {
       this.$router.push({ name: page })
@@ -616,4 +655,32 @@ export default {
 .btn--full {
   width: 100%;
 }
+
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid #ffffff;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+
 </style>

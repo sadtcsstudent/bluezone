@@ -38,6 +38,8 @@ model User {
   notifications     Notification[]
   discussionLikes   DiscussionLike[]
   replyLikes        ReplyLike[]
+  polls             Poll[]                      @relation("PollCreator")
+  pollVotes         PollVote[]                  @relation("PollVoteUser")
   resetTokens       PasswordResetToken[]
   newsletterSub     NewsletterSubscriber?       @relation("UserNewsletter")
   createdInitiatives Initiative[]               @relation("CreatedInitiatives")
@@ -277,6 +279,42 @@ model Notification {
   link      String?
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   createdAt DateTime @default(now())
+}
+
+model Poll {
+  id          String       @id @default(cuid())
+  question    String
+  active      Boolean      @default(true)
+  allowMultiple Boolean    @default(false)
+  allowChangeVote Boolean  @default(false)
+  createdById String
+  createdBy   User         @relation("PollCreator", fields: [createdById], references: [id])
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  options     PollOption[]
+  votes       PollVote[]
+}
+
+model PollOption {
+  id        String     @id @default(cuid())
+  pollId    String
+  poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  text      String
+  votes     PollVote[]
+}
+
+model PollVote {
+  id        String     @id @default(cuid())
+  pollId    String
+  optionId  String
+  userId    String
+  
+  poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  option    PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  user      User       @relation("PollVoteUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime   @default(now())
+  
+  @@unique([pollId, optionId, userId])
 }

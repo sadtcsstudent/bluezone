@@ -4,7 +4,7 @@
       <!-- Sidebar -->
       <aside class="company-sidebar">
         <div class="sidebar-header">
-          <h2>Company Dashboard</h2>
+          <h2>{{ $t('company.dashboard') }}</h2>
         </div>
         <nav class="company-nav">
           <button 
@@ -25,8 +25,8 @@
         <!-- Overview Tab -->
         <div v-if="activeTab === 'overview'" class="company-panel">
           <div class="panel-header">
-            <h2>Overview</h2>
-            <p>Your company statistics</p>
+            <h2>{{ $t('company.overview') }}</h2>
+            <p>{{ $t('company.statsSubtitle') }}</p>
           </div>
 
           <div class="stats-grid">
@@ -35,7 +35,7 @@
                 <Calendar :size="24" />
               </div>
               <div class="stat-info">
-                <h3>My Events</h3>
+                <h3>{{ $t('company.myEvents') }}</h3>
                 <p class="stat-value">{{ stats.events || 0 }}</p>
               </div>
             </div>
@@ -44,7 +44,7 @@
                 <Leaf :size="24" />
               </div>
               <div class="stat-info">
-                <h3>My Initiatives</h3>
+                <h3>{{ $t('company.manageInitiatives') }}</h3>
                 <p class="stat-value">{{ stats.initiatives || 0 }}</p>
               </div>
             </div>
@@ -54,16 +54,16 @@
         <!-- Events Tab -->
         <div v-if="activeTab === 'events'" class="company-panel">
           <div class="panel-header">
-            <h2>My Events</h2>
+            <h2>{{ $t('company.myEvents') }}</h2>
             <button class="btn btn--primary" @click="openCreateEvent">
               <Plus :size="16" />
-              Create Event
+              {{ $t('admin.eventsTab.createEvent') }}
             </button>
           </div>
 
           <div class="empty-state" v-if="events.length === 0">
             <Calendar :size="48" />
-            <h3>No events created yet</h3>
+            <h3>{{ $t('company.noEvents') }}</h3>
           </div>
 
           <div class="events-list">
@@ -73,29 +73,29 @@
                  <p>{{ new Date(event.date).toLocaleDateString() }} • {{ event.location }}</p>
                </div>
                <div class="event-actions">
-                 <button class="btn btn--sm btn--outline" @click="openEditEvent(event)">Edit</button>
-                 <button class="btn btn--sm btn--danger" @click="deleteEvent(event.id)">Delete</button>
+                 <button class="btn btn--sm btn--outline" @click="openEditEvent(event)">{{ $t('company.edit') }}</button>
+                 <button class="btn btn--sm btn--danger" @click="deleteEvent(event.id)">{{ $t('company.delete') }}</button>
                </div>
              </div>
           </div>
           <div class="load-more-row" v-if="visibleEvents.length < events.length">
-            <button class="btn btn--outline" @click="eventsShown += 10">Load more events</button>
+            <button class="btn btn--outline" @click="eventsShown += 10">{{ $t('company.loadMore') }}</button>
           </div>
         </div>
 
         <!-- Initiatives Tab -->
         <div v-if="activeTab === 'initiatives'" class="company-panel">
           <div class="panel-header">
-            <h2>My Initiatives</h2>
+            <h2>{{ $t('company.manageInitiatives') }}</h2>
              <button class="btn btn--primary" @click="openCreateInitiative">
               <Plus :size="16" />
-              Add Initiative
+              {{ $t('company.createInitiative') }}
             </button>
           </div>
 
           <div class="empty-state" v-if="initiatives.length === 0">
             <Leaf :size="48" />
-            <h3>No initiatives created yet</h3>
+            <h3>{{ $t('company.noInitiatives') }}</h3>
           </div>
 
           <div class="events-list">
@@ -119,6 +119,126 @@
           </div>
           <div class="load-more-row" v-if="visibleInitiatives.length < initiatives.length">
             <button class="btn btn--outline" @click="initiativesShown += 10">Load more initiatives</button>
+          </div>
+        </div>
+
+        <!-- Polls Tab -->
+        <div v-if="activeTab === 'polls'" class="company-panel">
+          <div class="panel-header">
+            <div>
+              <h2>Polls Manager</h2>
+              <p>Create and manage polls for your community</p>
+            </div>
+            <button class="btn btn--primary" @click="resetPollForm">
+              <Plus :size="16" />
+              New Poll
+            </button>
+          </div>
+
+          <div class="polls-grid" style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; align-items: start;">
+            <div class="poll-form-card" style="background: rgb(var(--color-surface)); padding: 1.5rem; border-radius: 1rem; border: 1px solid rgb(var(--color-border));">
+              <div class="form-group">
+                <label>Question</label>
+                <input v-model="pollForm.question" placeholder="What would you like to ask?" />
+              </div>
+
+              <div class="form-group" style="margin-top: 1rem;">
+                <label>Options</label>
+                <div
+                  v-for="(option, index) in pollForm.options"
+                  :key="option.id || index"
+                  class="poll-option-input"
+                  style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;"
+                >
+                  <input v-model="option.text" placeholder="Option text" style="flex: 1;" />
+                  <button
+                    v-if="pollForm.options.length > 2"
+                    type="button"
+                    class="btn btn--ghost btn--sm"
+                    @click="removePollOption(index)"
+                  >
+                    <X :size="16" />
+                  </button>
+                </div>
+                <button type="button" class="btn btn--outline btn--sm" @click="addPollOption">
+                  <Plus :size="14" />
+                  Add option
+                </button>
+              </div>
+
+              <div class="checkbox-group" style="display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem 0;">
+                <label class="checkbox-row" style="display: flex; align-items: center; gap: 0.5rem;">
+                  <input type="checkbox" v-model="pollForm.active" />
+                  <span>Active</span>
+                </label>
+                <label class="checkbox-row" style="display: flex; align-items: center; gap: 0.5rem;">
+                  <input type="checkbox" v-model="pollForm.allowMultiple" />
+                  <span>Multi-Select</span>
+                </label>
+                <label class="checkbox-row" style="display: flex; align-items: center; gap: 0.5rem;">
+                  <input type="checkbox" v-model="pollForm.allowChangeVote" />
+                  <span>Allow Vote Change</span>
+                </label>
+              </div>
+
+              <div class="modal-actions">
+                <button type="button" class="btn btn--ghost" @click="resetPollForm">Clear</button>
+                <button
+                  type="button"
+                  class="btn btn--primary"
+                  :disabled="pollSaving"
+                  @click="savePoll"
+                >
+                  {{ pollSaving ? 'Saving...' : (editingPollId ? 'Update Poll' : 'Create Poll') }}
+                </button>
+              </div>
+            </div>
+
+            <div class="poll-list">
+              <div v-if="pollsLoading" class="empty-state">
+                <MessageSquare :size="32" />
+                <p>Loading polls...</p>
+              </div>
+              <div v-else-if="polls.length === 0" class="empty-state">
+                <MessageSquare :size="48" />
+                <h3>No polls yet</h3>
+                <p>Start a new poll to gather quick feedback.</p>
+              </div>
+              <div v-else class="poll-card" v-for="poll in polls" :key="poll.id" style="background: white; border: 1px solid rgb(var(--color-border)); border-radius: 1rem; padding: 1.5rem; margin-bottom: 1rem;">
+                <div class="poll-card__header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                  <div>
+                    <div class="status-pill" :style="{ background: poll.active ? '#dcfce7' : '#f3f4f6', color: poll.active ? '#16a34a' : '#6b7280', padding: '0.25rem 0.75rem', borderRadius: '50px', fontSize: '0.75rem', fontWeight: '600', display: 'inline-block', marginBottom: '0.5rem' }">
+                      {{ poll.active ? 'Active' : 'Paused' }}
+                    </div>
+                    <h3 style="margin: 0; font-size: 1.125rem;">{{ poll.question }}</h3>
+                    <p class="meta" style="color: rgb(var(--color-text-secondary)); font-size: 0.875rem; margin-top: 0.25rem;">
+                      {{ new Date(poll.createdAt).toLocaleDateString() }} • {{ poll.totalVotes }} vote{{ poll.totalVotes === 1 ? '' : 's' }}
+                    </p>
+                    <div class="poll-badges" style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                        <span v-if="poll.allowMultiple" class="badge" style="background: #e0f2fe; color: #0284c7; padding: 0.1rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">Multi</span>
+                        <span v-if="poll.allowChangeVote" class="badge" style="background: #dcfce7; color: #16a34a; padding: 0.1rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">Changeable</span>
+                    </div>
+                  </div>
+                  <div class="poll-actions" style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn--sm btn--outline" @click="editPoll(poll)">Edit</button>
+                    <button
+                      class="btn btn--sm"
+                      :class="poll.active ? 'btn--ghost' : 'btn--primary'"
+                      @click="togglePollStatus(poll)"
+                    >
+                      {{ poll.active ? 'Pause' : 'Activate' }}
+                    </button>
+                    <button class="btn btn--sm btn--danger" @click="deletePoll(poll)">Delete</button>
+                  </div>
+                </div>
+                <div class="poll-options-list">
+                  <div class="poll-option-row" v-for="option in poll.options" :key="option.id" style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">
+                    <span>{{ option.text }}</span>
+                    <span class="meta" style="color: rgb(var(--color-text-secondary)); font-size: 0.875rem;">{{ option.voteCount }} votes ({{ option.percentage }}%)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>
@@ -239,7 +359,7 @@
 
 <script setup>
 import { onMounted, ref, computed } from 'vue'
-import { LayoutDashboard, Calendar, Leaf, Plus, Trash2, Edit, Search, Upload, X } from 'lucide-vue-next'
+import { LayoutDashboard, Calendar, Leaf, Plus, Trash2, Edit, Search, Upload, X, PieChart, MessageSquare } from 'lucide-vue-next'
 import api from '@/services/api'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -270,11 +390,23 @@ const map = ref(null)
 const mapMarker = ref(null)
 const addressQuery = ref('')
 const searchingAddress = ref(false)
+const polls = ref([])
+const pollsLoading = ref(false)
+const pollForm = ref({
+  question: '',
+  active: true,
+  allowMultiple: false,
+  allowChangeVote: false,
+  options: [{ text: '' }, { text: '' }]
+})
+const editingPollId = ref(null)
+const pollSaving = ref(false)
 
 const tabs = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
   { id: 'events', label: 'My Events', icon: Calendar },
-  { id: 'initiatives', label: 'My Initiatives', icon: Leaf }
+  { id: 'initiatives', label: 'My Initiatives', icon: Leaf },
+  { id: 'polls', label: 'Polls', icon: PieChart }
 ]
 
 const loadData = async () => {
@@ -289,6 +421,8 @@ const loadData = async () => {
         const initRes = await api.get('/company/initiatives')
         initiatives.value = initRes.initiatives || []
         initiativesShown.value = 10
+
+        await fetchPolls()
     } catch (err) {
         console.error('Failed to load company data', err)
     }
@@ -510,6 +644,128 @@ const searchAddress = async () => {
     alert('Search failed')
   } finally {
     searchingAddress.value = false
+  }
+}
+
+// --- Polls Logic ---
+const fetchPolls = async () => {
+  pollsLoading.value = true
+  try {
+    const data = await api.get('/polls/manage')
+    polls.value = data.polls || []
+  } catch (err) {
+    console.error('Failed to load polls', err)
+  } finally {
+    pollsLoading.value = false
+  }
+}
+
+const resetPollForm = () => {
+  pollForm.value = {
+    question: '',
+    active: true,
+    allowMultiple: false,
+    allowChangeVote: false,
+    options: [{ text: '' }, { text: '' }]
+  }
+  editingPollId.value = null
+}
+
+const addPollOption = () => {
+  pollForm.value.options.push({ text: '' })
+}
+
+const removePollOption = (index) => {
+  if (pollForm.value.options.length <= 2) {
+    alert('Polls need at least two options')
+    return
+  }
+  pollForm.value.options.splice(index, 1)
+}
+
+const editPoll = (poll) => {
+  editingPollId.value = poll.id
+  pollForm.value = {
+    question: poll.question,
+    active: poll.active,
+    allowMultiple: poll.allowMultiple || false,
+    allowChangeVote: poll.allowChangeVote || false,
+    options: poll.options.map((opt) => ({ id: opt.id, text: opt.text }))
+  }
+}
+
+const savePoll = async () => {
+  const question = (pollForm.value.question || '').trim()
+  const options = pollForm.value.options
+    .map((opt) => ({ ...opt, text: (opt.text || '').trim() }))
+    .filter((opt) => opt.text)
+
+  if (!question) {
+    alert('Please add a poll question')
+    return
+  }
+
+  if (options.length < 2) {
+    alert('Add at least two options')
+    return
+  }
+
+  pollSaving.value = true
+  try {
+    const payload = { 
+      question, 
+      active: pollForm.value.active, 
+      allowMultiple: pollForm.value.allowMultiple,
+      allowChangeVote: pollForm.value.allowChangeVote,
+      options 
+    }
+    if (editingPollId.value) {
+      const res = await api.put(`/polls/${editingPollId.value}`, payload)
+      const idx = polls.value.findIndex((p) => p.id === editingPollId.value)
+      if (idx !== -1 && res.poll) {
+        polls.value.splice(idx, 1, res.poll)
+      }
+    } else {
+      const res = await api.post('/polls', payload)
+      if (res.poll) {
+        polls.value = [res.poll, ...polls.value]
+      }
+    }
+    await fetchPolls()
+    resetPollForm()
+    alert(editingPollId.value ? 'Poll updated' : 'Poll created')
+  } catch (err) {
+    console.error('Failed to save poll', err)
+    alert('Failed to save poll')
+  } finally {
+    pollSaving.value = false
+  }
+}
+
+const togglePollStatus = async (poll) => {
+  try {
+    const res = await api.put(`/polls/${poll.id}`, { active: !poll.active })
+    if (res.poll) {
+      const idx = polls.value.findIndex((p) => p.id === poll.id)
+      if (idx !== -1) polls.value.splice(idx, 1, res.poll)
+    } else {
+      poll.active = !poll.active
+    }
+  } catch (err) {
+    console.error('Failed to update poll', err)
+    alert('Failed to update poll status')
+  }
+}
+
+const deletePoll = async (poll) => {
+  if (!confirm('Delete this poll?')) return
+  try {
+    await api.delete(`/polls/${poll.id}`)
+    polls.value = polls.value.filter((p) => p.id !== poll.id)
+    if (editingPollId.value === poll.id) resetPollForm()
+  } catch (err) {
+    console.error('Failed to delete poll', err)
+    alert('Failed to delete poll')
   }
 }
 </script>

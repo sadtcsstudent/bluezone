@@ -4,12 +4,12 @@
       <!-- Header -->
       <header class="page-header">
         <div class="header-content">
-          <h1>Discover Groups</h1>
-          <p>Join communities that share your interests and passions</p>
+          <h1>{{ $t('groups.discoverTitle') }}</h1>
+          <p>{{ $t('groups.headerSubtitle') }}</p>
         </div>
         <button class="btn btn--primary" @click="showCreateModal = true">
           <Plus :size="20" />
-          <span>Create Group</span>
+          <span>{{ $t('groups.createGroup') }}</span>
         </button>
       </header>
 
@@ -17,7 +17,7 @@
       <div class="filters-bar">
         <div class="search-input">
           <Search :size="20" />
-          <input v-model="searchQuery" type="text" placeholder="Search groups..." />
+          <input v-model="searchQuery" type="text" :placeholder="$t('groups.searchPlaceholder')" />
         </div>
         <div class="categories-list">
           <button 
@@ -60,9 +60,9 @@
             <div class="card-footer">
               <div class="members-count">
                 <Users :size="16" />
-                <span>{{ group._count?.members || 0 }} members</span>
+                <span>{{ group._count?.members || 0 }} {{ $t('groupDetail.members').toLowerCase() }}</span>
               </div>
-              <span class="join-text">View Group <ArrowRight :size="16" /></span>
+              <span class="join-text">{{ $t('groups.viewGroup') }} <ArrowRight :size="16" /></span>
             </div>
           </div>
         </div>
@@ -70,8 +70,8 @@
 
       <div v-else class="empty-state">
         <Users :size="48" />
-        <h3>No groups found</h3>
-        <p>Try adjusting your search or create a new group</p>
+        <h3>{{ $t('groups.noGroups') }}</h3>
+        <p>{{ $t('groups.noGroupsDesc') }}</p>
       </div>
     </div>
 
@@ -79,7 +79,7 @@
     <div v-if="showCreateModal" class="modal-overlay" @click.self="showCreateModal = false">
       <div class="modal-content">
         <div class="modal-header">
-          <h2>Create New Group</h2>
+          <h2>{{ $t('groups.createModal.title') }}</h2>
           <button class="close-btn" @click="showCreateModal = false">
             <X :size="24" />
           </button>
@@ -87,14 +87,14 @@
         
         <form @submit.prevent="createGroup" class="create-form">
           <div class="form-group">
-            <label>Group Name</label>
+            <label>{{ $t('groups.createModal.name') }}</label>
             <input v-model="newGroup.name" type="text" required placeholder="e.g. Hiking Enthusiasts" />
           </div>
 
           <div class="form-group">
-            <label>Category</label>
+            <label>{{ $t('groups.createModal.category') }}</label>
             <select v-model="newGroup.category" required>
-              <option value="" disabled>Select a category</option>
+              <option value="" disabled>{{ $t('groups.createModal.selectCategory') }}</option>
               <option v-for="cat in categories.filter(c => c !== 'All')" :key="cat" :value="cat">
                 {{ cat }}
               </option>

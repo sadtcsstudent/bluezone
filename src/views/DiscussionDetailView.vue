@@ -25,7 +25,7 @@
             </div>
             <div class="author-info">
               <span class="author-name">{{ discussion.author?.name || discussion.author?.email }}</span>
-              <span class="author-role">Author</span>
+              <span class="author-role">{{ $t('discussion.authorRole') }}</span>
             </div>
           </div>
 
@@ -48,8 +48,8 @@
             <div v-if="editingDiscussion" class="edit-mode">
               <textarea v-model="editDiscussionContent" rows="6"></textarea>
               <div class="edit-actions">
-                <button class="btn btn--sm btn--ghost" @click="cancelEditDiscussion">Cancel</button>
-                <button class="btn btn--sm btn--primary" @click="saveDiscussion">Save</button>
+                <button class="btn btn--sm btn--ghost" @click="cancelEditDiscussion">{{ $t('common.cancel') }}</button>
+                <button class="btn btn--sm btn--primary" @click="saveDiscussion">{{ $t('common.save') }}</button>
               </div>
             </div>
             <div v-else class="post-body">
@@ -64,16 +64,16 @@
               >
                 <ThumbsUp :size="18" />
                 <span>
-                  {{ (discussion?.likesCount || 0) }} Like{{ (discussion?.likesCount || 0) === 1 ? '' : 's' }}
+                  {{ (discussion?.likesCount || 0) }} {{ (discussion?.likesCount || 0) === 1 ? $t('discussion.like') : $t('discussion.likes') }}
                 </span>
               </button>
               <button class="action-btn" @click="shareDiscussion">
                 <Share2 :size="18" />
-                <span>Share</span>
+                <span>{{ $t('discussion.share') }}</span>
               </button>
               <button class="action-btn" @click="scrollToReply">
                 <MessageSquare :size="18" />
-                <span>Reply</span>
+                <span>{{ $t('discussion.reply') }}</span>
               </button>
             </footer>
           </div>
@@ -82,7 +82,7 @@
         <!-- Replies Section -->
         <div class="replies-section">
           <div class="replies-header">
-            <h3>{{ totalReplies }} Replies</h3>
+            <h3>{{ totalReplies }} {{ $t('discussion.replies') }}</h3>
           </div>
 
           <div class="replies-list">

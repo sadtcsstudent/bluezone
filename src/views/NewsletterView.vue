@@ -5,48 +5,46 @@
       <div class="newsletter-header">
         <div class="newsletter-badge">
           <Mail :size="16" class="badge-icon" />
-          <span class="badge-text">Newsletter</span>
+          <span class="badge-text">{{ $t('newsletterPage.badge') }}</span>
         </div>
-        <h1>Stay Connected</h1>
+        <h1>{{ $t('newsletterPage.title') }}</h1>
         <p class="newsletter-subtitle">
-          Get monthly updates on community events, health tips, local initiatives,
-          and inspiring stories from our Blue Zone Twente community.
+          {{ $t('newsletterPage.subtitle') }}
         </p>
       </div>
 
       <!-- Subscribe Section -->
       <div class="subscribe-section">
         <div class="subscribe-content">
-          <h2 class="subscribe-title">Subscribe to Our Newsletter</h2>
+          <h2 class="subscribe-title">{{ $t('newsletterPage.subscribeTitle') }}</h2>
           <p class="subscribe-description">
-            Join over 800 community members receiving monthly inspiration,
-            event updates, and practical tips for healthy living.
+            {{ $t('newsletterPage.subscribeDesc') }}
           </p>
 
           <form v-if="!subscribed" @submit.prevent="handleSubscribe" class="subscribe-form">
             <input
               type="email"
               v-model="email"
-              placeholder="Enter your email address"
+              :placeholder="$t('newsletterPage.emailPlaceholder')"
               required
               class="subscribe-input"
             />
             <button type="submit" class="subscribe-button">
-              <span>Subscribe</span>
+              <span>{{ $t('newsletterPage.subscribeButton') }}</span>
               <ArrowRight :size="20" />
             </button>
           </form>
 
           <div v-else class="subscribed-message">
             <CheckCircle :size="24" />
-            <span>Thank you for subscribing!</span>
+            <span>{{ $t('newsletterPage.successMessage') }}</span>
           </div>
 
           <div class="privacy-container">
             <p class="privacy-text">
-              We respect your privacy. 
-              <button v-if="subscribed" @click="handleUnsubscribe" class="unsubscribe-link">Unsubscribe</button>
-              <span v-else>Unsubscribe anytime.</span>
+              {{ $t('newsletterPage.privacyText') }}
+              <button v-if="subscribed" @click="handleUnsubscribe" class="unsubscribe-link">{{ $t('newsletterPage.unsubscribe') }}</button>
+              <span v-else>{{ $t('newsletterPage.unsubscribeText') }}</span>
             </p>
           </div>
         </div>
@@ -54,33 +52,33 @@
 
       <!-- What You'll Receive -->
       <div class="benefits-section">
-        <h2 class="benefits-title">What You'll Receive</h2>
+        <h2 class="benefits-title">{{ $t('newsletterPage.benefits.title') }}</h2>
         <div class="benefits-grid">
           <div class="benefit-card">
             <div class="benefit-icon benefit-icon--primary">
               <Calendar :size="24" />
             </div>
-            <h4>Event Highlights</h4>
+            <h4>{{ $t('newsletterPage.benefits.highlightTitle') }}</h4>
             <p class="benefit-text">
-              First access to upcoming workshops, gatherings, and community activities.
+              {{ $t('newsletterPage.benefits.highlightDesc') }}
             </p>
           </div>
           <div class="benefit-card">
             <div class="benefit-icon benefit-icon--secondary">
               <Mail :size="24" />
             </div>
-            <h4>Health & Wellness Tips</h4>
+            <h4>{{ $t('newsletterPage.benefits.tipsTitle') }}</h4>
             <p class="benefit-text">
-              Practical advice on nutrition, movement, mindfulness, and sustainable living.
+              {{ $t('newsletterPage.benefits.tipsDesc') }}
             </p>
           </div>
           <div class="benefit-card">
             <div class="benefit-icon benefit-icon--accent">
               <CheckCircle :size="24" />
             </div>
-            <h4>Community Stories</h4>
+            <h4>{{ $t('newsletterPage.benefits.storiesTitle') }}</h4>
             <p class="benefit-text">
-              Inspiring stories from members and updates on local initiatives.
+              {{ $t('newsletterPage.benefits.storiesDesc') }}
             </p>
           </div>
         </div>
@@ -88,7 +86,7 @@
 
       <!-- Past Newsletters -->
       <div class="archive-section">
-        <h2 class="archive-title">Past Newsletters</h2>
+        <h2 class="archive-title">{{ $t('newsletterPage.archiveTitle') }}</h2>
         <div class="archive-list">
           <div
             v-for="(newsletter, index) in pastNewsletters"

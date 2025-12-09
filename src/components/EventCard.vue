@@ -26,12 +26,12 @@
         </div>
         <div class="event-card__detail">
           <Users :size="16" />
-          <span>{{ attendees }} attending</span>
+          <span>{{ attendees }} {{ $t('components.eventCard.attending') }}</span>
         </div>
       </div>
       <div class="event-card__actions">
         <button class="event-card__button event-card__button--outline" @click.stop="handleViewDetails">
-          View Details
+          {{ $t('components.eventCard.viewDetails') }}
         </button>
         <button
           class="event-card__button event-card__button--primary"
@@ -43,7 +43,7 @@
         >
           <Check v-if="status === 'registered'" :size="16" />
           <Star v-else-if="status === 'interested'" :size="16" />
-          <span>{{ status === 'registered' ? 'Registered' : status === 'interested' ? 'Interested' : 'Register' }}</span>
+          <span>{{ status === 'registered' ? $t('components.eventCard.registered') : status === 'interested' ? $t('components.eventCard.interested') : $t('components.eventCard.register') }}</span>
         </button>
       </div>
     </div>

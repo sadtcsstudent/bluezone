@@ -4,7 +4,7 @@
       <!-- Sidebar -->
       <aside class="settings-sidebar">
         <div class="sidebar-header">
-          <h2>Settings</h2>
+          <h2>{{ $t('settings.title') }}</h2>
         </div>
         <nav class="settings-nav">
           <button 
@@ -25,8 +25,8 @@
         <!-- Profile Settings -->
         <div v-if="activeTab === 'profile'" class="settings-panel">
           <div class="panel-header">
-            <h2>Public Profile</h2>
-            <p>Manage how others see you on the platform</p>
+            <h2>{{ $t('settings.publicProfile') }}</h2>
+            <p>{{ $t('settings.profileDesc') }}</p>
           </div>
 
           <form @submit.prevent="updateProfile" class="settings-form">
@@ -41,8 +41,8 @@
                 </div>
               </div>
               <div class="avatar-info">
-                <h3>Profile Picture</h3>
-                <p>PNG, JPG up to 5MB</p>
+                <h3>{{ $t('settings.profilePicture') }}</h3>
+                <p>{{ $t('settings.imageRequirements') }}</p>
                 <input 
                   type="file" 
                   ref="fileInput" 
@@ -54,36 +54,36 @@
             </div>
 
             <div class="form-group">
-              <label>Display Name</label>
-              <input v-model="profile.name" type="text" placeholder="Your full name" />
+              <label>{{ $t('settings.displayName') }}</label>
+              <input v-model="profile.name" type="text" :placeholder="$t('settings.displayNamePlaceholder')" />
             </div>
 
             <div class="form-group">
-              <label>Bio</label>
-              <textarea v-model="profile.bio" rows="3" placeholder="Tell us about yourself"></textarea>
+              <label>{{ $t('settings.bio') }}</label>
+              <textarea v-model="profile.bio" rows="3" :placeholder="$t('settings.bioPlaceholder')"></textarea>
             </div>
 
             <div class="form-group">
-              <label>Location</label>
+              <label>{{ $t('settings.location') }}</label>
               <div class="input-icon">
                 <MapPin :size="18" />
-                <input v-model="profile.location" type="text" placeholder="City, Country" />
+                <input v-model="profile.location" type="text" :placeholder="$t('settings.locationPlaceholder')" />
               </div>
             </div>
 
             <div class="form-group">
-              <label>Interests</label>
+              <label>{{ $t('settings.interests') }}</label>
               <input 
                 v-model="interestsInput" 
                 type="text" 
-                placeholder="Coding, Design, Music (comma separated)" 
+                :placeholder="$t('settings.interestsPlaceholder')" 
               />
-              <p class="help-text">Separate tags with commas</p>
+              <p class="help-text">{{ $t('settings.interestsHelp') }}</p>
             </div>
 
             <div class="form-actions">
               <button type="submit" class="btn btn--primary" :disabled="saving">
-                {{ saving ? 'Saving...' : 'Save Changes' }}
+                {{ saving ? $t('settings.saving') : $t('settings.saveChanges') }}
               </button>
             </div>
           </form>
@@ -92,12 +92,12 @@
         <!-- Account Settings -->
         <div v-if="activeTab === 'account'" class="settings-panel">
           <div class="panel-header">
-            <h2>Account Security</h2>
-            <p>Manage your login credentials and security</p>
+            <h2>{{ $t('settings.accountSecurity') }}</h2>
+            <p>{{ $t('settings.securityDesc') }}</p>
           </div>
 
           <div class="settings-section">
-            <h3>Email Address</h3>
+            <h3>{{ $t('settings.emailAddress') }}</h3>
             <div class="email-display">
               <Mail :size="20" />
               <input v-if="editingEmail" v-model="newEmail" type="email" class="email-input" />

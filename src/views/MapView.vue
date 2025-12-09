@@ -7,12 +7,11 @@
         <div>
           <div class="map-badge">
             <MapPin :size="16" class="badge-icon" />
-            <span class="badge-text">Local Map</span>
+            <span class="badge-text">{{ $t('map.badge') }}</span>
           </div>
-          <h1>Community Initiatives Map</h1>
+          <h1>{{ $t('map.title') }}</h1>
           <p class="map-subtitle">
-            Discover community gardens, farmers markets, walking groups, and other
-            local initiatives near you.
+            {{ $t('map.subtitle') }}
           </p>
         </div>
 
@@ -20,7 +19,7 @@
         <div class="map-controls">
           <div class="search-bar">
             <Search :size="18" class="search-icon" />
-            <input v-model="searchQuery" type="text" placeholder="Search initiatives..." />
+            <input v-model="searchQuery" type="text" :placeholder="$t('map.searchPlaceholder')" />
           </div>
 
           <div class="filter-buttons">
@@ -28,35 +27,35 @@
               @click="filterType = 'all'"
               :class="['filter-btn', { 'filter-btn--active': filterType === 'all' }]"
             >
-              All Initiatives
+              {{ $t('map.filters.all') }}
             </button>
             <button
               @click="filterType = 'garden'"
               :class="['filter-btn', { 'filter-btn--garden': filterType === 'garden' }]"
             >
               <Leaf :size="16" />
-              <span>Gardens</span>
+              <span>{{ $t('map.filters.garden') }}</span>
             </button>
             <button
               @click="filterType = 'market'"
               :class="['filter-btn', { 'filter-btn--market': filterType === 'market' }]"
             >
               <ShoppingBasket :size="16" />
-              <span>Markets</span>
+              <span>{{ $t('map.filters.market') }}</span>
             </button>
             <button
               @click="filterType = 'event'"
               :class="['filter-btn', { 'filter-btn--event': filterType === 'event' }]"
             >
               <Calendar :size="16" />
-              <span>Events</span>
+              <span>{{ $t('map.filters.event') }}</span>
             </button>
             <button
               @click="filterType = 'group'"
               :class="['filter-btn', { 'filter-btn--group': filterType === 'group' }]"
             >
               <Users :size="16" />
-              <span>Groups</span>
+              <span>{{ $t('map.filters.group') }}</span>
             </button>
           </div>
         </div>
@@ -70,19 +69,19 @@
         <div class="map-legend">
           <div class="legend-item">
             <div class="legend-dot legend-dot--garden"></div>
-            <span>Gardens</span>
+            <span>{{ $t('map.legend.garden') }}</span>
           </div>
           <div class="legend-item">
             <div class="legend-dot legend-dot--market"></div>
-            <span>Markets</span>
+            <span>{{ $t('map.legend.market') }}</span>
           </div>
           <div class="legend-item">
             <div class="legend-dot legend-dot--event"></div>
-            <span>Events</span>
+            <span>{{ $t('map.legend.event') }}</span>
           </div>
           <div class="legend-item">
             <div class="legend-dot legend-dot--group"></div>
-            <span>Groups</span>
+            <span>{{ $t('map.legend.group') }}</span>
           </div>
         </div>
       </div>

@@ -1,0 +1,505 @@
+{
+  "nav": {
+    "home": "Home",
+    "story": "Our Story",
+    "events": "Events",
+    "forum": "Forum",
+    "map": "Map",
+    "newsletter": "Newsletter",
+    "login": "Log In",
+    "signup": "Sign Up",
+    "messages": "Messages",
+    "profile": "Profile"
+  },
+  "footer": {
+    "description": "A vibrant community dedicated to healthy, social, and sustainable living in the beautiful Twente region.",
+    "quickLinks": "Quick Links",
+    "community": "Community",
+    "contact": "Contact",
+    "blog": "Blog",
+    "resources": "Resources",
+    "partnerships": "Partnerships",
+    "volunteer": "Volunteer",
+    "copyright": "© {year} Blue Zone Twente. All rights reserved.",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "cookiePolicy": "Cookie Policy"
+  },
+  "home": {
+    "badge": "Living Laboratory • Learning Network",
+    "title": "Welcome to Blue Zone Twente",
+    "description": "A vibrant community dedicated to healthy, social, and sustainable living. Join us in creating a thriving ecosystem where people connect, learn, and grow together in the beautiful Twente region.",
+    "joinCommunity": "Join Our Community",
+    "learnMore": "Learn More",
+    "communityMembers": "Community Members",
+    "coreValues": "Our Core Values",
+    "coreValuesSubtitle": "Blue Zone Twente is built on principles that promote wellbeing, community connection, and sustainable living for all.",
+    "communityConnection": "Community Connection",
+    "communityConnectionDesc": "Building strong, supportive relationships through shared experiences, local initiatives, and meaningful interactions.",
+    "healthyLiving": "Healthy Living",
+    "healthyLivingDesc": "Promoting physical and mental wellbeing through nutrition, movement, mindfulness, and access to healthy local food.",
+    "sustainability": "Sustainability",
+    "sustainabilityDesc": "Creating a regenerative future through eco-friendly practices, local food systems, and environmental stewardship.",
+    "communityPulse": "Community Pulse",
+    "hearFromCommunity": "Hear from the community",
+    "communityPulseDesc": "Quick questions to learn what matters most right now. Share your vote and see what the community thinks.",
+    "upcomingEvents": "Upcoming Events",
+    "upcomingEventsSubtitle": "Join us for workshops, gatherings, and community activities",
+    "viewAllEvents": "View All Events",
+    "ctaTitle": "Ready to Join Our Community?",
+    "ctaDescription": "Become part of a movement dedicated to creating healthier, more connected, and sustainable communities in Twente. Together, we can make a difference.",
+    "createAccount": "Create Account",
+    "exploreLocalInitiatives": "Explore Local Initiatives"
+  },
+  "login": {
+    "title": "Welcome Back",
+    "subtitle": "Log in to connect with your community, join events, and access exclusive resources.",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "your.email{'@'}example.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "forgotPassword": "Forgot password?",
+    "rememberMe": "Remember me for 30 days",
+    "loginButton": "Log In",
+    "welcomeToast": "Welcome back!",
+    "errorToast": "Login failed. Please check your credentials.",
+    "noAccount": "Don't have an account?",
+    "signupLink": "Sign up",
+    "orContinueWith": "Or continue with",
+    "show": "Show",
+    "hide": "Hide"
+  },
+  "signup": {
+    "title": "Join Our Community",
+    "subtitle": "Create your account and become part of a movement for healthier, more connected living in Twente.",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Your full name",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "your.email{'@'}example.com",
+    "locationLabel": "Location in Twente",
+    "locationPlaceholder": "e.g., Enschede, Hengelo, Oldenzaal",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Create a strong password",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "interestsLabel": "Interests (optional)",
+    "newsletterLabel": "Subscribe to our monthly newsletter with event updates, health tips, and community stories",
+    "termsLabel": "I agree to the",
+    "termsOfService": "Terms of Service",
+    "and": "and",
+    "privacyPolicy": "Privacy Policy",
+    "createAccountButton": "Create Account",
+    "hasAccount": "Already have an account?",
+    "loginLink": "Log in",
+    "whatYouGet": "What You'll Get",
+    "benefit1": "Access to exclusive community events and workshops",
+    "benefit2": "Connect with like-minded neighbors and friends",
+    "benefit3": "Participate in forums and group discussions",
+    "benefit4": "Monthly newsletter with health tips and local news",
+    "benefit5": "Discover local initiatives and sustainable living resources",
+    "passwordsNoMatch": "Passwords do not match!",
+    "loading": "Creating Account...",
+    "successToast": "Account created successfully! Welcome to BlueZone.",
+    "errorToast": "Failed to create account. Please try again.",
+    "validation": {
+      "minLength": "Password must be at least 8 characters long",
+      "number": "Password must contain at least one number",
+      "special": "Password must contain at least one special character"
+    }
+  },
+  "interests": {
+    "gardening": "Gardening",
+    "healthyCooking": "Healthy Cooking",
+    "walkingGroups": "Walking Groups",
+    "yogaMeditation": "Yoga & Meditation",
+    "sustainability": "Sustainability",
+    "localFood": "Local Food",
+    "communityEvents": "Community Events",
+    "volunteering": "Volunteering"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit"
+  },
+  "about": {
+    "title": "About This Project",
+    "description": "This is a Vue.js 3 project built with Vite and Yarn."
+  },
+  "admin": {
+    "panel": "Admin Panel",
+    "overview": "Overview",
+    "users": "Users",
+    "events": "Events",
+    "polls": "Polls",
+    "content": "Content",
+    "stats": {
+      "platformHealth": "Platform statistics and health",
+      "totalUsers": "Total Users",
+      "activeEvents": "Active Events",
+      "forumPosts": "Forum Posts",
+      "reports": "Reports",
+      "active": "Active",
+      "suspended": "Suspended",
+      "locked": "Locked"
+    },
+    "usersTab": {
+      "manageUsers": "Manage Users",
+      "searchPlaceholder": "Search users...",
+      "filterRole": "Filter by Role",
+      "deleteSelected": "Delete Selected ({count})",
+      "table": {
+        "user": "User",
+        "role": "Role",
+        "status": "Status",
+        "joined": "Joined",
+        "actions": "Actions"
+      }
+    },
+    "eventsTab": {
+      "manageEvents": "Manage Events",
+      "createEvent": "Create Event",
+      "editEvent": "Edit Event",
+      "noEvents": "No events found",
+      "loadMore": "Load more events"
+    },
+    "pollsTab": {
+      "pollsManager": "Polls Manager",
+      "subtitle": "Create quick polls and see community sentiment",
+      "createPoll": "Create Poll",
+      "activePoll": "Active Poll"
+    }
+  },
+  "company": {
+    "dashboard": "Company Dashboard",
+    "manageInitiatives": "Manage Initiatives",
+    "createInitiative": "Create Initiative",
+    "myEvents": "My Events",
+    "analytics": "Analytics",
+    "overview": "Overview",
+    "statsSubtitle": "Your company statistics",
+    "noEvents": "No events created yet",
+    "noInitiatives": "No initiatives created yet",
+    "loadMore": "Load more events",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "discussion": {
+    "backToForum": "Back to Forum",
+    "reply": "Reply",
+    "edit": "Edit",
+    "delete": "Delete",
+    "replies": "Replies",
+    "writeReply": "Write a reply...",
+    "postReply": "Post Reply",
+    "authorRole": "Author",
+    "share": "Share",
+    "like": "Like",
+    "likes": "Likes"
+  },
+  "eventDetail": {
+    "backToEvents": "Back to Events",
+    "date": "Date",
+    "time": "Time",
+    "location": "Location",
+    "host": "Hosted by",
+    "register": "Register Now",
+    "registered": "You are registered",
+    "attendees": "Attendees",
+    "about": "About this event"
+  },
+  "eventsPage": {
+    "title": "Community Events",
+    "headerTitle": "Upcoming Events",
+    "badge": "Events Calendar",
+    "subtitle": "Discover workshops, gatherings, and activities across Twente",
+    "headerSubtitle": "Join us for community gatherings, workshops, and activities that bring people together and promote wellbeing.",
+    "searchPlaceholder": "Search events...",
+    "categories": "Categories",
+    "all": "All",
+    "noEvents": "No events found matching your criteria.",
+    "listView": "List View",
+    "calendarView": "Calendar View"
+  },
+  "forgotPassword": {
+    "title": "Reset Password",
+    "subtitle": "No worries, we'll send you reset instructions.",
+    "sendLink": "Send Reset Link",
+    "successMessage": "If an account exists for {email}, we've sent instructions.",
+    "backToLogin": "Back to Log In"
+  },
+  "forum": {
+    "title": "Community Forum",
+    "headerTitle": "Join the Conversation",
+    "subtitle": "Join the conversation, share ideas, and connect with neighbors.",
+    "headerSubtitle": "Connect with fellow community members, share experiences, and learn from each other.",
+    "startDiscussion": "Start Discussion",
+    "newDiscussion": "New Discussion",
+    "searchPlaceholder": "Search discussions...",
+    "categories": "Categories",
+    "trending": "Trending Topics",
+    "noDiscussions": "No discussions found.",
+    "sort": {
+      "recent": "Most Recent",
+      "popular": "Most Popular",
+      "active": "Most Active"
+    },
+    "discussion_one": "discussion",
+    "discussion_other": "discussions",
+    "createModal": {
+      "title": "Start a New Discussion",
+      "topicTitle": "Topic Title",
+      "category": "Category",
+      "content": "Content",
+      "cancel": "Cancel",
+      "post": "Post Discussion"
+    }
+  },
+  "groupDetail": {
+    "backToGroups": "Back to Groups",
+    "members": "Members",
+    "join": "Join Group",
+    "leave": "Leave Group",
+    "about": "About this group",
+    "discussions": "Discussions",
+    "events": "Group Events"
+  },
+  "groups": {
+    "title": "Community Groups",
+    "discoverTitle": "Discover Groups",
+    "subtitle": "Find your tribe. Connect with people who share your interests.",
+    "headerSubtitle": "Join communities that share your interests and passions",
+    "searchPlaceholder": "Search groups...",
+    "createGroup": "Create Group",
+    "viewGroup": "View Group",
+    "noGroups": "No groups found",
+    "noGroupsDesc": "Try adjusting your search or create a new group",
+    "createModal": {
+      "title": "Create New Group",
+      "name": "Group Name",
+      "category": "Category",
+      "selectCategory": "Select a category"
+    }
+  },
+  "map": {
+    "title": "Community Initiatives Map",
+    "subtitle": "Discover community gardens, farmers markets, walking groups, and other local initiatives near you.",
+    "searchPlaceholder": "Search initiatives...",
+    "filter": "Filter",
+    "badge": "Local Map",
+    "filters": {
+      "all": "All Initiatives",
+      "garden": "Gardens",
+      "market": "Markets",
+      "event": "Events",
+      "group": "Groups"
+    },
+    "legend": {
+      "garden": "Gardens",
+      "market": "Markets",
+      "event": "Events",
+      "group": "Groups"
+    },
+    "getDirections": "Get Directions"
+  },
+  "messages": {
+    "title": "Messages",
+    "searchPlaceholder": "Search conversations...",
+    "noSelection": "Select a conversation to start messaging",
+    "typeMessage": "Type a message...",
+    "send": "Send",
+    "online": "Online",
+    "offline": "Offline",
+    "newConversation": "New Conversation"
+  },
+  "newsletterPage": {
+    "badge": "Newsletter",
+    "title": "Stay Connected",
+    "subtitle": "Get monthly updates on community events, health tips, local initiatives, and inspiring stories from our Blue Zone Twente community.",
+    "subscribeTitle": "Subscribe to Our Newsletter",
+    "subscribeDesc": "Join over 800 community members receiving monthly inspiration, event updates, and practical tips for healthy living.",
+    "emailPlaceholder": "Enter your email address",
+    "subscribeButton": "Subscribe",
+    "successMessage": "Thank you for subscribing!",
+    "privacyText": "We respect your privacy.",
+    "unsubscribe": "Unsubscribe",
+    "unsubscribeText": "Unsubscribe anytime.",
+    "benefits": {
+      "title": "What You'll Receive",
+      "highlightTitle": "Event Highlights",
+      "highlightDesc": "First access to upcoming workshops, gatherings, and community activities.",
+      "tipsTitle": "Health & Wellness Tips",
+      "tipsDesc": "Practical advice on nutrition, movement, mindfulness, and sustainable living.",
+      "storiesTitle": "Community Stories",
+      "storiesDesc": "Inspiring stories from members and updates on local initiatives."
+    },
+    "archiveTitle": "Past Newsletters",
+    "download": "Download"
+  },
+  "profilePage": {
+    "memberSince": "Member since",
+    "editProfile": "Edit Profile",
+    "adminPanel": "Admin Panel",
+    "companyDashboard": "Company Dashboard",
+    "accountSettings": "Account Settings",
+    "logOut": "Log Out",
+    "quickStats": "Quick Stats",
+    "eventsAttended": "Events Attended",
+    "groupsJoined": "Groups Joined",
+    "forumPosts": "Forum Posts",
+    "myInterests": "My Interests",
+    "upcomingEvents": "My Upcoming Events",
+    "myGroups": "My Groups",
+    "savedInitiatives": "Saved Initiatives",
+    "viewAll": "View All",
+    "browseMore": "Browse More",
+    "viewMap": "View Map"
+  },
+  "resetPassword": {
+    "title": "Reset Password",
+    "subtitle": "Enter your new password below.",
+    "newPassword": "New Password",
+    "button": "Reset Password",
+    "success": "Your password has been reset successfully.",
+    "loginNow": "Log In Now",
+    "updating": "Updating...",
+    "updated": "Password Updated"
+  },
+  "settings": {
+    "title": "Settings",
+    "tabs": {
+      "profile": "Profile",
+      "account": "Account",
+      "privacy": "Privacy",
+      "notifications": "Notifications"
+    },
+    "publicProfile": "Public Profile",
+    "profileDesc": "Manage how others see you on the platform",
+    "profilePicture": "Profile Picture",
+    "change": "Change",
+    "saveChanges": "Save Changes",
+    "accountSecurity": "Account Security",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "deleteAccount": "Delete Account",
+    "dangerZone": "Once you delete your account, there is no going back. Please be certain.",
+    "displayName": "Display Name",
+    "displayNamePlaceholder": "Your full name",
+    "bio": "Bio",
+    "bioPlaceholder": "Tell us about yourself",
+    "location": "Location",
+    "locationPlaceholder": "City, Country",
+    "interests": "Interests",
+    "interestsPlaceholder": "Coding, Design, Music (comma separated)",
+    "interestsHelp": "Separate tags with commas",
+    "saving": "Saving...",
+    "imageRequirements": "PNG, JPG up to 5MB",
+    "emailAddress": "Email Address"
+  },
+  "story": {
+    "badge": "Our Story",
+    "title": "Building a Healthier, More Connected Twente",
+    "subtitle": "Blue Zone Twente is a living laboratory and learning network where community members come together to create lasting change.",
+    "originTitle": "How It All Began",
+    "missionTitle": "Our Mission",
+    "visionTitle": "Our Vision",
+    "valuesTitle": "Our Values",
+    "originText1": "In 2023, a group of passionate residents, health professionals, and sustainability advocates came together with a shared vision: to transform Twente into a region where people live longer, healthier, and happier lives.",
+    "originText2": "Inspired by the world's Blue Zones—regions where people live measurably longer lives—we set out to create our own blueprint for wellbeing. We recognized that true health goes beyond individual choices; it's shaped by our communities, environments, and connections.",
+    "originText3": "From community gardens to walking groups, from local food initiatives to neighborhood gatherings, Blue Zone Twente has grown into a movement of over 1,200 members across the region.",
+    "missionText": "To create a thriving ecosystem where residents of Twente can easily access resources, connect with like-minded individuals, and participate in initiatives that promote healthy, social, and sustainable living for all.",
+    "visionText": "A Twente where every community is a Blue Zone—where people naturally make healthy choices, where neighbors know and support each other, and where sustainable practices are woven into the fabric of daily life.",
+    "values": {
+      "communityFirst": {
+        "title": "Community First",
+        "text": "We believe in the power of collective action and mutual support. Together, we're stronger."
+      },
+      "inclusivity": {
+        "title": "Inclusivity",
+        "text": "Everyone is welcome. We celebrate diversity and create spaces where all voices are heard."
+      },
+      "transparency": {
+        "title": "Transparency",
+        "text": "We share knowledge openly, communicate honestly, and build trust through clarity."
+      },
+      "sustainability": {
+        "title": "Sustainability",
+        "text": "We're committed to practices that nurture both people and planet for generations to come."
+      }
+    },
+    "whatWeDo": {
+      "title": "What We Do",
+      "subtitle": "Blue Zone Twente operates as a living laboratory where ideas are tested, shared, and scaled across our communities.",
+      "connect": {
+        "title": "Connect",
+        "text": "Regular events, forums, and gatherings that bring people together around shared interests."
+      },
+      "learn": {
+        "title": "Learn",
+        "text": "Workshops, newsletters, and resources on health, nutrition, sustainability, and community building."
+      },
+      "act": {
+        "title": "Act",
+        "text": "Support for local initiatives, from community gardens to food cooperatives to walking groups."
+      }
+    },
+    "joinMovement": {
+      "title": "Be Part of the Movement",
+      "text": "Whether you're interested in healthier eating, meeting neighbors, or contributing to sustainability initiatives, there's a place for you in Blue Zone Twente."
+    }
+  },
+  "poll": {
+    "communityPulse": "Community Pulse",
+    "nextPoll": "Next poll",
+    "signInToVote": "Sign in to vote",
+    "votes": "vote | votes",
+    "noPolls": "No active polls yet. Check back soon!"
+  },
+  "components": {
+    "imageUpload": {
+      "clickToUpload": "Click or drag image here",
+      "maxSize": "Max 5MB (JPG, PNG, WEBP)",
+      "changeImage": "Change Image",
+      "errors": {
+        "fileType": "Please select an image file",
+        "fileSize": "Image size should be less than 5MB"
+      }
+    },
+    "poll": {
+      "title": "Community Pulse",
+      "nextPoll": "Next poll",
+      "signInToVote": "Sign in to vote",
+      "votes": "vote | votes",
+      "noPolls": "No active polls yet. Check back soon!"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "markAllRead": "Mark all as read",
+      "empty": "No notifications yet"
+    },
+    "eventCard": {
+      "attending": "attending",
+      "viewDetails": "View Details",
+      "register": "Register",
+      "registered": "Registered",
+      "interested": "Interested"
+    },
+    "forumCard": {
+      "replies": "replies"
+    }
+  },
+  "calendar": {
+    "today": "Today",
+    "month": "Month",
+    "week": "Week",
+    "day": "Day"
+  }
+}

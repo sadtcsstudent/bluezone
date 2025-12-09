@@ -22,17 +22,18 @@
 
         <!-- Desktop Auth Buttons -->
         <div class="nav-auth">
+          <LanguageSwitcher />
           <template v-if="!isLoggedIn">
             <button @click="navigate('login')" class="nav-btn nav-btn--ghost">
-              Log In
+              {{ $t('nav.login') }}
             </button>
             <button @click="navigate('signup')" class="nav-btn nav-btn--primary">
-              Sign Up
+              {{ $t('nav.signup') }}
             </button>
           </template>
           <template v-else>
             <NotificationBell />
-            <button @click="navigate('messages')" class="nav-icon-btn" title="Messages">
+            <button @click="navigate('messages')" class="nav-icon-btn" :title="$t('nav.messages')">
               <MessageCircle :size="20" />
             </button>
             <button @click="navigate('profile')" class="nav-avatar">
@@ -61,22 +62,25 @@
           </button>
         </div>
         <div class="nav-mobile-auth">
+          <div class="nav-mobile-language">
+            <LanguageSwitcher />
+          </div>
           <template v-if="!isLoggedIn">
             <button @click="navigateAndClose('login')" class="nav-btn nav-btn--ghost nav-btn--full">
-              Log In
+              {{ $t('nav.login') }}
             </button>
             <button @click="navigateAndClose('signup')" class="nav-btn nav-btn--primary nav-btn--full">
-              Sign Up
+              {{ $t('nav.signup') }}
             </button>
           </template>
           <template v-else>
             <button @click="navigateAndClose('messages')" class="nav-btn nav-btn--ghost nav-btn--full">
               <MessageCircle :size="20" />
-              <span>Messages</span>
+              <span>{{ $t('nav.messages') }}</span>
             </button>
             <button @click="navigateAndClose('profile')" class="nav-btn nav-btn--ghost nav-btn--full">
               <User :size="20" />
-              <span>Profile</span>
+              <span>{{ $t('nav.profile') }}</span>
             </button>
           </template>
         </div>
@@ -88,6 +92,7 @@
 <script>
 import { Sprout, Menu, X, MessageCircle, User } from 'lucide-vue-next'
 import NotificationBell from './NotificationBell.vue'
+import LanguageSwitcher from './LanguageSwitcher.vue'
 
 export default {
   name: 'Navigation',
@@ -96,7 +101,8 @@ export default {
     X,
     MessageCircle,
     User,
-    NotificationBell
+    NotificationBell,
+    LanguageSwitcher
   },
   props: {
     currentPage: {
@@ -108,14 +114,15 @@ export default {
   data() {
     return {
       isMobileMenuOpen: false,
-      navItems: [
-        { page: 'home', label: 'Home' },
-        { page: 'story', label: 'Our Story' },
-        { page: 'events', label: 'Events' },
-        { page: 'forum', label: 'Forum' },
-        { page: 'map', label: 'Map' },
-        { page: 'newsletter', label: 'Newsletter' }
-      ]
+      navKeys: ['home', 'story', 'events', 'forum', 'map', 'newsletter']
+    }
+  },
+  computed: {
+    navItems() {
+      return this.navKeys.map(key => ({
+        page: key,
+        label: this.$t(`nav.${key}`)
+      }))
     }
   },
   methods: {
@@ -389,5 +396,11 @@ export default {
   gap: 0.5rem;
   padding-top: 1rem;
   border-top: 1px solid rgb(var(--color-border));
+}
+
+.nav-mobile-language {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
 }
 </style>

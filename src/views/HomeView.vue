@@ -8,22 +8,20 @@
             <div class="hero__badge">
               <Sprout :size="16" class="hero__badge-icon" />
               <span class="hero__badge-text">
-                Living Laboratory • Learning Network
+                {{ $t('home.badge') }}
               </span>
             </div>
-            <h1 class="hero__title">Welcome to Blue Zone Twente</h1>
+            <h1 class="hero__title">{{ $t('home.title') }}</h1>
             <p class="hero__description">
-              A vibrant community dedicated to healthy, social, and sustainable living.
-              Join us in creating a thriving ecosystem where people connect, learn,
-              and grow together in the beautiful Twente region.
+              {{ $t('home.description') }}
             </p>
             <div class="hero__actions" v-if="!isLoggedIn">
               <button class="btn btn--primary" @click="handleNavigate('signup')">
-                <span>Join Our Community</span>
+                <span>{{ $t('home.joinCommunity') }}</span>
                 <ArrowRight :size="20" />
               </button>
               <button class="btn btn--outline" @click="handleNavigate('story')">
-                Learn More
+                {{ $t('home.learnMore') }}
               </button>
             </div>
           </div>
@@ -40,7 +38,7 @@
                 <Users :size="24" />
               </div>
               <div>
-                <div class="hero__stat-label">Community Members</div>
+                <div class="hero__stat-label">{{ $t('home.communityMembers') }}</div>
                 <div class="hero__stat-value">1,200+</div>
               </div>
             </div>
@@ -53,10 +51,9 @@
     <section class="values">
       <div class="values__container">
         <div class="values__header">
-          <h2>Our Core Values</h2>
+          <h2>{{ $t('home.coreValues') }}</h2>
           <p class="values__subtitle">
-            Blue Zone Twente is built on principles that promote wellbeing,
-            community connection, and sustainable living for all.
+            {{ $t('home.coreValuesSubtitle') }}
           </p>
         </div>
         <div class="values__grid">
@@ -64,33 +61,47 @@
             <div class="value-card__icon value-card__icon--primary">
               <Heart :size="28" />
             </div>
-            <h3 class="value-card__title">Community Connection</h3>
+            <h3 class="value-card__title">{{ $t('home.communityConnection') }}</h3>
             <p class="value-card__description">
-              Building strong, supportive relationships through shared experiences,
-              local initiatives, and meaningful interactions.
+              {{ $t('home.communityConnectionDesc') }}
             </p>
           </div>
           <div class="value-card value-card--secondary">
             <div class="value-card__icon value-card__icon--secondary">
               <Sprout :size="28" />
             </div>
-            <h3 class="value-card__title">Healthy Living</h3>
+            <h3 class="value-card__title">{{ $t('home.healthyLiving') }}</h3>
             <p class="value-card__description">
-              Promoting physical and mental wellbeing through nutrition, movement,
-              mindfulness, and access to healthy local food.
+              {{ $t('home.healthyLivingDesc') }}
             </p>
           </div>
           <div class="value-card value-card--accent">
             <div class="value-card__icon value-card__icon--accent">
               <Leaf :size="28" />
             </div>
-            <h3 class="value-card__title">Sustainability</h3>
+            <h3 class="value-card__title">{{ $t('home.sustainability') }}</h3>
             <p class="value-card__description">
-              Creating a regenerative future through eco-friendly practices,
-              local food systems, and environmental stewardship.
+              {{ $t('home.sustainabilityDesc') }}
             </p>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- Community Pulse -->
+    <section class="community-pulse">
+      <div class="community-pulse__container">
+        <div class="pulse-copy">
+          <div class="pulse-badge">
+            <Sparkles :size="16" />
+            <span>{{ $t('home.hearFromCommunity') }}</span>
+          </div>
+          <h2>{{ $t('home.communityPulse') }}</h2>
+          <p>
+            {{ $t('home.communityPulseDesc') }}
+          </p>
+        </div>
+        <CommunityPoll />
       </div>
     </section>
 
@@ -99,13 +110,13 @@
       <div class="events__container">
         <div class="events__header">
           <div>
-            <h2>Upcoming Events</h2>
+            <h2>{{ $t('home.upcomingEvents') }}</h2>
             <p class="events__subtitle">
-              Join us for workshops, gatherings, and community activities
+              {{ $t('home.upcomingEventsSubtitle') }}
             </p>
           </div>
           <button class="events__view-all events__view-all--desktop" @click="handleNavigate('events')">
-            <span>View All Events</span>
+            <span>{{ $t('home.viewAllEvents') }}</span>
             <ArrowRight :size="20" />
           </button>
         </div>
@@ -120,7 +131,7 @@
           />
         </div>
         <button class="events__view-all events__view-all--mobile" @click="handleNavigate('events')">
-          View All Events
+          {{ $t('home.viewAllEvents') }}
         </button>
       </div>
     </section>
@@ -128,18 +139,17 @@
     <!-- CTA Section -->
     <section class="cta" v-if="!isLoggedIn">
       <div class="cta__container">
-        <h2 class="cta__title">Ready to Join Our Community?</h2>
+        <h2 class="cta__title">{{ $t('home.ctaTitle') }}</h2>
         <p class="cta__description">
-          Become part of a movement dedicated to creating healthier, more connected,
-          and sustainable communities in Twente. Together, we can make a difference.
+          {{ $t('home.ctaDescription') }}
         </p>
         <div class="cta__actions">
           <button class="btn btn--white" @click="handleNavigate('signup')">
-            Create Account
+            {{ $t('home.createAccount') }}
           </button>
           <button class="btn btn--outline-white" @click="handleNavigate('map')">
             <MapPin :size="20" />
-            <span>Explore Local Initiatives</span>
+            <span>{{ $t('home.exploreLocalInitiatives') }}</span>
           </button>
         </div>
       </div>
@@ -148,25 +158,28 @@
 </template>
 
 <script>
-import { ArrowRight, Users, MapPin, Sprout, Heart, Leaf } from 'lucide-vue-next'
+import { ArrowRight, Users, MapPin, Sprout, Heart, Leaf, Sparkles } from 'lucide-vue-next'
 import { mapState } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import { useToastStore } from '@/stores/toast'
 import api from '@/services/api'
 import EventCard from '../components/EventCard.vue'
 import ImageWithFallback from '../components/ImageWithFallback.vue'
+import CommunityPoll from '../components/CommunityPoll.vue'
 
 export default {
   name: 'HomePage',
   components: {
     EventCard,
     ImageWithFallback,
+    CommunityPoll,
     ArrowRight,
     Users,
     MapPin,
     Sprout,
     Heart,
-    Leaf
+    Leaf,
+    Sparkles
   },
   computed: {
     ...mapState(useAuthStore, ['isLoggedIn'])
@@ -550,6 +563,51 @@ export default {
   color: rgb(var(--color-text-secondary));
   line-height: 1.6;
   margin: 0;
+}
+
+.community-pulse {
+  padding: 5rem 0;
+  background: rgb(var(--color-background));
+}
+
+.community-pulse__container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: grid;
+  gap: 2rem;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .community-pulse__container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.pulse-copy h2 {
+  font-size: 2rem;
+  margin: 0.5rem 0;
+  color: rgb(var(--color-text));
+}
+
+.pulse-copy p {
+  color: rgb(var(--color-text-secondary));
+  max-width: 36rem;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.pulse-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  background: white;
+  border: 1px solid rgb(var(--color-border));
+  color: rgb(var(--color-primary));
+  font-weight: 600;
 }
 
 /* Events Section */

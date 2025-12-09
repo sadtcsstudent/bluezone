@@ -17,13 +17,13 @@
       />
       <div v-else class="placeholder">
         <UploadCloud :size="32" class="upload-icon" />
-        <p>Click or drag image here</p>
-        <span class="sub-text">Max 5MB (JPG, PNG, WEBP)</span>
+        <p>{{ $t('components.imageUpload.clickToUpload') }}</p>
+        <span class="sub-text">{{ $t('components.imageUpload.maxSize') }}</span>
       </div>
       
       <div v-if="previewUrl || currentImage" class="overlay">
         <Camera :size="24" />
-        <span>Change Image</span>
+        <span>{{ $t('components.imageUpload.changeImage') }}</span>
       </div>
     </div>
     
@@ -44,6 +44,9 @@
 <script setup>
 import { ref } from 'vue'
 import { UploadCloud, Camera } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   currentImage: {
@@ -67,13 +70,13 @@ const validateFile = (file) => {
   if (!file) return false
   
   if (!file.type.startsWith('image/')) {
-    error.value = 'Please select an image file'
+    error.value = t('components.imageUpload.errors.fileType')
     emit('error', error.value)
     return false
   }
   
   if (file.size > 5 * 1024 * 1024) {
-    error.value = 'Image size should be less than 5MB'
+    error.value = t('components.imageUpload.errors.fileSize')
     emit('error', error.value)
     return false
   }

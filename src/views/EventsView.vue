@@ -6,12 +6,11 @@
         <div>
           <div class="events-badge">
             <Calendar :size="16" class="events-badge-icon" />
-            <span class="events-badge-text">Events Calendar</span>
+            <span class="events-badge-text">{{ $t('eventsPage.badge') }}</span>
           </div>
-          <h1 class="events-title">Upcoming Events</h1>
+          <h1 class="events-title">{{ $t('eventsPage.headerTitle') }}</h1>
           <p class="events-subtitle">
-            Join us for community gatherings, workshops, and activities that bring
-            people together and promote wellbeing.
+            {{ $t('eventsPage.headerSubtitle') }}
           </p>
         </div>
 
@@ -21,7 +20,7 @@
             <Search class="search-icon" :size="20" />
             <input
               type="text"
-              placeholder="Search events..."
+              :placeholder="$t('eventsPage.searchPlaceholder')"
               v-model="searchQuery"
               class="search-input"
             />
@@ -36,8 +35,16 @@
             <button
               @click="viewMode = 'list'"
               :class="['view-mode-btn', { 'view-mode-btn--active': viewMode === 'list' }]"
+              :title="$t('eventsPage.listView')"
             >
               <List :size="20" />
+            </button>
+            <button
+              @click="viewMode = 'calendar'"
+              :class="['view-mode-btn', { 'view-mode-btn--active': viewMode === 'calendar' }]"
+              :title="$t('eventsPage.calendarView')"
+            >
+              <Calendar :size="20" />
             </button>
           </div>
         </div>
@@ -62,7 +69,13 @@
       </div>
 
       <div v-else-if="filteredEvents.length > 0">
-        <div :class="viewMode === 'grid' ? 'events-grid' : 'events-list'">
+        <div v-if="viewMode === 'calendar'">
+          <EventsCalendar 
+            :events="filteredEvents"
+            @view-details="handleViewDetails" 
+          />
+        </div>
+        <div v-else :class="viewMode === 'grid' ? 'events-grid' : 'events-list'">
           <EventCard
             v-for="(event, index) in filteredEvents"
             :key="index"
@@ -75,7 +88,7 @@
         
         <div v-if="hasMore && !searchQuery" class="load-more-container">
           <button class="btn-load-more" @click="loadEvents(false)" :disabled="loadingMore">
-            {{ loadingMore ? 'Loading...' : 'Load More Events' }}
+            {{ loadingMore ? $t('common.loading') : $t('admin.eventsTab.loadMore') }}
           </button>
         </div>
       </div>
@@ -83,7 +96,7 @@
       <!-- No Results -->
       <div v-else class="no-results">
         <Calendar :size="64" class="no-results-icon" />
-        <h3>No events found</h3>
+        <h3>{{ $t('eventsPage.noEvents') }}</h3>
         <p class="no-results-text">
           Try adjusting your filters or search query
         </p>
@@ -95,6 +108,7 @@
 <script>
 import { Calendar, Grid, List, Search, Filter } from 'lucide-vue-next'
 import EventCard from '../components/EventCard.vue'
+import EventsCalendar from '../components/EventsCalendar.vue'
 import api from '@/services/api'
 import { useToastStore } from '@/stores/toast'
 import { useAuthStore } from '@/stores/auth'
@@ -103,6 +117,7 @@ export default {
   name: 'EventsView',
   components: {
     EventCard,
+    EventsCalendar,
     Calendar,
     Grid,
     List,
@@ -143,6 +158,17 @@ export default {
           event.description.toLowerCase().includes(this.searchQuery.toLowerCase())
         return categoryMatch && searchMatch
       })
+    }
+  },
+  watch: {
+    viewMode(newMode) {
+      if (newMode === 'calendar') {
+        this.limit = 100 // Load more events for calendar
+        this.loadEvents(true)
+      } else {
+        this.limit = 9 // Reset to default for grid/list
+        this.loadEvents(true)
+      }
     }
   },
   methods: {
