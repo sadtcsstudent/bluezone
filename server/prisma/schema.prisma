@@ -55,7 +55,8 @@ model Event {
   date          DateTime
   time          String
   location      String
-  category      String
+  categoryId    String
+  category      Category             @relation(fields: [categoryId], references: [id])
   imageUrl      String
   maxAttendees  Int?
   organizerId   String
@@ -64,6 +65,18 @@ model Event {
 
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  icon      String
+  color     String
+
+  events    Event[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model EventRegistration {
@@ -120,8 +133,10 @@ model Initiative {
   type           String
   location       String
   description    String
-  coordinateX    Float
-  coordinateY    Float
+  latitude       Float?
+  longitude      Float?
+  coordinateX    Float?              // Keep old fields for migration
+  coordinateY    Float?              // Keep old fields for migration
   contact        String?
   website        String?
 

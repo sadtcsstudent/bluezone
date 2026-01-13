@@ -313,9 +313,14 @@ export default {
   flex: 1;
   padding: 1rem 1.5rem;
   border-radius: 9999px;
-  border: none;
+  border: 2px solid white;
   font-size: 1rem;
-  color: rgb(var(--color-text));
+  color: white;
+  background: transparent;
+}
+
+.subscribe-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .subscribe-input:focus {

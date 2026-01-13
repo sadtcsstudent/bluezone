@@ -478,8 +478,8 @@ export default {
 }
 
 .interest-button--active {
-  background: rgb(var(--color-primary));
-  color: white;
+  background: white;
+  color: rgb(var(--color-primary));
   border-color: rgb(var(--color-primary));
 }
 

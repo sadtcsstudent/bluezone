@@ -128,7 +128,35 @@
     "confirm": "Confirm",
     "back": "Back",
     "next": "Next",
-    "submit": "Submit"
+    "submit": "Submit",
+    "create": "Create",
+    "update": "Update",
+    "remove": "Remove",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "close": "Close",
+    "upload": "Upload",
+    "download": "Download",
+    "preview": "Preview",
+    "saveChanges": "Save Changes",
+    "active": "Active",
+    "inactive": "Inactive",
+    "name": "Name",
+    "description": "Description",
+    "type": "Type",
+    "location": "Location",
+    "date": "Date",
+    "time": "Time",
+    "category": "Category",
+    "title": "Title",
+    "content": "Content",
+    "optional": "Optional",
+    "required": "Required",
+    "select": "Select",
+    "clear": "Clear",
+    "yes": "Yes",
+    "no": "No"
   },
   "about": {
     "title": "About This Project",
@@ -141,10 +169,22 @@
     "events": "Events",
     "polls": "Polls",
     "content": "Content",
+    "tabs": {
+      "overview": "Overview",
+      "users": "Users",
+      "events": "Events",
+      "categories": "Categories",
+      "polls": "Polls",
+      "initiatives": "Initiatives",
+      "moderation": "Moderation",
+      "newsletter": "Newsletter"
+    },
     "stats": {
       "platformHealth": "Platform statistics and health",
       "totalUsers": "Total Users",
       "activeEvents": "Active Events",
+      "groups": "Groups",
+      "initiatives": "Initiatives",
       "forumPosts": "Forum Posts",
       "reports": "Reports",
       "active": "Active",
@@ -156,12 +196,34 @@
       "searchPlaceholder": "Search users...",
       "filterRole": "Filter by Role",
       "deleteSelected": "Delete Selected ({count})",
+      "title": "User Management",
+      "unnamed": "Unnamed",
       "table": {
         "user": "User",
         "role": "Role",
         "status": "Status",
         "joined": "Joined",
         "actions": "Actions"
+      },
+      "roles": {
+        "user": "User",
+        "company": "Company",
+        "admin": "Admin"
+      },
+      "status": {
+        "active": "Active",
+        "suspended": "Suspended",
+        "locked": "Locked"
+      },
+      "actions": {
+        "unlockAccount": "Unlock Account",
+        "suspend": "Suspend",
+        "unsuspend": "Unsuspend"
+      },
+      "confirmations": {
+        "changeRole": "Change role of {name} to {role}?",
+        "deleteUser": "Are you sure? This cannot be undone.",
+        "deleteMultiple": "Are you sure you want to delete {count} users? This cannot be undone."
       }
     },
     "eventsTab": {
@@ -176,6 +238,55 @@
       "subtitle": "Create quick polls and see community sentiment",
       "createPoll": "Create Poll",
       "activePoll": "Active Poll"
+    },
+    "categoriesTab": {
+      "title": "Event Categories",
+      "subtitle": "Manage event categories with custom icons and colors",
+      "createCategory": "Create Category",
+      "noCategories": "No categories found",
+      "createFirst": "Create your first category to organize events",
+      "eventsCount": "{count} events",
+      "confirmations": {
+        "delete": "Are you sure you want to delete this category? This will fail if events use this category."
+      }
+    },
+    "moderationTab": {
+      "title": "Content Moderation",
+      "subtitle": "Manage forum discussions and replies",
+      "loadMore": "Load more discussions",
+      "confirmations": {
+        "deleteDiscussion": "Delete this discussion?"
+      }
+    },
+    "newsletterTab": {
+      "title": "Send Newsletter",
+      "subtitle": "Compose and send updates to all subscribers",
+      "subjectLabel": "Subject Line",
+      "subjectPlaceholder": "e.g. Weekly Community Updates",
+      "contentLabel": "Content",
+      "contentPlaceholder": "Write your newsletter content here...",
+      "preview": "Preview",
+      "sending": "Sending...",
+      "sendNewsletter": "Send Newsletter",
+      "confirmations": {
+        "send": "Are you sure you want to send this newsletter to ALL subscribers?"
+      }
+    },
+    "initiativesTab": {
+      "title": "Initiatives Management",
+      "addInitiative": "Add Initiative",
+      "noInitiatives": "No initiatives found",
+      "loadMore": "Load more initiatives",
+      "confirmations": {
+        "delete": "Are you sure you want to delete this initiative?"
+      }
+    },
+    "eventsConfirmations": {
+      "delete": "Delete this event?"
+    },
+    "pollsConfirmations": {
+      "delete": "Delete this poll?",
+      "deleteNamed": "Are you sure you want to delete this poll: \"{question}\"?"
     }
   },
   "company": {
@@ -190,7 +301,29 @@
     "noInitiatives": "No initiatives created yet",
     "loadMore": "Load more events",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "initiativeUpdated": "Initiative updated successfully",
+    "initiativeCreated": "Initiative created successfully",
+    "initiativeFailed": "Failed: {message}",
+    "confirmDeleteInitiative": "Are you sure you want to delete this initiative?",
+    "initiativeDeleted": "Initiative deleted successfully",
+    "addressNotFound": "Address not found",
+    "searchFailed": "Search failed",
+    "eventUpdated": "Event updated successfully",
+    "eventCreated": "Event created successfully",
+    "eventFailed": "Failed to save event: {message}",
+    "confirmDeleteEvent": "Delete this event?",
+    "eventDeleted": "Event deleted successfully",
+    "deleteFailed": "Failed to delete",
+    "pollsNeedTwoOptions": "Polls need at least two options",
+    "pollQuestionRequired": "Please add a poll question",
+    "pollTwoOptionsRequired": "Add at least two options",
+    "pollUpdated": "Poll updated successfully",
+    "pollCreated": "Poll created successfully",
+    "pollFailed": "Failed to save poll",
+    "pollStatusFailed": "Failed to update poll status",
+    "confirmDeletePoll": "Delete this poll?",
+    "pollDeleted": "Poll deleted successfully"
   },
   "discussion": {
     "backToForum": "Back to Forum",
@@ -212,9 +345,31 @@
     "location": "Location",
     "host": "Hosted by",
     "register": "Register Now",
-    "registered": "You are registered",
+    "registered": "Registered",
+    "interested": "Interested",
+    "interestedSection": "Interested",
+    "interestedCount": "{count} interested",
     "attendees": "Attendees",
-    "about": "About this event"
+    "attendeesCount": "{count} going",
+    "about": "About this event",
+    "aboutThisEvent": "About this event",
+    "markAsInterested": "Mark as Interested",
+    "removeInterest": "Remove Interest",
+    "markedAsInterested": "Marked as interested",
+    "registeredForEvent": "Registered for event",
+    "checkOutEvent": "Check out this event: {title}",
+    "share": "Share",
+    "addToCalendar": "Add to Calendar",
+    "registration": "Registration",
+    "spotsTaken": "{count} spots taken",
+    "totalSpots": "{count} total",
+    "registerNow": "Register Now",
+    "full": "Full",
+    "unregister": "Unregister",
+    "hostedBy": "Hosted by",
+    "communityLeader": "Community Leader",
+    "organizer": "Organizer",
+    "linkCopied": "Link copied to clipboard!"
   },
   "eventsPage": {
     "title": "Community Events",
@@ -227,7 +382,8 @@
     "all": "All",
     "noEvents": "No events found matching your criteria.",
     "listView": "List View",
-    "calendarView": "Calendar View"
+    "calendarView": "Calendar View",
+    "confirmRegister": "Would you like to register for \"{title}\"?"
   },
   "forgotPassword": {
     "title": "Reset Password",
@@ -361,7 +517,22 @@
     "savedInitiatives": "Saved Initiatives",
     "viewAll": "View All",
     "browseMore": "Browse More",
-    "viewMap": "View Map"
+    "viewMap": "View Map",
+    "membersCount": "{count} members",
+    "member": "Member",
+    "editProfileModal": "Edit Profile",
+    "displayName": "Display Name",
+    "bio": "Bio",
+    "bioPlaceholder": "Tell us about yourself",
+    "interestsLabel": "Interests (comma separated)",
+    "interestsPlaceholder": "Gardening, Cooking, Yoga",
+    "locationPlaceholder": "e.g. Enschede, NL",
+    "saving": "Saving...",
+    "imageSizeError": "Image size should be less than 5MB",
+    "avatarUploadSuccess": "Avatar uploaded successfully",
+    "avatarUploadFailed": "Failed to upload avatar",
+    "profileUpdated": "Profile updated!",
+    "profileUpdateFailed": "Failed to update profile"
   },
   "resetPassword": {
     "title": "Reset Password",
@@ -501,5 +672,20 @@
     "month": "Month",
     "week": "Week",
     "day": "Day"
+  },
+  "categories": {
+    "Sports & Fitness": "Sports & Fitness",
+    "Arts & Culture": "Arts & Culture",
+    "Music & Entertainment": "Music & Entertainment",
+    "Food & Drink": "Food & Drink",
+    "Education & Learning": "Education & Learning",
+    "Technology": "Technology",
+    "Health & Wellness": "Health & Wellness",
+    "Outdoor & Nature": "Outdoor & Nature",
+    "Business & Networking": "Business & Networking",
+    "Community & Social": "Community & Social",
+    "Family & Kids": "Family & Kids",
+    "Other": "Other",
+    "All Events": "All Events"
   }
 }

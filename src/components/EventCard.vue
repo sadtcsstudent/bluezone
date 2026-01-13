@@ -6,7 +6,7 @@
         :alt="title"
         class-name="event-card__image"
       />
-      <div class="event-card__category">{{ category }}</div>
+      <div class="event-card__category">{{ translateCategory(category) }}</div>
     </div>
     <div class="event-card__content">
       <h3 class="event-card__title">{{ title }}</h3>
@@ -53,6 +53,7 @@
 <script>
 import { Calendar, Clock, MapPin, Users, Check, Star } from 'lucide-vue-next'
 import ImageWithFallback from './ImageWithFallback.vue'
+import { useTranslateCategory } from '@/composables/useTranslateCategory'
 
 export default {
   name: 'EventCard',
@@ -64,6 +65,12 @@ export default {
     Users,
     Check,
     Star
+  },
+  setup() {
+    const { translateCategory } = useTranslateCategory()
+    return {
+      translateCategory
+    }
   },
   props: {
     title: {

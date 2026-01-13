@@ -39,7 +39,7 @@
               </div>
               <div>
                 <div class="hero__stat-label">{{ $t('home.communityMembers') }}</div>
-                <div class="hero__stat-value">1,200+</div>
+                <div class="hero__stat-value">{{ userCount > 0 ? userCount.toLocaleString() + '+' : '1,200+' }}</div>
               </div>
             </div>
           </div>
@@ -166,6 +166,7 @@ import api from '@/services/api'
 import EventCard from '../components/EventCard.vue'
 import ImageWithFallback from '../components/ImageWithFallback.vue'
 import CommunityPoll from '../components/CommunityPoll.vue'
+import { useConfirm } from '@/composables/useConfirm'
 
 export default {
   name: 'HomePage',
@@ -181,6 +182,12 @@ export default {
     Leaf,
     Sparkles
   },
+  setup() {
+    const confirmModal = useConfirm()
+    return {
+      confirmModal
+    }
+  },
   computed: {
     ...mapState(useAuthStore, ['isLoggedIn'])
   },
@@ -188,11 +195,15 @@ export default {
     return {
       authStore: useAuthStore(),
       upcomingEvents: [],
-      loading: false
+      loading: false,
+      userCount: 0
     }
   },
   async created() {
-    await this.loadEvents()
+    await Promise.all([
+      this.loadEvents(),
+      this.loadStats()
+    ])
   },
   methods: {
     handleNavigate(page) {
@@ -202,26 +213,40 @@ export default {
     async loadEvents() {
       this.loading = true
       try {
-        // Fetch 3 upcoming events
-        const data = await api.get('/events?limit=3')
-        
+        // Fetch upcoming events
+        const data = await api.get('/events?limit=10')
+
         const normalizeEvent = (event) => {
           const attendeeCount = event.attendees ?? event.attendeeCount ?? (
             event.registrations ? event.registrations.filter((r) => r.status === 'registered').length : 0
           )
           return {
             ...event,
+            category: typeof event.category === 'object' ? event.category?.name : event.category,
             attendees: attendeeCount,
             attendeeCount,
             status: event.status || null
           }
         }
-        
-        this.upcomingEvents = (data.events || []).map(normalizeEvent)
+
+        // Filter out events user is already registered for and limit to 3
+        this.upcomingEvents = (data.events || [])
+          .map(normalizeEvent)
+          .filter(event => event.status !== 'registered')
+          .slice(0, 3)
       } catch (err) {
         console.error('Failed to load home page events', err)
       } finally {
         this.loading = false
+      }
+    },
+    async loadStats() {
+      try {
+        const data = await api.get('/stats')
+        this.userCount = data.userCount || 0
+      } catch (err) {
+        console.error('Failed to load stats', err)
+        // Keep default value of 0
       }
     },
     requireLogin() {
@@ -237,19 +262,37 @@ export default {
 
       // Logic for toggling Interest
       if (event.status === 'interested') {
-        if (!confirm(`Remove interest for ${event.title}?`)) return
+        const confirmed = await this.confirmModal.confirm({
+          title: 'Remove Interest',
+          message: `Are you sure you want to remove interest for "${event.title}"?`,
+          confirmText: 'Remove',
+          type: 'warning'
+        })
+        if (!confirmed) return
         await this.performUnregister(event, 'Interest removed')
         return
       }
 
       // Logic for Unregistering (if already registered)
       if (event.status === 'registered') {
-        if (!confirm(`Unregister from ${event.title}?`)) return
+        const confirmed = await this.confirmModal.confirm({
+          title: 'Unregister from Event',
+          message: `Are you sure you want to unregister from "${event.title}"?`,
+          confirmText: 'Unregister',
+          type: 'warning'
+        })
+        if (!confirmed) return
         await this.performUnregister(event, 'Successfully unregistered')
         return
       }
-      
-      if (!confirm(`Register for ${event.title}?`)) return
+
+      const confirmed = await this.confirmModal.confirm({
+        title: this.$t('eventDetail.registration'),
+        message: this.$t('eventsPage.confirmRegister', { title: event.title }),
+        confirmText: this.$t('eventDetail.registerNow'),
+        type: 'question'
+      })
+      if (!confirmed) return
       
       const toast = useToastStore()
       try {

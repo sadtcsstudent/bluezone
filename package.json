@@ -6,7 +6,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "smoke": "playwright test"
+    "smoke": "playwright test",
+    "seed:categories": "tsx server/seed-categories.ts",
+    "seed:companies": "tsx server/seed-companies.ts"
   },
   "repository": "https://github.com/sadtcsstudent/bluezone.git",
   "author": "Alexandra Lupan <alexandra.lupan@elnino.tech>",
@@ -25,12 +27,13 @@
     "socket.io-client": "^4.8.1",
     "vue": "^3.5.25",
     "vue-i18n": "^11.2.2",
-    "vue-router": "^4.6.3"
+    "vue-router": "^4.6.3",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",
-    "@tailwindcss/oxide-linux-x64-gnu": "4.1.17",
     "@rollup/rollup-linux-x64-gnu": "^4.53.3",
+    "@tailwindcss/oxide-linux-x64-gnu": "4.1.17",
     "@tailwindcss/postcss": "^4.1.17",
     "@vitejs/plugin-vue": "^6.0.2",
     "autoprefixer": "^10.4.22",

@@ -128,7 +128,35 @@
     "confirm": "Bevestigen",
     "back": "Terug",
     "next": "Volgende",
-    "submit": "Verzenden"
+    "submit": "Verzenden",
+    "create": "Aanmaken",
+    "update": "Bijwerken",
+    "remove": "Verwijderen",
+    "add": "Toevoegen",
+    "search": "Zoeken",
+    "filter": "Filteren",
+    "close": "Sluiten",
+    "upload": "Uploaden",
+    "download": "Downloaden",
+    "preview": "Voorbeeld",
+    "saveChanges": "Wijzigingen Opslaan",
+    "active": "Actief",
+    "inactive": "Inactief",
+    "name": "Naam",
+    "description": "Beschrijving",
+    "type": "Type",
+    "location": "Locatie",
+    "date": "Datum",
+    "time": "Tijd",
+    "category": "Categorie",
+    "title": "Titel",
+    "content": "Inhoud",
+    "optional": "Optioneel",
+    "required": "Verplicht",
+    "select": "Selecteren",
+    "clear": "Wissen",
+    "yes": "Ja",
+    "no": "Nee"
   },
   "about": {
     "title": "Over Dit Project",
@@ -139,12 +167,24 @@
     "overview": "Overzicht",
     "users": "Gebruikers",
     "events": "Evenementen",
-    "polls": "Polls",
-    "content": "Content",
+    "polls": "Peilingen",
+    "content": "Inhoud",
+    "tabs": {
+      "overview": "Overzicht",
+      "users": "Gebruikers",
+      "events": "Evenementen",
+      "categories": "Categorieën",
+      "polls": "Peilingen",
+      "initiatives": "Initiatieven",
+      "moderation": "Moderatie",
+      "newsletter": "Nieuwsbrief"
+    },
     "stats": {
       "platformHealth": "Platformstatistieken en gezondheid",
       "totalUsers": "Totaal Aantal Gebruikers",
       "activeEvents": "Actieve Evenementen",
+      "groups": "Groepen",
+      "initiatives": "Initiatieven",
       "forumPosts": "Forumberichten",
       "reports": "Rapportages",
       "active": "Actief",
@@ -156,12 +196,34 @@
       "searchPlaceholder": "Zoek gebruikers...",
       "filterRole": "Filter op Rol",
       "deleteSelected": "Verwijder Geselecteerde ({count})",
+      "title": "Gebruikersbeheer",
+      "unnamed": "Naamloos",
       "table": {
         "user": "Gebruiker",
         "role": "Rol",
         "status": "Status",
         "joined": "Lid sinds",
         "actions": "Acties"
+      },
+      "roles": {
+        "user": "Gebruiker",
+        "company": "Bedrijf",
+        "admin": "Beheerder"
+      },
+      "status": {
+        "active": "Actief",
+        "suspended": "Geschorst",
+        "locked": "Vergrendeld"
+      },
+      "actions": {
+        "unlockAccount": "Account Ontgrendelen",
+        "suspend": "Schorsen",
+        "unsuspend": "Schorsing Opheffen"
+      },
+      "confirmations": {
+        "changeRole": "Rol van {name} wijzigen naar {role}?",
+        "deleteUser": "Weet je het zeker? Dit kan niet ongedaan worden gemaakt.",
+        "deleteMultiple": "Weet je zeker dat je {count} gebruikers wilt verwijderen? Dit kan niet ongedaan worden gemaakt."
       }
     },
     "eventsTab": {
@@ -176,6 +238,55 @@
       "subtitle": "Maak snelle polls en zie wat de gemeenschap denkt",
       "createPoll": "Maak Poll",
       "activePoll": "Actieve Poll"
+    },
+    "categoriesTab": {
+      "title": "Evenementcategorieën",
+      "subtitle": "Beheer evenementcategorieën met aangepaste iconen en kleuren",
+      "createCategory": "Categorie Aanmaken",
+      "noCategories": "Geen categorieën gevonden",
+      "createFirst": "Maak je eerste categorie om evenementen te organiseren",
+      "eventsCount": "{count} evenementen",
+      "confirmations": {
+        "delete": "Weet je zeker dat je deze categorie wilt verwijderen? Dit zal mislukken als evenementen deze categorie gebruiken."
+      }
+    },
+    "moderationTab": {
+      "title": "Inhoudmoderatie",
+      "subtitle": "Beheer forumdiscussies en reacties",
+      "loadMore": "Laad meer discussies",
+      "confirmations": {
+        "deleteDiscussion": "Deze discussie verwijderen?"
+      }
+    },
+    "newsletterTab": {
+      "title": "Nieuwsbrief Versturen",
+      "subtitle": "Stel updates samen en verstuur naar alle abonnees",
+      "subjectLabel": "Onderwerpregegel",
+      "subjectPlaceholder": "bijv. Wekelijkse Gemeenschapsupdates",
+      "contentLabel": "Inhoud",
+      "contentPlaceholder": "Schrijf hier je nieuwsbrief inhoud...",
+      "preview": "Voorbeeld",
+      "sending": "Verzenden...",
+      "sendNewsletter": "Nieuwsbrief Versturen",
+      "confirmations": {
+        "send": "Weet je zeker dat je deze nieuwsbrief naar ALLE abonnees wilt versturen?"
+      }
+    },
+    "initiativesTab": {
+      "title": "Initiatieven Beheer",
+      "addInitiative": "Initiatief Toevoegen",
+      "noInitiatives": "Geen initiatieven gevonden",
+      "loadMore": "Laad meer initiatieven",
+      "confirmations": {
+        "delete": "Weet je zeker dat je dit initiatief wilt verwijderen?"
+      }
+    },
+    "eventsConfirmations": {
+      "delete": "Dit evenement verwijderen?"
+    },
+    "pollsConfirmations": {
+      "delete": "Deze poll verwijderen?",
+      "deleteNamed": "Weet je zeker dat je deze poll wilt verwijderen: \"{question}\"?"
     }
   },
   "company": {
@@ -190,7 +301,29 @@
     "noInitiatives": "Nog geen initiatieven aangemaakt",
     "loadMore": "Laad meer evenementen",
     "edit": "Bewerken",
-    "delete": "Verwijderen"
+    "delete": "Verwijderen",
+    "initiativeUpdated": "Initiatief succesvol bijgewerkt",
+    "initiativeCreated": "Initiatief succesvol aangemaakt",
+    "initiativeFailed": "Mislukt: {message}",
+    "confirmDeleteInitiative": "Weet je zeker dat je dit initiatief wilt verwijderen?",
+    "initiativeDeleted": "Initiatief succesvol verwijderd",
+    "addressNotFound": "Adres niet gevonden",
+    "searchFailed": "Zoeken mislukt",
+    "eventUpdated": "Evenement succesvol bijgewerkt",
+    "eventCreated": "Evenement succesvol aangemaakt",
+    "eventFailed": "Opslaan evenement mislukt: {message}",
+    "confirmDeleteEvent": "Dit evenement verwijderen?",
+    "eventDeleted": "Evenement succesvol verwijderd",
+    "deleteFailed": "Verwijderen mislukt",
+    "pollsNeedTwoOptions": "Polls moeten minstens twee opties hebben",
+    "pollQuestionRequired": "Voeg een poll-vraag toe",
+    "pollTwoOptionsRequired": "Voeg minstens twee opties toe",
+    "pollUpdated": "Poll succesvol bijgewerkt",
+    "pollCreated": "Poll succesvol aangemaakt",
+    "pollFailed": "Opslaan poll mislukt",
+    "pollStatusFailed": "Bijwerken poll-status mislukt",
+    "confirmDeletePoll": "Deze poll verwijderen?",
+    "pollDeleted": "Poll succesvol verwijderd"
   },
   "discussion": {
     "backToForum": "Terug naar Forum",
@@ -212,9 +345,31 @@
     "location": "Locatie",
     "host": "Georganiseerd door",
     "register": "Registreer Nu",
-    "registered": "Je bent geregistreerd",
+    "registered": "Geregistreerd",
+    "interested": "Geïnteresseerd",
+    "interestedSection": "Geïnteresseerd",
+    "interestedCount": "{count} geïnteresseerd",
     "attendees": "Deelnemers",
-    "about": "Over dit evenement"
+    "attendeesCount": "{count} aanwezig",
+    "about": "Over dit evenement",
+    "aboutThisEvent": "Over dit evenement",
+    "markAsInterested": "Markeer als Geïnteresseerd",
+    "removeInterest": "Interesse Verwijderen",
+    "markedAsInterested": "Gemarkeerd als geïnteresseerd",
+    "registeredForEvent": "Geregistreerd voor evenement",
+    "checkOutEvent": "Bekijk dit evenement: {title}",
+    "share": "Delen",
+    "addToCalendar": "Toevoegen aan Agenda",
+    "registration": "Registratie",
+    "spotsTaken": "{count} plekken bezet",
+    "totalSpots": "{count} totaal",
+    "registerNow": "Registreer Nu",
+    "full": "Vol",
+    "unregister": "Uitschrijven",
+    "hostedBy": "Georganiseerd door",
+    "communityLeader": "Gemeenschapsleider",
+    "organizer": "Organisator",
+    "linkCopied": "Link gekopieerd naar klembord!"
   },
   "eventsPage": {
     "title": "Gemeenschapsevenementen",
@@ -227,7 +382,8 @@
     "all": "Alles",
     "noEvents": "Geen evenementen gevonden die aan je criteria voldoen.",
     "listView": "Lijstweergave",
-    "calendarView": "Kalenderweergave"
+    "calendarView": "Kalenderweergave",
+    "confirmRegister": "Wil je je registreren voor \"{title}\"?"
   },
   "forgotPassword": {
     "title": "Wachtwoord Resetten",
@@ -361,7 +517,22 @@
     "savedInitiatives": "Opgeslagen Initiatieven",
     "viewAll": "Bekijk Alles",
     "browseMore": "Meer Bekijken",
-    "viewMap": "Bekijk Kaart"
+    "viewMap": "Bekijk Kaart",
+    "membersCount": "{count} leden",
+    "member": "Lid",
+    "editProfileModal": "Profiel Bewerken",
+    "displayName": "Weergavenaam",
+    "bio": "Bio",
+    "bioPlaceholder": "Vertel ons over jezelf",
+    "interestsLabel": "Interesses (gescheiden door komma's)",
+    "interestsPlaceholder": "Tuinieren, Koken, Yoga",
+    "locationPlaceholder": "bijv. Enschede, NL",
+    "saving": "Opslaan...",
+    "imageSizeError": "Afbeeldingsgrootte moet kleiner zijn dan 5MB",
+    "avatarUploadSuccess": "Avatar succesvol geüpload",
+    "avatarUploadFailed": "Avatar uploaden mislukt",
+    "profileUpdated": "Profiel bijgewerkt!",
+    "profileUpdateFailed": "Profiel bijwerken mislukt"
   },
   "resetPassword": {
     "title": "Wachtwoord Resetten",
@@ -501,5 +672,20 @@
     "month": "Maand",
     "week": "Week",
     "day": "Dag"
+  },
+  "categories": {
+    "Sports & Fitness": "Sport & Fitness",
+    "Arts & Culture": "Kunst & Cultuur",
+    "Music & Entertainment": "Muziek & Entertainment",
+    "Food & Drink": "Eten & Drinken",
+    "Education & Learning": "Onderwijs & Leren",
+    "Technology": "Technologie",
+    "Health & Wellness": "Gezondheid & Welzijn",
+    "Outdoor & Nature": "Buitenleven & Natuur",
+    "Business & Networking": "Zakelijk & Netwerken",
+    "Community & Social": "Gemeenschap & Sociaal",
+    "Family & Kids": "Gezin & Kinderen",
+    "Other": "Overige",
+    "All Events": "Alle Evenementen"
   }
 }

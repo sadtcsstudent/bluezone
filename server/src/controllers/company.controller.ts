@@ -9,8 +9,10 @@ const createInitiativeSchema = z.object({
     type: z.string(),
     location: z.string(),
     description: z.string(),
-    coordinateX: z.number(),
-    coordinateY: z.number(),
+    latitude: z.number().nullable().optional(),
+    longitude: z.number().nullable().optional(),
+    coordinateX: z.number().nullable().optional(), // Keep for backward compatibility
+    coordinateY: z.number().nullable().optional(), // Keep for backward compatibility
     contact: z.string().optional(),
     website: z.string().optional()
 });

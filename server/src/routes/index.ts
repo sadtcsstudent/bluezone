@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { prisma } from '../utils/prisma';
 import authRoutes from './auth.routes';
 import eventsRoutes from './events.routes';
 import forumRoutes from './forum.routes';
@@ -12,8 +13,19 @@ import adminRoutes from './admin.routes';
 import uploadRoutes from './upload.routes';
 import companyRoutes from './company.routes';
 import pollsRoutes from './polls.routes';
+import categoriesRoutes from './categories.routes';
 
 const router = Router();
+
+// Public stats endpoint
+router.get('/stats', async (_req, res) => {
+  try {
+    const userCount = await prisma.user.count();
+    res.json({ userCount });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch stats' });
+  }
+});
 
 router.use('/auth', authRoutes);
 router.use('/events', eventsRoutes);
@@ -28,5 +40,6 @@ router.use('/admin', adminRoutes);
 router.use('/upload', uploadRoutes);
 router.use('/company', companyRoutes);
 router.use('/polls', pollsRoutes);
+router.use('/categories', categoriesRoutes);
 
 export default router;

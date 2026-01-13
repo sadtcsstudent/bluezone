@@ -58,7 +58,7 @@
             @click="selectCategory(category)"
             :class="['category-btn', { 'category-btn--active': isActiveCategory(category) }]"
           >
-            {{ category }}
+            {{ translateCategory(category) }}
           </button>
         </div>
       </div>
@@ -112,6 +112,8 @@ import EventsCalendar from '../components/EventsCalendar.vue'
 import api from '@/services/api'
 import { useToastStore } from '@/stores/toast'
 import { useAuthStore } from '@/stores/auth'
+import { useConfirm } from '@/composables/useConfirm'
+import { useTranslateCategory } from '@/composables/useTranslateCategory'
 
 export default {
   name: 'EventsView',
@@ -124,20 +126,21 @@ export default {
     Search,
     Filter
   },
+  setup() {
+    const confirmModal = useConfirm()
+    const { translateCategory } = useTranslateCategory()
+    return {
+      confirmModal,
+      translateCategory
+    }
+  },
   data() {
     return {
       authStore: useAuthStore(),
       viewMode: 'grid',
       selectedCategory: 'all',
       searchQuery: '',
-      categories: [
-        'All Events',
-        'Gardening',
-        'Food & Nutrition',
-        'Wellbeing',
-        'Social',
-        'Sustainability',
-      ],
+      categories: ['All Events'],
       events: [],
       loading: false,
       page: 1,
@@ -147,12 +150,13 @@ export default {
     }
   },
   async created() {
+    await this.loadCategories()
     await this.loadEvents()
   },
   computed: {
     filteredEvents() {
       return this.events.filter(event => {
-        const categoryMatch = this.selectedCategory === 'all' || event.category === this.selectedCategory
+        const categoryMatch = this.selectedCategory === 'all' || event.category?.name === this.selectedCategory
         const searchMatch = this.searchQuery === '' ||
           event.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
           event.description.toLowerCase().includes(this.searchQuery.toLowerCase())
@@ -172,6 +176,18 @@ export default {
     }
   },
   methods: {
+    async loadCategories() {
+      try {
+        const data = await api.get('/categories')
+        const categoryNames = (data.categories || [])
+          .map(cat => cat.name)
+        this.categories = ['All Events', ...categoryNames]
+      } catch (err) {
+        console.error('Failed to load categories', err)
+        // Use default categories if API fails
+        this.categories = ['All Events']
+      }
+    },
     async loadEvents(reset = false) {
       if (reset) {
         this.page = 1
@@ -191,6 +207,7 @@ export default {
           )
           return {
             ...event,
+            category: typeof event.category === 'object' ? event.category?.name : event.category,
             attendees: attendeeCount,
             attendeeCount,
             status: event.status || null
@@ -235,26 +252,38 @@ export default {
 
       // Logic for toggling Interest
       if (event.status === 'interested') {
-        if (!confirm(`Remove interest for ${event.title}?`)) return
+        const confirmed = await this.confirmModal.confirm({
+          title: 'Remove Interest',
+          message: `Are you sure you want to remove interest for "${event.title}"?`,
+          confirmText: 'Remove',
+          type: 'warning'
+        })
+        if (!confirmed) return
         await this.performUnregister(event, 'Interest removed')
         return
       }
 
       // Logic for Unregistering (if already registered)
       if (event.status === 'registered') {
-        if (!confirm(`Unregister from ${event.title}?`)) return
+        const confirmed = await this.confirmModal.confirm({
+          title: 'Unregister from Event',
+          message: `Are you sure you want to unregister from "${event.title}"?`,
+          confirmText: 'Unregister',
+          type: 'warning'
+        })
+        if (!confirmed) return
         await this.performUnregister(event, 'Successfully unregistered')
         return
       }
 
-      // Logic for Registering (default is 'registered', card handles 'interested' case via viewing details usually, but if we want to support direct interest toggle we'd need two buttons. 
-      // Assuming this button is the primary 'Register' action. 
-      // However, the card *also* sets status to 'interested' visually? 
-      // The EventCard emits `register` which calls this.
-      // If we want to support marking interested from main page, we need UI for it.
-      // For now, let's assume the button action is primarily 'Register'.
-      
-      if (!confirm(`Register for ${event.title}?`)) return
+      // Logic for Registering
+      const confirmed = await this.confirmModal.confirm({
+        title: this.$t('eventDetail.registration'),
+        message: this.$t('eventsPage.confirmRegister', { title: event.title }),
+        confirmText: this.$t('eventDetail.registerNow'),
+        type: 'question'
+      })
+      if (!confirmed) return
       
       const toast = useToastStore()
       try {

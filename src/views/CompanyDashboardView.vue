@@ -246,7 +246,7 @@
 
     <!-- Create Event Modal -->
     <div v-if="showCreateEvent" class="modal-overlay" @click.self="showCreateEvent = false">
-      <div class="modal-content">
+      <div class="modal-content modal-content--lg modal-content--scrollable">
         <h2>{{ isEditing ? 'Edit Event' : 'Create Event' }}</h2>
         <form @submit.prevent="saveEvent" class="create-form">
           <div class="form-group">
@@ -262,27 +262,57 @@
               <X :size="16" /> Remove Image
             </button>
           </div>
+
           <div class="form-group">
-             <label>Title</label>
-             <input v-model="newEvent.title" placeholder="Title" required />
+            <label>Event Title</label>
+            <input v-model="newEvent.title" placeholder="Enter event title" required />
           </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Date & Time</label>
+              <input v-model="newEvent.date" type="datetime-local" required />
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <select v-model="newEvent.categoryId" required>
+                <option value="" disabled>Select a category</option>
+                <option
+                  v-for="category in categories"
+                  :key="category.id"
+                  :value="category.id"
+                >
+                  {{ category.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+
           <div class="form-group">
-             <label>Date & Time</label>
-             <input v-model="newEvent.date" type="datetime-local" required />
+            <label>Location (Click on map or search address)</label>
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <div class="search-row" style="display: flex; gap: 0.5rem;">
+                <input
+                  v-model="eventAddressQuery"
+                  placeholder="Type an address to find..."
+                  @keydown.enter.prevent="searchEventAddress"
+                  style="flex: 1;"
+                />
+                <button type="button" class="btn btn--outline" @click="searchEventAddress" :disabled="searchingEventAddress">
+                  <Search :size="16" />
+                  {{ searchingEventAddress ? '...' : 'Find' }}
+                </button>
+              </div>
+            </div>
+            <div id="company-event-picker-map" class="picker-map picker-map--tall"></div>
+            <p class="help-text">Click on the map to select event location</p>
           </div>
+
           <div class="form-group">
-             <label>Location</label>
-             <input v-model="newEvent.location" placeholder="Location" required />
+            <label>Description</label>
+            <textarea v-model="newEvent.description" placeholder="Describe your event..." required rows="4"></textarea>
           </div>
-          <div class="form-group">
-             <label>Category</label>
-             <input v-model="newEvent.category" placeholder="Category (e.g. Sports)" required />
-          </div>
-          <div class="form-group">
-             <label>Description</label>
-             <textarea v-model="newEvent.description" placeholder="Description" required></textarea>
-          </div>
-          
+
           <div class="modal-actions">
             <button type="button" class="btn btn--ghost" @click="showCreateEvent = false">Cancel</button>
             <button type="submit" class="btn btn--primary">{{ isEditing ? 'Save Changes' : 'Create' }}</button>
@@ -332,10 +362,11 @@
             <label>Location (Click on map or search address)</label>
              <div class="form-group" style="margin-bottom: 1rem;">
               <div class="search-row" style="display: flex; gap: 0.5rem;">
-                <input 
-                  v-model="addressQuery" 
-                  placeholder="Type an address to find..." 
+                <input
+                  v-model="addressQuery"
+                  placeholder="Type an address to find..."
                   @keydown.enter.prevent="searchAddress"
+                  style="flex: 1;"
                 />
                 <button type="button" class="btn btn--outline" @click="searchAddress" :disabled="searchingAddress">
                   <Search :size="16" />
@@ -358,11 +389,18 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, watch, nextTick } from 'vue'
 import { LayoutDashboard, Calendar, Leaf, Plus, Trash2, Edit, Search, Upload, X, PieChart, MessageSquare } from 'lucide-vue-next'
 import api from '@/services/api'
+import { useToastStore } from '@/stores/toast'
+import { useConfirm } from '@/composables/useConfirm'
+import { useI18n } from 'vue-i18n'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+
+const toast = useToastStore()
+const confirmModal = useConfirm()
+const { t } = useI18n()
 
 const activeTab = ref('overview')
 const stats = ref({})
@@ -376,15 +414,20 @@ const initiatives = ref([])
 const showCreateEvent = ref(false)
 const isEditing = ref(false)
 const editingId = ref(null)
-const newEvent = ref({ title: '', date: '', location: '', description: '', category: 'General', imageUrl: '' })
+const newEvent = ref({ title: '', date: '', location: '', description: '', categoryId: '', imageUrl: '' })
 const selectedImage = ref(null)
 const imagePreview = ref(null)
+const categories = ref([])
+const eventAddressQuery = ref('')
+const searchingEventAddress = ref(false)
+const eventMap = ref(null)
+const eventMapMarker = ref(null)
 
 const showCreateInitiative = ref(false)
 const isEditingInitiative = ref(false)
 const editingInitiativeId = ref(null)
-const newInitiative = ref({ 
-  name: '', type: 'garden', description: '', contact: '', website: '', coordinateX: 50, coordinateY: 50 
+const newInitiative = ref({
+  name: '', type: 'garden', description: '', contact: '', website: '', latitude: null, longitude: null
 })
 const map = ref(null)
 const mapMarker = ref(null)
@@ -432,31 +475,58 @@ onMounted(() => {
     loadData()
 })
 
-// --- Events Logic ---
-const openCreateEvent = () => {
-  isEditing.value = false
-  editingId.value = null
-  newEvent.value = { title: '', date: '', location: '', description: '', category: 'General', imageUrl: '' }
-  selectedImage.value = null
-  imagePreview.value = null
-  showCreateEvent.value = true
+// Fetch categories
+const fetchCategories = async () => {
+  try {
+    const data = await api.get('/categories')
+    categories.value = data.categories || []
+  } catch (err) {
+    console.error('Failed to load categories', err)
+    categories.value = []
+  }
 }
 
-const openEditEvent = (event) => {
+// --- Events Logic ---
+const openCreateEvent = async () => {
+  isEditing.value = false
+  editingId.value = null
+  newEvent.value = { title: '', date: '', location: '', description: '', categoryId: '', imageUrl: '' }
+  selectedImage.value = null
+  imagePreview.value = null
+  eventAddressQuery.value = ''
+  showCreateEvent.value = true
+
+  if (categories.value.length === 0) {
+    await fetchCategories()
+  }
+
+  await nextTick()
+  initEventMap()
+}
+
+const openEditEvent = async (event) => {
   isEditing.value = true
   editingId.value = event.id
   const dateStr = new Date(event.date).toISOString().slice(0, 16)
-  newEvent.value = { 
-    title: event.title, 
-    date: dateStr, 
-    location: event.location, 
+  newEvent.value = {
+    title: event.title,
+    date: dateStr,
+    location: event.location,
     description: event.description,
-    category: event.category || 'General',
+    categoryId: event.categoryId || '',
     imageUrl: event.imageUrl || ''
   }
   selectedImage.value = null
   imagePreview.value = event.imageUrl || null
+  eventAddressQuery.value = event.location || ''
   showCreateEvent.value = true
+
+  if (categories.value.length === 0) {
+    await fetchCategories()
+  }
+
+  await nextTick()
+  initEventMap()
 }
 
 const handleImageSelect = (event) => {
@@ -489,10 +559,10 @@ const saveEvent = async () => {
 
     if (isEditing.value && editingId.value) {
       await api.put(`/events/${editingId.value}`, payload)
-      alert('Event updated')
+      toast.success(t('company.eventUpdated'))
     } else {
       await api.post('/events', payload)
-      alert('Event created')
+      toast.success(t('company.eventCreated'))
     }
     showCreateEvent.value = false
     selectedImage.value = null
@@ -500,18 +570,25 @@ const saveEvent = async () => {
     loadData()
   } catch (err) {
     console.error('Failed to save event', err)
-    alert('Failed to save event: ' + (err.response?.data?.message || err.message))
+    toast.error(t('company.eventFailed', { message: err.response?.data?.message || err.message }))
   }
 }
 
 const deleteEvent = async (id) => {
-  if (!confirm('Delete this event?')) return
+  const confirmed = await confirmModal.confirm({
+    title: t('common.confirm'),
+    message: t('company.confirmDeleteEvent'),
+    confirmText: t('common.delete'),
+    type: 'warning'
+  })
+  if (!confirmed) return
   try {
     await api.delete(`/events/${id}`)
+    toast.success(t('company.eventDeleted'))
     loadData()
   } catch (err) {
     console.error('Failed to delete event', err)
-    alert('Failed to delete event')
+    toast.error(t('company.deleteFailed'))
   }
 }
 
@@ -519,8 +596,8 @@ const deleteEvent = async (id) => {
 const openCreateInitiative = () => {
   isEditingInitiative.value = false
   editingInitiativeId.value = null
-  newInitiative.value = { 
-    name: '', type: 'garden', description: '', contact: '', website: '', coordinateX: 50, coordinateY: 50, location: '' 
+  newInitiative.value = {
+    name: '', type: 'garden', description: '', contact: '', website: '', latitude: null, longitude: null, location: ''
   }
   addressQuery.value = ''
   showCreateInitiative.value = true
@@ -530,7 +607,11 @@ const openCreateInitiative = () => {
 const openEditInitiative = (initiative) => {
   isEditingInitiative.value = true
   editingInitiativeId.value = initiative.id
-  newInitiative.value = { ...initiative }
+  newInitiative.value = {
+    ...initiative,
+    latitude: initiative.latitude,
+    longitude: initiative.longitude
+  }
   addressQuery.value = initiative.location || ''
   showCreateInitiative.value = true
   setTimeout(() => initMap(), 100)
@@ -549,64 +630,94 @@ const saveInitiative = async () => {
         newInitiative.value.location = addressQuery.value
         if (isEditingInitiative.value) {
             await api.put(`/company/initiatives/${editingInitiativeId.value}`, newInitiative.value)
-            alert('Initiative updated')
+            toast.success(t('company.initiativeUpdated'))
         } else {
             await api.post('/company/initiatives', newInitiative.value)
-            alert('Initiative created')
+            toast.success(t('company.initiativeCreated'))
         }
         closeCreateInitiative()
         loadData()
     } catch (err) {
         console.error('Failed to save initiative', err)
-        alert('Failed: ' + (err.response?.data?.message || err.message))
+        toast.error(t('company.initiativeFailed', { message: err.response?.data?.message || err.message }))
     }
 }
 
 const deleteInitiative = async (id) => {
-    if (!confirm('Are you sure?')) return
+    const confirmed = await confirmModal.confirm({
+        title: t('common.confirm'),
+        message: t('company.confirmDeleteInitiative'),
+        confirmText: t('common.delete'),
+        type: 'warning'
+    })
+    if (!confirmed) return
     try {
         await api.delete(`/company/initiatives/${id}`)
+        toast.success(t('company.initiativeDeleted'))
         loadData()
     } catch (err) {
         console.error('Failed to delete initiative', err)
-        alert('Failed')
+        toast.error(t('company.deleteFailed'))
     }
 }
 
-// Map Logic (Reused)
+// Map Logic - Using real coordinates
+const OVERIJSSEL_CENTER_LAT = 52.45
+const OVERIJSSEL_CENTER_LNG = 6.5
+
 const initMap = () => {
-  let lat = 52.22153
-  let lng = 6.89366
-  
-  if (isEditingInitiative.value || (newInitiative.value.coordinateX !== 50 || newInitiative.value.coordinateY !== 50)) {
-     const y = newInitiative.value.coordinateY
-     const x = newInitiative.value.coordinateX
-     lat = 52.24 - (y / 100) * 0.04
-     lng = 6.87 + (x / 100) * 0.05
+  let lat = OVERIJSSEL_CENTER_LAT
+  let lng = OVERIJSSEL_CENTER_LNG
+  let zoom = 10
+
+  // If editing and has coordinates, use them
+  if (isEditingInitiative.value && newInitiative.value.latitude && newInitiative.value.longitude) {
+    lat = newInitiative.value.latitude
+    lng = newInitiative.value.longitude
+    zoom = 13
   }
 
   if (map.value) map.value.remove()
 
-  map.value = L.map('company-picker-map').setView([lat, lng], 13)
+  map.value = L.map('company-picker-map').setView([lat, lng], zoom)
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map.value)
-  
-  if (isEditingInitiative.value || (newInitiative.value.coordinateX !== 50 || newInitiative.value.coordinateY !== 50)) {
-     mapMarker.value = L.marker([lat, lng]).addTo(map.value)
+
+  // Add marker if editing
+  if (isEditingInitiative.value && newInitiative.value.latitude && newInitiative.value.longitude) {
+    mapMarker.value = L.marker([lat, lng]).addTo(map.value)
+    if (newInitiative.value.location) {
+      mapMarker.value.bindPopup(newInitiative.value.location)
+    }
   }
 
-  map.value.on('click', (e) => {
+  // Click to place marker
+  map.value.on('click', async (e) => {
     const { lat, lng } = e.latlng
-    const y = Math.max(0, Math.min(100, ((52.24 - lat) / 0.04) * 100))
-    const x = Math.max(0, Math.min(100, ((lng - 6.87) / 0.05) * 100))
-    newInitiative.value.coordinateX = x
-    newInitiative.value.coordinateY = y
+
+    newInitiative.value.latitude = lat
+    newInitiative.value.longitude = lng
 
     if (mapMarker.value) {
       mapMarker.value.setLatLng([lat, lng])
     } else {
       mapMarker.value = L.marker([lat, lng]).addTo(map.value)
+    }
+
+    // Reverse geocode to get address
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+      const data = await response.json()
+      if (data && data.display_name) {
+        addressQuery.value = data.display_name
+        newInitiative.value.location = data.display_name
+        if (mapMarker.value) {
+          mapMarker.value.bindPopup(data.display_name).openPopup()
+        }
+      }
+    } catch (err) {
+      console.error('Reverse geocoding failed', err)
     }
   })
 }
@@ -617,35 +728,137 @@ const searchAddress = async () => {
   try {
     const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressQuery.value)}`)
     const data = await response.json()
-    
+
     if (data && data.length > 0) {
       const { lat, lon, display_name } = data[0]
       const latitude = parseFloat(lat)
       const longitude = parseFloat(lon)
-      
+
       if (map.value) {
-        map.value.setView([latitude, longitude], 16)
+        map.value.setView([latitude, longitude], 14)
         if (mapMarker.value) {
           mapMarker.value.setLatLng([latitude, longitude]).bindPopup(display_name).openPopup()
         } else {
           mapMarker.value = L.marker([latitude, longitude]).addTo(map.value).bindPopup(display_name).openPopup()
         }
       }
-      const y = Math.max(0, Math.min(100, ((52.24 - latitude) / 0.04) * 100))
-      const x = Math.max(0, Math.min(100, ((longitude - 6.87) / 0.05) * 100))
-      newInitiative.value.coordinateX = x
-      newInitiative.value.coordinateY = y
+
+      // Store real coordinates
+      newInitiative.value.latitude = latitude
+      newInitiative.value.longitude = longitude
+      // Auto-fill the address input with the full address
       addressQuery.value = display_name
+      newInitiative.value.location = display_name
     } else {
-      alert('Address not found')
+      toast.error(t('company.addressNotFound'))
     }
   } catch (err) {
     console.error(err)
-    alert('Search failed')
+    toast.error(t('company.searchFailed'))
   } finally {
     searchingAddress.value = false
   }
 }
+
+// Event Map Logic
+const initEventMap = () => {
+  const lat = OVERIJSSEL_CENTER_LAT
+  const lng = OVERIJSSEL_CENTER_LNG
+  const zoom = 10
+
+  if (eventMap.value) {
+    eventMap.value.remove()
+  }
+
+  eventMap.value = L.map('company-event-picker-map').setView([lat, lng], zoom)
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(eventMap.value)
+
+  eventMap.value.on('click', async (e) => {
+    const { lat, lng } = e.latlng
+
+    if (eventMapMarker.value) {
+      eventMapMarker.value.setLatLng([lat, lng])
+    } else {
+      eventMapMarker.value = L.marker([lat, lng]).addTo(eventMap.value)
+    }
+
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=en`)
+      const data = await response.json()
+
+      if (data && data.display_name) {
+        const cleanDisplayName = data.display_name
+          .replace(/[^\x00-\x7F,\s]/g, '')
+          .replace(/,\s*,/g, ',')
+          .replace(/,\s*$/g, '')
+          .trim()
+
+        eventAddressQuery.value = cleanDisplayName
+        newEvent.value.location = cleanDisplayName
+
+        if (eventMapMarker.value) {
+          eventMapMarker.value.bindPopup(cleanDisplayName).openPopup()
+        }
+      }
+    } catch (err) {
+      console.error('Reverse geocoding error', err)
+    }
+  })
+}
+
+const searchEventAddress = async () => {
+  if (!eventAddressQuery.value) return
+
+  searchingEventAddress.value = true
+  try {
+    const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(eventAddressQuery.value)}&accept-language=en`)
+    const data = await response.json()
+
+    if (data && data.length > 0) {
+      const { lat, lon, display_name } = data[0]
+      const latitude = parseFloat(lat)
+      const longitude = parseFloat(lon)
+
+      const cleanDisplayName = display_name
+        .replace(/[^\x00-\x7F,\s]/g, '')
+        .replace(/,\s*,/g, ',')
+        .replace(/,\s*$/g, '')
+        .trim()
+
+      if (eventMap.value) {
+        eventMap.value.setView([latitude, longitude], 16)
+
+        if (eventMapMarker.value) {
+          eventMapMarker.value.setLatLng([latitude, longitude])
+            .bindPopup(cleanDisplayName).openPopup()
+        } else {
+          eventMapMarker.value = L.marker([latitude, longitude]).addTo(eventMap.value)
+            .bindPopup(cleanDisplayName).openPopup()
+        }
+      }
+
+      newEvent.value.location = cleanDisplayName || eventAddressQuery.value
+    } else {
+      useToastStore().error('Address not found')
+    }
+  } catch (err) {
+    console.error('Geocoding error', err)
+    useToastStore().error('Failed to search address')
+  } finally {
+    searchingEventAddress.value = false
+  }
+}
+
+// Map cleanup watcher for event modal
+watch(showCreateEvent, (isOpen) => {
+  if (!isOpen && eventMap.value) {
+    eventMap.value.remove()
+    eventMap.value = null
+    eventMapMarker.value = null
+  }
+})
 
 // --- Polls Logic ---
 const fetchPolls = async () => {
@@ -677,7 +890,7 @@ const addPollOption = () => {
 
 const removePollOption = (index) => {
   if (pollForm.value.options.length <= 2) {
-    alert('Polls need at least two options')
+    toast.error(t('company.pollsNeedTwoOptions'))
     return
   }
   pollForm.value.options.splice(index, 1)
@@ -701,12 +914,12 @@ const savePoll = async () => {
     .filter((opt) => opt.text)
 
   if (!question) {
-    alert('Please add a poll question')
+    toast.error(t('company.pollQuestionRequired'))
     return
   }
 
   if (options.length < 2) {
-    alert('Add at least two options')
+    toast.error(t('company.pollTwoOptionsRequired'))
     return
   }
 
@@ -733,10 +946,10 @@ const savePoll = async () => {
     }
     await fetchPolls()
     resetPollForm()
-    alert(editingPollId.value ? 'Poll updated' : 'Poll created')
+    toast.success(editingPollId.value ? t('company.pollUpdated') : t('company.pollCreated'))
   } catch (err) {
     console.error('Failed to save poll', err)
-    alert('Failed to save poll')
+    toast.error(t('company.pollFailed'))
   } finally {
     pollSaving.value = false
   }
@@ -753,19 +966,26 @@ const togglePollStatus = async (poll) => {
     }
   } catch (err) {
     console.error('Failed to update poll', err)
-    alert('Failed to update poll status')
+    toast.error(t('company.pollStatusFailed'))
   }
 }
 
 const deletePoll = async (poll) => {
-  if (!confirm('Delete this poll?')) return
+  const confirmed = await confirmModal.confirm({
+    title: t('common.confirm'),
+    message: t('company.confirmDeletePoll'),
+    confirmText: t('common.delete'),
+    type: 'warning'
+  })
+  if (!confirmed) return
   try {
     await api.delete(`/polls/${poll.id}`)
     polls.value = polls.value.filter((p) => p.id !== poll.id)
     if (editingPollId.value === poll.id) resetPollForm()
+    toast.success(t('company.pollDeleted'))
   } catch (err) {
     console.error('Failed to delete poll', err)
-    alert('Failed to delete poll')
+    toast.error(t('company.deleteFailed'))
   }
 }
 </script>

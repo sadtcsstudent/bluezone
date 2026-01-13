@@ -15,6 +15,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev.api
+    restart: unless-stopped
     working_dir: /app
     env_file:
       - server/.env
@@ -36,6 +37,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev.web
+    restart: unless-stopped
     working_dir: /app
     environment:
       VITE_API_URL: ${VITE_API_URL:-/api}
