@@ -6,7 +6,11 @@ type PollWithRelations = Awaited<ReturnType<typeof loadPollWithRelations>>;
 
 // ... (imports remain same)
 
-const formatPoll = (poll: PollWithRelations, currentUserId?: string, includeMeta = false) => {
+const formatPoll = (poll: PollWithRelations | null, currentUserId?: string, includeMeta = false) => {
+  if (!poll) {
+    throw new Error('Poll is null');
+  }
+
   const totalVotes = poll.options.reduce((acc, opt) => acc + opt.votes.length, 0);
 
   // Changed: Return array of voted option IDs
@@ -116,7 +120,7 @@ export const getAdminPolls = async (req: Request, res: Response, next: NextFunct
       orderBy: { createdAt: 'desc' }
     });
 
-    res.json({ polls: polls.map((p) => formatPoll(p, req.user.id, true)) });
+    res.json({ polls: polls.map((p) => formatPoll(p, req.user?.id, true)) });
   } catch (error) {
     next(error);
   }
@@ -175,7 +179,10 @@ export const updatePoll = async (req: Request, res: Response, next: NextFunction
       });
     });
 
-    res.json({ poll: formatPoll(updatedPoll!, req.user.id, true) });
+    if (!updatedPoll) {
+      throw new AppError(404, 'Poll not found after update');
+    }
+    res.json({ poll: formatPoll(updatedPoll, req.user?.id, true) });
   } catch (error) {
     next(error);
   }
@@ -262,7 +269,10 @@ export const votePoll = async (req: Request, res: Response, next: NextFunction) 
     }
 
     const updated = await loadPollWithRelations(pollId);
-    res.json({ poll: formatPoll(updated!, req.user.id) });
+    if (!updated) {
+      throw new AppError(404, 'Poll not found after voting');
+    }
+    res.json({ poll: formatPoll(updated, req.user?.id) });
   } catch (error) {
     next(error);
   }

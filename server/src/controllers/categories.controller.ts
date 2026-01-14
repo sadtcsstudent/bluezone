@@ -53,7 +53,7 @@ export const createCategory = async (req: Request, res: Response, next: NextFunc
     res.status(201).json({ category });
   } catch (error: any) {
     if (error.code === 'P2002') {
-      next(new AppError('Category with this name already exists', 400));
+      next(new AppError(400, 'Category with this name already exists'));
     } else {
       next(error);
     }
@@ -73,9 +73,9 @@ export const updateCategory = async (req: Request, res: Response, next: NextFunc
     res.json({ category });
   } catch (error: any) {
     if (error.code === 'P2025') {
-      next(new AppError('Category not found', 404));
+      next(new AppError(404, 'Category not found'));
     } else if (error.code === 'P2002') {
-      next(new AppError('Category with this name already exists', 400));
+      next(new AppError(400, 'Category with this name already exists'));
     } else {
       next(error);
     }
@@ -93,11 +93,11 @@ export const deleteCategory = async (req: Request, res: Response, next: NextFunc
     });
 
     if (!category) {
-      throw new AppError('Category not found', 404);
+      throw new AppError(404, 'Category not found');
     }
 
     if (category._count.events > 0) {
-      throw new AppError('Cannot delete category with existing events', 400);
+      throw new AppError(400, 'Cannot delete category with existing events');
     }
 
     await prisma.category.delete({ where: { id } });
@@ -119,7 +119,7 @@ export const reorderCategories = async (req: Request, res: Response, next: NextF
     });
 
     if (categories.length !== categoryIds.length) {
-      throw new AppError('Some categories not found', 400);
+      throw new AppError(400, 'Some categories not found');
     }
 
     res.json({ message: 'Category order saved successfully' });
