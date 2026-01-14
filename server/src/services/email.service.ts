@@ -8,14 +8,18 @@ const getTransporter = () => {
 
   transporterPromise = (async () => {
     if (process.env.SMTP_HOST) {
+      const port = parseInt(process.env.SMTP_PORT || '587');
       return nodemailer.createTransport({
         host: process.env.SMTP_HOST,
-        port: parseInt(process.env.SMTP_PORT || '587'),
-        secure: process.env.SMTP_SECURE === 'true',
+        port: port,
+        secure: port === 465, // true for 465, false for other ports
         auth: {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASS,
         },
+        connectionTimeout: 10000, // 10 seconds
+        greetingTimeout: 10000,
+        socketTimeout: 10000,
       });
     }
 
