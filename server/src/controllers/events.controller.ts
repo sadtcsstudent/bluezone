@@ -34,14 +34,14 @@ export const listEvents = async (req: Request, res: Response, next: NextFunction
         { description: { contains: search, mode: 'insensitive' } }
       ];
     }
-    if (category) where.category = category;
+    if (category) where.categoryId = category;
 
     let orderBy: any = { date: 'asc' };
     if (sort === 'popularity') orderBy = { registrations: { _count: 'desc' } };
     if (sort === 'attendees') orderBy = { maxAttendees: 'desc' };
 
     const [events, total] = await Promise.all([
-      prisma.event.findMany({ where, take, skip, orderBy, include: { registrations: true } }),
+      prisma.event.findMany({ where, take, skip, orderBy, include: { registrations: true, category: true } }),
       prisma.event.count({ where })
     ]);
 
@@ -71,7 +71,7 @@ export const getEvent = async (req: Request, res: Response, next: NextFunction) 
   try {
     const event = await prisma.event.findUnique({
       where: { id: req.params.id },
-      include: { registrations: { include: { user: true } } }
+      include: { registrations: { include: { user: true } }, category: true }
     });
     if (!event) throw new AppError(404, 'Event not found');
 
@@ -162,7 +162,7 @@ export const listAttendees = async (req: Request, res: Response, next: NextFunct
 
 export const createEvent = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { title, description, date, location, category, maxAttendees, image, imageUrl, time } = req.body;
+    const { title, description, date, location, categoryId, maxAttendees, image, imageUrl, time } = req.body;
     const parsedDate = new Date(date);
     if (Number.isNaN(parsedDate.getTime())) {
       throw new AppError(400, 'Invalid event date');
@@ -178,11 +178,12 @@ export const createEvent = async (req: Request, res: Response, next: NextFunctio
         date: parsedDate,
         time: normalizedTime,
         location,
-        category,
+        categoryId,
         maxAttendees: typeof parsedMax === 'number' && !Number.isNaN(parsedMax) ? parsedMax : null,
         imageUrl: imageUrl || image || '',
         organizerId: req.user!.id
-      }
+      },
+      include: { category: true }
     });
 
     res.status(201).json({ event });
@@ -199,13 +200,13 @@ export const updateEvent = async (req: Request, res: Response, next: NextFunctio
       throw new AppError(403, 'Not authorized to update this event');
     }
 
-    const { title, description, date, location, category, maxAttendees, image, imageUrl, time } = req.body;
+    const { title, description, date, location, categoryId, maxAttendees, image, imageUrl, time } = req.body;
     const data: any = {};
 
     if (title) data.title = title;
     if (description) data.description = description;
     if (location) data.location = location;
-    if (category) data.category = category;
+    if (categoryId) data.categoryId = categoryId;
     if (typeof maxAttendees !== 'undefined') {
       const parsedMax = Number(maxAttendees);
       data.maxAttendees = Number.isNaN(parsedMax) ? null : parsedMax;
@@ -221,7 +222,11 @@ export const updateEvent = async (req: Request, res: Response, next: NextFunctio
       data.time = time;
     }
 
-    const updated = await prisma.event.update({ where: { id: req.params.id }, data });
+    const updated = await prisma.event.update({
+      where: { id: req.params.id },
+      data,
+      include: { category: true }
+    });
     res.json({ event: updated });
   } catch (error) {
     next(error);

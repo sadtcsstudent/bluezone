@@ -5,17 +5,16 @@
         <!-- Left Side - Form -->
         <div class="login-form-wrapper">
           <div class="login-header">
-            <h1>Welcome Back</h1>
+            <h1>{{ $t('login.title') }}</h1>
             <p class="login-subtitle">
-              Log in to connect with your community, join events, and access
-              exclusive resources.
+              {{ $t('login.subtitle') }}
             </p>
           </div>
 
           <form @submit.prevent="handleSubmit" class="login-form">
             <div class="form-group">
               <label for="email" class="form-label">
-                Email Address
+                {{ $t('login.emailLabel') }}
               </label>
               <div class="input-wrapper">
                 <Mail class="input-icon" :size="20" />
@@ -23,7 +22,7 @@
                   id="email"
                   type="email"
                   v-model="email"
-                  placeholder="your.email@example.com"
+                  :placeholder="$t('login.emailPlaceholder')"
                   required
                   class="form-input"
                 />
@@ -33,10 +32,10 @@
             <div class="form-group">
               <div class="password-header">
                 <label for="password" class="form-label">
-                  Password
+                  {{ $t('login.passwordLabel') }}
                 </label>
                 <RouterLink :to="{ name: 'forgot-password' }" class="forgot-link">
-                  Forgot password?
+                  {{ $t('login.forgotPassword') }}
                 </RouterLink>
               </div>
               <div class="input-wrapper password-wrapper">
@@ -45,7 +44,7 @@
                   id="password"
                   :type="showPassword ? 'text' : 'password'"
                   v-model="password"
-                  placeholder="Enter your password"
+                  :placeholder="$t('login.passwordPlaceholder')"
                   required
                   class="form-input"
                 />
@@ -54,9 +53,9 @@
                   class="toggle-visibility"
                   @click="showPassword = !showPassword"
                   :aria-pressed="showPassword"
-                  :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                  :aria-label="showPassword ? $t('login.hide') : $t('login.show')"
                 >
-                  {{ showPassword ? 'Hide' : 'Show' }}
+                  {{ showPassword ? $t('login.hide') : $t('login.show') }}
                 </button>
               </div>
             </div>
@@ -69,24 +68,25 @@
                 class="checkbox-input"
               />
               <label for="remember" class="checkbox-label">
-                Remember me for 30 days
+                {{ $t('login.rememberMe') }}
               </label>
             </div>
 
-            <button type="submit" class="btn btn--primary btn--full">
-              <span>Log In</span>
-              <ArrowRight :size="20" />
+            <button type="submit" class="btn btn--primary btn--full" :disabled="loading">
+              <span>{{ loading ? $t('common.loading') : $t('login.loginButton') }}</span>
+              <ArrowRight v-if="!loading" :size="20" />
+              <div v-else class="spinner"></div>
             </button>
 
             <div class="signup-link">
               <p>
-                Don't have an account?
+                {{ $t('login.noAccount') }}
                 <button
                   type="button"
                   @click="handleNavigate('signup')"
                   class="link-button"
                 >
-                  Sign up
+                  {{ $t('login.signupLink') }}
                 </button>
               </p>
             </div>
@@ -95,7 +95,7 @@
           <!-- Divider -->
           <div class="divider">
             <div class="divider-line"></div>
-            <span class="divider-text">Or continue with</span>
+            <span class="divider-text">{{ $t('login.orContinueWith') }}</span>
           </div>
 
           <!-- Social Login -->
@@ -124,6 +124,7 @@
 import { Mail, Lock, ArrowRight } from 'lucide-vue-next'
 import ImageWithFallback from '../components/ImageWithFallback.vue'
 import { useAuthStore } from '@/stores/auth'
+import { useToastStore } from '@/stores/toast'
 
 export default {
   name: 'LoginView',
@@ -139,21 +140,26 @@ export default {
       password: '',
       showPassword: false,
       rememberMe: false,
-      error: null
+      loading: false
     }
   },
   setup() {
     const authStore = useAuthStore()
-    return { authStore }
+    const toastStore = useToastStore()
+    return { authStore, toastStore }
   },
   methods: {
     async handleSubmit() {
-      this.error = null
+      this.loading = true
       try {
         await this.authStore.login(this.email, this.password, this.rememberMe)
+        this.toastStore.success(this.$t('login.welcomeToast'))
         this.$router.push({ name: 'home' })
       } catch (e) {
-        this.error = e.message || 'Login failed'
+        const message = e.message || this.$t('login.errorToast')
+        this.toastStore.error(message)
+      } finally {
+        this.loading = false
       }
     },
     handleNavigate(page) {
@@ -457,4 +463,25 @@ export default {
 .btn--full {
   width: 100%;
 }
+
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 </style>

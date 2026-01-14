@@ -10,7 +10,16 @@ export default defineConfig({
     }
   },
   server: {
+    host: '0.0.0.0',
     port: 3000,
+    watch: {
+      usePolling: true,
+      interval: 1000
+    },
+    hmr: {
+      host: 'localhost',
+      port: 3000
+    },
     proxy: {
       '/api': {
         target: process.env.VITE_PROXY_TARGET || 'http://localhost:4000',

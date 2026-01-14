@@ -8,7 +8,7 @@ export const welcomeEmailTemplate = (name: string) => `
     .header { background-color: #4A90E2; color: white; padding: 20px; text-align: center; }
     .content { padding: 20px; background-color: #f9f9f9; }
     .footer { text-align: center; padding: 20px; font-size: 12px; color: #666; }
-    .button { display: inline-block; padding: 10px 20px; background-color: #4A90E2; color: white; text-decoration: none; border-radius: 5px; }
+    .button { display: inline-block; padding: 10px 20px; background-color: #4A90E2; color: #ffffff !important; text-decoration: none; border-radius: 5px; }
   </style>
 </head>
 <body>
@@ -20,7 +20,7 @@ export const welcomeEmailTemplate = (name: string) => `
       <p>Hi ${name},</p>
       <p>Welcome to BlueZone! We're excited to have you on board.</p>
       <p>Discover events, join groups, and connect with your community.</p>
-      <p><a href="${process.env.CLIENT_URL || 'http://localhost:5173'}" class="button">Get Started</a></p>
+      <p><a href="${process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173'}" class="button">Get Started</a></p>
     </div>
     <div class="footer">
       <p>&copy; ${new Date().getFullYear()} BlueZone. All rights reserved.</p>

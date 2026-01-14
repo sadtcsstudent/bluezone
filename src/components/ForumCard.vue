@@ -15,7 +15,7 @@
       <div class="forum-card-stats">
         <div class="stat-item">
           <MessageCircle :size="16" />
-          <span>{{ replies }} replies</span>
+          <span>{{ replies }} {{ $t('components.forumCard.replies') }}</span>
         </div>
         <div class="stat-item">
           <Clock :size="16" />

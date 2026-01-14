@@ -23,22 +23,22 @@
           />
           <div class="profile-details">
             <h1>{{ profile.name }}</h1>
-            <p class="profile-meta">Member since {{ memberSince }}</p>
+            <p class="profile-meta">{{ $t('profilePage.memberSince') }} {{ memberSince }}</p>
             <p class="profile-location">{{ profile.location }}</p>
           </div>
         </div>
         <div class="profile-actions">
           <button class="btn btn--outline-primary" @click="openEditModal">
             <Edit :size="16" />
-            <span>Edit Profile</span>
+            <span>{{ $t('profilePage.editProfile') }}</span>
           </button>
           <button v-if="profile.role === 'admin'" class="btn btn--primary" @click="navigate('admin')">
             <LayoutDashboard :size="16" />
-            <span>Admin Panel</span>
+            <span>{{ $t('profilePage.adminPanel') }}</span>
           </button>
           <button v-if="profile.role === 'company'" class="btn btn--primary" @click="navigate('company-dashboard')">
             <LayoutDashboard :size="16" />
-            <span>Company Dashboard</span>
+            <span>{{ $t('profilePage.companyDashboard') }}</span>
           </button>
           <button class="btn btn--icon" @click="navigate('settings')">
             <Settings :size="20" />
@@ -51,18 +51,18 @@
         <aside class="profile-sidebar">
           <!-- Quick Stats -->
           <div class="sidebar-card">
-            <h3>Quick Stats</h3>
+            <h3>{{ $t('profilePage.quickStats') }}</h3>
             <div class="stats-list">
               <div class="stat-item">
-                <span class="stat-label">Events Attended</span>
+                <span class="stat-label">{{ $t('profilePage.eventsAttended') }}</span>
                 <span class="stat-value">{{ stats.eventsAttended }}</span>
               </div>
               <div class="stat-item">
-                <span class="stat-label">Groups Joined</span>
+                <span class="stat-label">{{ $t('profilePage.groupsJoined') }}</span>
                 <span class="stat-value">{{ stats.groupsJoined }}</span>
               </div>
               <div class="stat-item">
-                <span class="stat-label">Forum Posts</span>
+                <span class="stat-label">{{ $t('profilePage.forumPosts') }}</span>
                 <span class="stat-value">{{ stats.forumPosts }}</span>
               </div>
             </div>
@@ -71,7 +71,7 @@
           <!-- Interests -->
           <div class="sidebar-card">
             <div class="card-header">
-              <h3>My Interests</h3>
+              <h3>{{ $t('profilePage.myInterests') }}</h3>
               <button class="icon-btn" @click="openEditModal">
                 <Edit :size="16" />
               </button>
@@ -91,11 +91,11 @@
           <div class="sidebar-card">
             <button class="action-btn" @click="navigate('settings')">
               <Settings :size="20" />
-              <span>Account Settings</span>
+              <span>{{ $t('profilePage.accountSettings') }}</span>
             </button>
             <button @click="handleLogout" class="action-btn action-btn--danger">
               <LogOut :size="20" />
-              <span>Log Out</span>
+              <span>{{ $t('profilePage.logOut') }}</span>
             </button>
           </div>
         </aside>
@@ -107,10 +107,10 @@
             <div class="content-card-header">
               <div class="content-card-title">
                 <Calendar :size="20" class="title-icon" />
-                <h3>My Upcoming Events</h3>
+                <h3>{{ $t('profilePage.upcomingEvents') }}</h3>
               </div>
               <button @click="navigate('events')" class="link-btn">
-                View All
+                {{ $t('profilePage.viewAll') }}
               </button>
             </div>
             <div class="event-list">
@@ -124,7 +124,7 @@
                   <p class="event-meta">{{ event.date }} • {{ event.time }}</p>
                 </div>
                 <span :class="['event-status', event.status === 'Registered' ? 'event-status--registered' : 'event-status--interested']">
-                  {{ event.status }}
+                  {{ event.status === 'Registered' ? $t('eventDetail.registered') : $t('eventDetail.interested') }}
                 </span>
               </div>
             </div>
@@ -135,10 +135,10 @@
             <div class="content-card-header">
               <div class="content-card-title">
                 <MessageCircle :size="20" class="title-icon" />
-                <h3>My Groups</h3>
+                <h3>{{ $t('profilePage.myGroups') }}</h3>
               </div>
               <button @click="navigate('forum')" class="link-btn">
-                Browse More
+                {{ $t('profilePage.browseMore') }}
               </button>
             </div>
             <div class="group-list">
@@ -149,9 +149,9 @@
               >
                 <div class="group-content">
                   <h4>{{ group.name }}</h4>
-                  <p class="group-meta">{{ group.category }} • {{ group.members }} members</p>
+                  <p class="group-meta">{{ group.category }} • {{ $t('profilePage.membersCount', { count: group.members }) }}</p>
                 </div>
-                <span class="group-role">{{ group.role }}</span>
+                <span class="group-role">{{ $t('profilePage.member') }}</span>
               </div>
             </div>
           </div>
@@ -161,10 +161,10 @@
             <div class="content-card-header">
               <div class="content-card-title">
                 <Heart :size="20" class="title-icon" />
-                <h3>Saved Initiatives</h3>
+                <h3>{{ $t('profilePage.savedInitiatives') }}</h3>
               </div>
               <button @click="navigate('map')" class="link-btn">
-                View Map
+                {{ $t('profilePage.viewMap') }}
               </button>
             </div>
             <div class="initiative-grid">
@@ -186,32 +186,32 @@
     <div v-if="showEditProfile" class="modal-overlay" @click.self="showEditProfile = false">
       <div class="modal-content">
         <div class="modal-header">
-          <h2>Edit Profile</h2>
+          <h2>{{ $t('profilePage.editProfileModal') }}</h2>
           <button class="close-btn" @click="showEditProfile = false">
             <X :size="24" />
           </button>
         </div>
         <form @submit.prevent="updateProfile" class="edit-form">
           <div class="form-group">
-            <label>Display Name</label>
+            <label>{{ $t('profilePage.displayName') }}</label>
             <input v-model="editForm.name" required />
           </div>
           <div class="form-group">
-            <label>Location</label>
-            <input v-model="editForm.location" placeholder="e.g. Enschede, NL" />
+            <label>{{ $t('common.location') }}</label>
+            <input v-model="editForm.location" :placeholder="$t('profilePage.locationPlaceholder')" />
           </div>
           <div class="form-group">
-            <label>Bio</label>
-            <textarea v-model="editForm.bio" rows="3" placeholder="Tell us about yourself"></textarea>
+            <label>{{ $t('profilePage.bio') }}</label>
+            <textarea v-model="editForm.bio" rows="3" :placeholder="$t('profilePage.bioPlaceholder')"></textarea>
           </div>
           <div class="form-group">
-            <label>Interests (comma separated)</label>
-            <input v-model="editForm.interests" placeholder="Gardening, Cooking, Yoga" />
+            <label>{{ $t('profilePage.interestsLabel') }}</label>
+            <input v-model="editForm.interests" :placeholder="$t('profilePage.interestsPlaceholder')" />
           </div>
           <div class="modal-actions">
-            <button type="button" class="btn btn--ghost" @click="showEditProfile = false">Cancel</button>
+            <button type="button" class="btn btn--ghost" @click="showEditProfile = false">{{ $t('common.cancel') }}</button>
             <button type="submit" class="btn btn--primary" :disabled="saving">
-              {{ saving ? 'Saving...' : 'Save Changes' }}
+              {{ saving ? $t('profilePage.saving') : $t('common.saveChanges') }}
             </button>
           </div>
         </form>
@@ -295,7 +295,7 @@ export default {
 
       const toast = useToastStore()
       if (file.size > 5 * 1024 * 1024) {
-        toast.error('Image size should be less than 5MB')
+        toast.error(this.$t('profilePage.imageSizeError'))
         return
       }
 
@@ -307,10 +307,10 @@ export default {
           headers: { 'Content-Type': 'multipart/form-data' }
         })
         this.profile.avatar = response.url
-        toast.success('Avatar uploaded successfully')
+        toast.success(this.$t('profilePage.avatarUploadSuccess'))
       } catch (error) {
         console.error('Avatar upload failed:', error)
-        toast.error('Failed to upload avatar')
+        toast.error(this.$t('profilePage.avatarUploadFailed'))
       }
     },
     openEditModal() {
@@ -334,10 +334,10 @@ export default {
         await api.put('/users/me', updates)
         await this.loadProfile()
         this.showEditProfile = false
-        toast.success('Profile updated!')
+        toast.success(this.$t('profilePage.profileUpdated'))
       } catch (err) {
         console.error('Failed to update profile', err)
-        toast.error('Failed to update profile')
+        toast.error(this.$t('profilePage.profileUpdateFailed'))
       } finally {
         this.saving = false
       }

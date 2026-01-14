@@ -12,7 +12,7 @@ const adminEventSchema = z
     date: z.string(),
     time: z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/).optional(),
     location: z.string().min(2, 'Location is required'),
-    category: z.string().min(2, 'Category is required'),
+    categoryId: z.string().min(1, 'Category is required'),
     maxAttendees: z
       .preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().int().positive())
       .optional(),
@@ -118,11 +118,12 @@ export const adminCreateEvent = async (req: Request, res: Response, next: NextFu
         date: parsedDate,
         time: body.time || parsedDate.toISOString().split('T')[1]?.slice(0, 5) || '00:00',
         location: body.location,
-        category: body.category,
+        categoryId: body.categoryId,
         maxAttendees: typeof body.maxAttendees === 'number' ? body.maxAttendees : null,
         imageUrl: body.imageUrl || body.image || '',
         organizerId: body.organizerId || req.user!.id
-      }
+      },
+      include: { category: true }
     });
     res.status(201).json({ event });
   } catch (error) {
@@ -147,7 +148,7 @@ export const adminUpdateEvent = async (req: Request, res: Response, next: NextFu
     if (body.title) data.title = body.title;
     if (body.description) data.description = body.description;
     if (body.location) data.location = body.location;
-    if (body.category) data.category = body.category;
+    if (body.categoryId) data.categoryId = body.categoryId;
     if (typeof body.maxAttendees !== 'undefined') data.maxAttendees = body.maxAttendees ?? null;
     if (body.imageUrl || body.image) data.imageUrl = body.imageUrl || body.image;
     if (body.organizerId) data.organizerId = body.organizerId;
@@ -161,7 +162,11 @@ export const adminUpdateEvent = async (req: Request, res: Response, next: NextFu
       data.time = body.time;
     }
 
-    const event = await prisma.event.update({ where: { id: req.params.id }, data });
+    const event = await prisma.event.update({
+      where: { id: req.params.id },
+      data,
+      include: { category: true }
+    });
     res.json({ event });
   } catch (error) {
     if (error instanceof z.ZodError) {

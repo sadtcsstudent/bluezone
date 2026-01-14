@@ -52,8 +52,13 @@ const getTransporter = () => {
   return transporterPromise;
 };
 
+const getClientUrl = () => {
+  return process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173';
+};
+
 export const sendWelcomeEmail = async (email: string, name: string) => {
   try {
+    console.log(`Attempting to send welcome email to ${email}`);
     const transporter = await getTransporter();
 
     // For jsonTransport (fallback), this mimics sendMail
@@ -76,9 +81,10 @@ export const sendWelcomeEmail = async (email: string, name: string) => {
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
   try {
+    console.log(`Attempting to send password reset email to ${email}`);
     const transporter = await getTransporter();
 
-    const resetUrl = `${process.env.CLIENT_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
+    const resetUrl = `${getClientUrl()}/reset-password?token=${token}`;
     const info = await transporter.sendMail({
       from: process.env.SMTP_FROM || '"BlueZone" <noreply@bluezone.com>',
       to: email,
@@ -98,6 +104,7 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
 
 export const sendNewsletterConfirmation = async (email: string) => {
   try {
+    console.log(`Attempting to send newsletter confirmation to ${email}`);
     const transporter = await getTransporter();
 
     const info = await transporter.sendMail({
@@ -139,7 +146,7 @@ export const sendNewsletterBroadcast = async (recipients: string[], subject: str
             <hr>
             <p style="font-size: 12px; color: #666;">
               You are receiving this email because you subscribed to the BlueZone newsletter.
-              <a href="${process.env.CLIENT_URL || 'http://localhost:3000'}/newsletter">Unsubscribe</a>
+              <a href="${getClientUrl()}/newsletter">Unsubscribe</a>
             </p>
           </div>`,
         });

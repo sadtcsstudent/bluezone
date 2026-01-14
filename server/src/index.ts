@@ -5,9 +5,9 @@ import helmet from 'helmet';
 import hpp from 'hpp';
 import path from 'path';
 import http from 'http';
+import { config } from './config';
 import routes from './routes';
 import { errorHandler } from './middleware/error.middleware';
-import { config } from './config';
 import { logger } from './utils/logger';
 import { setupSocket } from './socket';
 

@@ -1,4 +1,3 @@
-```
 <template>
   <div class="map-page">
     <div class="map-container">
@@ -7,12 +6,11 @@
         <div>
           <div class="map-badge">
             <MapPin :size="16" class="badge-icon" />
-            <span class="badge-text">Local Map</span>
+            <span class="badge-text">{{ $t('map.badge') }}</span>
           </div>
-          <h1>Community Initiatives Map</h1>
+          <h1>{{ $t('map.title') }}</h1>
           <p class="map-subtitle">
-            Discover community gardens, farmers markets, walking groups, and other
-            local initiatives near you.
+            {{ $t('map.subtitle') }}
           </p>
         </div>
 
@@ -20,7 +18,7 @@
         <div class="map-controls">
           <div class="search-bar">
             <Search :size="18" class="search-icon" />
-            <input v-model="searchQuery" type="text" placeholder="Search initiatives..." />
+            <input v-model="searchQuery" type="text" :placeholder="$t('map.searchPlaceholder')" />
           </div>
 
           <div class="filter-buttons">
@@ -28,35 +26,35 @@
               @click="filterType = 'all'"
               :class="['filter-btn', { 'filter-btn--active': filterType === 'all' }]"
             >
-              All Initiatives
+              {{ $t('map.filters.all') }}
             </button>
             <button
               @click="filterType = 'garden'"
               :class="['filter-btn', { 'filter-btn--garden': filterType === 'garden' }]"
             >
               <Leaf :size="16" />
-              <span>Gardens</span>
+              <span>{{ $t('map.filters.garden') }}</span>
             </button>
             <button
               @click="filterType = 'market'"
               :class="['filter-btn', { 'filter-btn--market': filterType === 'market' }]"
             >
               <ShoppingBasket :size="16" />
-              <span>Markets</span>
+              <span>{{ $t('map.filters.market') }}</span>
             </button>
             <button
               @click="filterType = 'event'"
               :class="['filter-btn', { 'filter-btn--event': filterType === 'event' }]"
             >
               <Calendar :size="16" />
-              <span>Events</span>
+              <span>{{ $t('map.filters.event') }}</span>
             </button>
             <button
               @click="filterType = 'group'"
               :class="['filter-btn', { 'filter-btn--group': filterType === 'group' }]"
             >
               <Users :size="16" />
-              <span>Groups</span>
+              <span>{{ $t('map.filters.group') }}</span>
             </button>
           </div>
         </div>
@@ -70,19 +68,19 @@
         <div class="map-legend">
           <div class="legend-item">
             <div class="legend-dot legend-dot--garden"></div>
-            <span>Gardens</span>
+            <span>{{ $t('map.legend.garden') }}</span>
           </div>
           <div class="legend-item">
             <div class="legend-dot legend-dot--market"></div>
-            <span>Markets</span>
+            <span>{{ $t('map.legend.market') }}</span>
           </div>
           <div class="legend-item">
             <div class="legend-dot legend-dot--event"></div>
-            <span>Events</span>
+            <span>{{ $t('map.legend.event') }}</span>
           </div>
           <div class="legend-item">
             <div class="legend-dot legend-dot--group"></div>
-            <span>Groups</span>
+            <span>{{ $t('map.legend.group') }}</span>
           </div>
         </div>
       </div>
@@ -245,7 +243,9 @@ export default {
         const initiatives = (data.initiatives || []).map((i) => ({
           ...i,
           isSaved: !!i.isSaved,
-          coordinates: { x: i.coordinateX, y: i.coordinateY }
+          latitude: i.latitude,
+          longitude: i.longitude,
+          coordinates: { x: i.coordinateX, y: i.coordinateY } // Keep for backward compatibility
         }))
 
         this.initiatives = initiatives.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
@@ -255,10 +255,10 @@ export default {
       }
     },
     initMap() {
-      // Enschede Coordinates
-      const lat = 52.22153;
-      const lng = 6.89366;
-      const zoom = 13;
+      // Overijssel Center Coordinates
+      const lat = 52.45;  // Center of Overijssel
+      const lng = 6.5;
+      const zoom = 10;  // Zoomed out to show entire province
 
       this.map = markRaw(L.map('map').setView([lat, lng], zoom));
 
@@ -276,15 +276,26 @@ export default {
       this.markers = [];
 
       this.filteredInitiatives.forEach(initiative => {
-        // Map 0-100 x/y to Lat/Lon box around Enschede
-        // Min Lat: 52.20, Max Lat: 52.24 (approx 5km height)
-        // Min Lng: 6.87, Max Lng: 6.92 (approx 5km width)
-        
-        // Y: 0% -> 52.24 (Top/North), 100% -> 52.20 (Bottom/South)
-        const lat = 52.24 - (initiative.coordinates.y / 100) * 0.04;
-        
-        // X: 0% -> 6.87 (Left/West), 100% -> 6.92 (Right/East)
-        const lng = 6.87 + (initiative.coordinates.x / 100) * 0.05;
+        // Use real coordinates if available, fallback to old conversion
+        let lat, lng
+
+        if (initiative.latitude && initiative.longitude) {
+          // New system: use real coordinates
+          lat = initiative.latitude
+          lng = initiative.longitude
+        } else if (initiative.coordinates && initiative.coordinates.x !== undefined && initiative.coordinates.y !== undefined) {
+          // Old system: convert using ORIGINAL Enschede formula for backward compatibility
+          const ENSCHEDE_LAT_BASE = 52.24
+          const ENSCHEDE_LAT_RANGE = 0.04
+          const ENSCHEDE_LNG_BASE = 6.87
+          const ENSCHEDE_LNG_RANGE = 0.05
+
+          lat = ENSCHEDE_LAT_BASE - (initiative.coordinates.y / 100) * ENSCHEDE_LAT_RANGE
+          lng = ENSCHEDE_LNG_BASE + (initiative.coordinates.x / 100) * ENSCHEDE_LNG_RANGE
+        } else {
+          // Skip if no coordinates
+          return
+        }
 
         // Custom Icon using CSS classes
         const getMarkerIcon = (type) => {
@@ -304,9 +315,7 @@ export default {
         };
 
         const iconHtml = `<div class="pin-icon pin-icon--${initiative.type}">
-          <div style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
-            ${getMarkerIcon(initiative.type)}
-          </div>
+          ${getMarkerIcon(initiative.type)}
         </div>`;
 
         const customIcon = L.divIcon({
@@ -328,14 +337,26 @@ export default {
       });
     },
     getDirections() {
-      if (!this.selectedInitiative || !this.selectedInitiative.coordinates) return
-      
-      // Calculate Lat/Lng from X/Y (same logic as map markers)
-      // Y: 0% -> 52.24 (Top/North), 100% -> 52.20 (Bottom/South)
-      const lat = 52.24 - (this.selectedInitiative.coordinates.y / 100) * 0.04;
-      
-      // X: 0% -> 6.87 (Left/West), 100% -> 6.92 (Right/East)
-      const lng = 6.87 + (this.selectedInitiative.coordinates.x / 100) * 0.05;
+      if (!this.selectedInitiative) return
+
+      let lat, lng
+
+      // Use real coordinates if available
+      if (this.selectedInitiative.latitude && this.selectedInitiative.longitude) {
+        lat = this.selectedInitiative.latitude
+        lng = this.selectedInitiative.longitude
+      } else if (this.selectedInitiative.coordinates) {
+        // Fallback to old system
+        const ENSCHEDE_LAT_BASE = 52.24
+        const ENSCHEDE_LAT_RANGE = 0.04
+        const ENSCHEDE_LNG_BASE = 6.87
+        const ENSCHEDE_LNG_RANGE = 0.05
+
+        lat = ENSCHEDE_LAT_BASE - (this.selectedInitiative.coordinates.y / 100) * ENSCHEDE_LAT_RANGE
+        lng = ENSCHEDE_LNG_BASE + (this.selectedInitiative.coordinates.x / 100) * ENSCHEDE_LNG_RANGE
+      } else {
+        return
+      }
 
       const destination = `${lat},${lng}`
       window.open(`https://www.google.com/maps/dir/?api=1&destination=${destination}`, '_blank')
@@ -362,6 +383,51 @@ export default {
   }
 }
 </script>
+
+<style>
+/* Global styles for Leaflet markers - must NOT be scoped */
+.custom-map-marker {
+  background: none !important;
+  border: none !important;
+}
+
+.pin-icon {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 50% !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: white !important;
+  transition: transform 0.2s ease !important;
+  padding: 12px !important;
+  box-sizing: border-box !important;
+}
+
+.pin-icon svg {
+  width: 100% !important;
+  height: 100% !important;
+  flex-shrink: 0 !important;
+  display: block !important;
+}
+
+.pin-icon--garden {
+  background: #3B8299 !important; /* Teal blue - matches legend */
+}
+
+.pin-icon--market {
+  background: #52A6C1 !important; /* Light blue - matches legend */
+}
+
+.pin-icon--event {
+  background: #8FC7DC !important; /* Soft sky blue - matches legend */
+}
+
+.pin-icon--group {
+  background: #295B6B !important; /* Dark teal - matches legend */
+}
+</style>
 
 <style scoped>
 .map-page {
@@ -488,34 +554,38 @@ export default {
   background: rgb(var(--color-background));
 }
 
+.filter-btn:active {
+  transform: scale(0.98);
+}
+
 .filter-btn--active {
-  background: rgb(var(--color-primary));
-  color: white;
-  border-color: rgb(var(--color-primary));
+  background: rgb(var(--color-primary)) !important;
+  color: white !important;
+  border-color: rgb(var(--color-primary)) !important;
 }
 
 .filter-btn--garden {
-  background: rgb(var(--color-primary));
-  color: white;
-  border-color: rgb(var(--color-primary));
+  background: rgb(var(--color-primary)) !important;
+  color: white !important;
+  border-color: rgb(var(--color-primary)) !important;
 }
 
 .filter-btn--market {
-  background: rgb(var(--color-secondary));
-  color: white;
-  border-color: rgb(var(--color-secondary));
+  background: rgb(var(--color-secondary)) !important;
+  color: white !important;
+  border-color: rgb(var(--color-secondary)) !important;
 }
 
 .filter-btn--event {
-  background: rgb(var(--color-accent));
-  color: rgb(var(--color-primary-dark));
-  border-color: rgb(var(--color-accent));
+  background: rgb(var(--color-accent)) !important;
+  color: rgb(var(--color-primary-dark)) !important;
+  border-color: rgb(var(--color-accent)) !important;
 }
 
 .filter-btn--group {
-  background: rgb(var(--color-primary-dark));
-  color: white;
-  border-color: rgb(var(--color-primary-dark));
+  background: rgb(var(--color-primary-dark)) !important;
+  color: white !important;
+  border-color: rgb(var(--color-primary-dark)) !important;
 }
 
 /* Map Canvas */
@@ -534,43 +604,7 @@ export default {
   z-index: 1;
 }
 
-/* Reusing pin styles for Leaflet custom icons */
-
-/* Ensure the wrapper div from Leaflet has no background/border if it picked up defaults */
-:deep(.custom-map-marker) {
-  background: none !important;
-  border: none !important;
-}
-
-/* The .pin-icon class is used within the L.divIcon HTML */
-.pin-icon {
-  width: 48px; /* Use px instead of rem to match JS */
-  height: 48px; /* Use px instead of rem to match JS */
-  border-radius: 9999px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  transition: transform 0.2s ease;
-}
-
-/* Specific colors for pin types */
-.pin-icon--garden {
-  background: rgb(var(--color-primary));
-}
-
-.pin-icon--market {
-  background: rgb(var(--color-secondary));
-}
-
-.pin-icon--event {
-  background: rgb(var(--color-accent));
-}
-
-.pin-icon--group {
-  background: rgb(var(--color-primary-dark));
-}
+/* Pin styles moved to non-scoped style block above */
 
 /* Leaflet tooltip styling */
 .leaflet-tooltip {
@@ -805,4 +839,3 @@ export default {
   border-color: rgb(var(--color-primary));
 }
 </style>
-```

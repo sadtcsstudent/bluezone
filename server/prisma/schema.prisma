@@ -38,6 +38,8 @@ model User {
   notifications     Notification[]
   discussionLikes   DiscussionLike[]
   replyLikes        ReplyLike[]
+  polls             Poll[]                      @relation("PollCreator")
+  pollVotes         PollVote[]                  @relation("PollVoteUser")
   resetTokens       PasswordResetToken[]
   newsletterSub     NewsletterSubscriber?       @relation("UserNewsletter")
   createdInitiatives Initiative[]               @relation("CreatedInitiatives")
@@ -53,7 +55,8 @@ model Event {
   date          DateTime
   time          String
   location      String
-  category      String
+  categoryId    String
+  category      Category             @relation(fields: [categoryId], references: [id])
   imageUrl      String
   maxAttendees  Int?
   organizerId   String
@@ -62,6 +65,18 @@ model Event {
 
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  icon      String
+  color     String
+
+  events    Event[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model EventRegistration {
@@ -118,8 +133,10 @@ model Initiative {
   type           String
   location       String
   description    String
-  coordinateX    Float
-  coordinateY    Float
+  latitude       Float?
+  longitude      Float?
+  coordinateX    Float?              // Keep old fields for migration
+  coordinateY    Float?              // Keep old fields for migration
   contact        String?
   website        String?
 
@@ -277,6 +294,42 @@ model Notification {
   link      String?
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   createdAt DateTime @default(now())
+}
+
+model Poll {
+  id          String       @id @default(cuid())
+  question    String
+  active      Boolean      @default(true)
+  allowMultiple Boolean    @default(false)
+  allowChangeVote Boolean  @default(false)
+  createdById String
+  createdBy   User         @relation("PollCreator", fields: [createdById], references: [id])
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  options     PollOption[]
+  votes       PollVote[]
+}
+
+model PollOption {
+  id        String     @id @default(cuid())
+  pollId    String
+  poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  text      String
+  votes     PollVote[]
+}
+
+model PollVote {
+  id        String     @id @default(cuid())
+  pollId    String
+  optionId  String
+  userId    String
+  
+  poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  option    PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  user      User       @relation("PollVoteUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime   @default(now())
+  
+  @@unique([pollId, optionId, userId])
 }

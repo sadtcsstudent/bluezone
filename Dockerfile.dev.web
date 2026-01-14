@@ -12,9 +12,9 @@ RUN apt-get update && apt-get install -y \
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-ENV TAILWIND_DISABLE_LIGHTNINGCSS=1
-RUN rm -f package-lock.json && npm install && npm remove lightningcss
+# Install dependencies with proper platform binaries for Linux
+RUN rm -f package-lock.json yarn.lock && \
+    npm install --force
 
 EXPOSE 3000
 

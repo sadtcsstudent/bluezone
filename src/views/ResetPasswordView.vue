@@ -5,18 +5,18 @@
         <LockKeyhole :size="32" />
       </div>
       
-      <h1>Reset Password</h1>
-      <p class="subtitle">Enter your new password below.</p>
+      <h1>{{ $t('resetPassword.title') }}</h1>
+      <p class="subtitle">{{ $t('resetPassword.subtitle') }}</p>
 
       <form @submit.prevent="submit" class="auth-form">
         <div class="form-group">
-          <label>New Password</label>
+          <label>{{ $t('resetPassword.newPassword') }}</label>
           <div class="input-wrapper">
             <Lock :size="20" class="input-icon" />
             <input 
               type="password" 
               v-model="password" 
-              placeholder="Min. 8 characters" 
+              :placeholder="$t('signup.passwordPlaceholder')" 
               required 
               minlength="8"
             />
@@ -24,18 +24,18 @@
         </div>
 
         <button type="submit" class="btn btn--primary" :disabled="loading || done">
-          <span v-if="!loading && !done">Reset Password</span>
-          <span v-else-if="loading">Updating...</span>
-          <span v-else>Password Updated</span>
+          <span v-if="!loading && !done">{{ $t('resetPassword.button') }}</span>
+          <span v-else-if="loading">{{ $t('resetPassword.updating') }}</span>
+          <span v-else>{{ $t('resetPassword.updated') }}</span>
         </button>
 
         <div v-if="done" class="success-message">
           <CheckCircle2 :size="20" />
-          <span>Your password has been reset successfully.</span>
+          <span>{{ $t('resetPassword.success') }}</span>
         </div>
 
         <router-link v-if="done" :to="{ name: 'login' }" class="btn btn--outline">
-          Log In Now
+          {{ $t('resetPassword.loginNow') }}
         </router-link>
       </form>
     </div>

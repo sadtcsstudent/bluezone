@@ -8,8 +8,8 @@
       <!-- Hero Section -->
       <div class="hero-section">
         <div class="hero-background">
-          <ImageWithFallback 
-            :src="event.image || 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80'" 
+          <ImageWithFallback
+            :src="event.image || getCategoryFallbackImage(event.category)"
             class-name="hero-img"
             alt="Event cover"
           />
@@ -18,12 +18,12 @@
         
         <div class="hero-content container">
           <div class="hero-badges">
-            <span class="badge category">{{ event.category || 'Community' }}</span>
+            <span class="badge category">{{ translateCategory(event.category) || $t('categories.Other') }}</span>
             <span v-if="event.status === 'registered'" class="badge status-registered">
-              <Check :size="14" /> Registered
+              <Check :size="14" /> {{ $t('eventDetail.registered') }}
             </span>
             <span v-else-if="event.status === 'interested'" class="badge status-interested">
-              <Star :size="14" /> Interested
+              <Star :size="14" /> {{ $t('eventDetail.interested') }}
             </span>
           </div>
           
@@ -46,10 +46,10 @@
 
           <div class="hero-actions">
             <button class="btn btn--white-outline" @click="shareEvent">
-              <Share2 :size="18" /> Share
+              <Share2 :size="18" /> {{ $t('eventDetail.share') }}
             </button>
             <button class="btn btn--white-outline" @click="downloadICS">
-              <Download :size="18" /> Add to Calendar
+              <Download :size="18" /> {{ $t('eventDetail.addToCalendar') }}
             </button>
           </div>
         </div>
@@ -60,14 +60,14 @@
           <!-- Left Column -->
           <div class="main-column">
             <section class="section">
-              <h2>About this event</h2>
+              <h2>{{ $t('eventDetail.aboutThisEvent') }}</h2>
               <p class="description">{{ event.description }}</p>
             </section>
 
             <section class="section">
               <div class="section-header">
-                <h2>Attendees</h2>
-                <span class="attendee-count">{{ attendees.length }} going</span>
+                <h2>{{ $t('eventDetail.attendees') }}</h2>
+                <span class="attendee-count">{{ $t('eventDetail.attendeesCount', { count: attendees.length }) }}</span>
               </div>
               
               <div class="attendees-grid">
@@ -88,8 +88,8 @@
 
             <section class="section" v-if="interested.length">
               <div class="section-header">
-                <h2>Interested</h2>
-                <span class="attendee-count">{{ interested.length }} interested</span>
+                <h2>{{ $t('eventDetail.interestedSection') }}</h2>
+                <span class="attendee-count">{{ $t('eventDetail.interestedCount', { count: interested.length }) }}</span>
               </div>
               
               <div class="attendees-grid">
@@ -112,58 +112,58 @@
           <!-- Right Column (Sidebar) -->
           <aside class="sidebar-column">
             <div class="registration-card">
-              <h3>Registration</h3>
+              <h3>{{ $t('eventDetail.registration') }}</h3>
               <div class="capacity-info" v-if="event.maxAttendees">
                 <div class="progress-bar">
-                  <div 
-                    class="progress-fill" 
+                  <div
+                    class="progress-fill"
                     :style="{ width: `${(attendees.length / event.maxAttendees) * 100}%` }"
                   ></div>
                 </div>
                 <div class="capacity-text">
-                  <span>{{ attendees.length }} spots taken</span>
-                  <span>{{ event.maxAttendees }} total</span>
+                  <span>{{ $t('eventDetail.spotsTaken', { count: attendees.length }) }}</span>
+                  <span>{{ $t('eventDetail.totalSpots', { count: event.maxAttendees }) }}</span>
                 </div>
               </div>
 
               <div class="action-buttons">
-                <button 
+                <button
                   v-if="event.status !== 'registered'"
-                  @click="register('registered')" 
+                  @click="register('registered')"
                   class="btn btn--primary btn--full"
                   :disabled="event.maxAttendees && attendees.length >= event.maxAttendees"
                 >
-                  {{ (event.maxAttendees && attendees.length >= event.maxAttendees) ? 'Full' : 'Register Now' }}
-                </button>
-                
-                <button 
-                  v-else
-                  @click="unregister" 
-                  class="btn btn--danger-outline btn--full"
-                >
-                  Unregister
+                  {{ (event.maxAttendees && attendees.length >= event.maxAttendees) ? $t('eventDetail.full') : $t('eventDetail.registerNow') }}
                 </button>
 
-                <button 
-                  @click="register('interested')" 
+                <button
+                  v-else
+                  @click="unregister"
+                  class="btn btn--danger-outline btn--full"
+                >
+                  {{ $t('eventDetail.unregister') }}
+                </button>
+
+                <button
+                  @click="register('interested')"
                   class="btn btn--outline btn--full"
                   :class="{ 'active': event.status === 'interested' }"
                 >
                   <Star :size="18" />
-                  <span>{{ event.status === 'interested' ? 'Remove Interest' : 'Mark as Interested' }}</span>
+                  <span>{{ event.status === 'interested' ? $t('eventDetail.removeInterest') : $t('eventDetail.markAsInterested') }}</span>
                 </button>
               </div>
             </div>
 
             <div class="host-card">
-              <h3>Hosted by</h3>
+              <h3>{{ $t('eventDetail.hostedBy') }}</h3>
               <div class="host-info">
                 <div class="host-avatar">
                   <User :size="24" />
                 </div>
                 <div class="host-details">
-                  <span class="host-name">Community Leader</span>
-                  <span class="host-role">Organizer</span>
+                  <span class="host-name">{{ $t('eventDetail.communityLeader') }}</span>
+                  <span class="host-role">{{ $t('eventDetail.organizer') }}</span>
                 </div>
               </div>
             </div>
@@ -182,6 +182,11 @@ import api from '@/services/api'
 import ImageWithFallback from '@/components/ImageWithFallback.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useToastStore } from '@/stores/toast'
+import { useTranslateCategory } from '@/composables/useTranslateCategory'
+import { useI18n } from 'vue-i18n'
+
+const { translateCategory } = useTranslateCategory()
+const { t } = useI18n()
 
 const route = useRoute()
 const router = useRouter()
@@ -201,19 +206,42 @@ const formatDate = (dateString) => {
   })
 }
 
+const getCategoryFallbackImage = (category) => {
+  const categoryImages = {
+    'Sports & Fitness': 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?auto=format&fit=crop&q=80&w=1200',
+    'Arts & Culture': 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&q=80&w=1200',
+    'Music & Entertainment': 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&q=80&w=1200',
+    'Food & Drink': 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=1200',
+    'Education & Learning': 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&q=80&w=1200',
+    'Technology': 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1200',
+    'Health & Wellness': 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=1200',
+    'Outdoor & Nature': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=1200',
+    'Business & Networking': 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=1200',
+    'Community & Social': 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&q=80&w=1200',
+    'Family & Kids': 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=1200',
+    'Other': 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=1200'
+  }
+
+  return categoryImages[category] || categoryImages['Other']
+}
+
 const load = async () => {
   loading.value = true
   try {
     const data = await api.get(`/events/${route.params.id}`)
     const userStatus = data.userStatus || (data.isRegistered ? 'registered' : null)
 
-    event.value = { ...data.event, status: userStatus || null }
-    
+    event.value = {
+      ...data.event,
+      category: typeof data.event.category === 'object' ? data.event.category?.name : data.event.category,
+      status: userStatus || null
+    }
+
     // Safeguard: Ensure no overlap between attendees and interested lists
     const rawInterested = data.interested || []
     const interestedIds = new Set(rawInterested.map(u => u.id))
     const rawAttendees = data.attendees || []
-    
+
     // Filter out anyone in interested list from attendees list (strict separation)
     attendees.value = rawAttendees.filter(a => !interestedIds.has(a.id))
     interested.value = rawInterested
@@ -248,12 +276,12 @@ const register = async (status) => {
   }
 }
 
-const unregister = async (skipConfirm = false, successMessage = 'You have been unregistered') => {
+const unregister = async (skipConfirm = false, successMessage = null) => {
   if (!requireLogin()) return
   if (!skipConfirm && !confirm('Are you sure you want to unregister?')) return
   try {
     await api.delete(`/events/${route.params.id}/register`)
-    toast.success(successMessage)
+    toast.success(successMessage || 'You have been unregistered')
     await load()
   } catch (error) {
     console.error('Unregistration failed:', error)
@@ -266,7 +294,7 @@ const shareEvent = async () => {
     try {
       await navigator.share({
         title: event.value.title,
-        text: `Check out this event: ${event.value.title}`,
+        text: t('eventDetail.checkOutEvent', { title: event.value.title }),
         url: window.location.href
       })
     } catch (err) {
@@ -274,7 +302,7 @@ const shareEvent = async () => {
     }
   } else {
     navigator.clipboard.writeText(window.location.href)
-    alert('Link copied to clipboard!')
+    alert(t('eventDetail.linkCopied'))
   }
 }
 
@@ -372,7 +400,7 @@ onMounted(load)
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.8));
+  background: linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.85));
 }
 
 .hero-content {
@@ -383,6 +411,7 @@ onMounted(load)
   flex-direction: column;
   justify-content: flex-end;
   padding-bottom: 3rem;
+  color: white;
 }
 
 .hero-badges {
@@ -425,7 +454,8 @@ onMounted(load)
   font-weight: 800;
   margin-bottom: 1.5rem;
   line-height: 1.1;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  color: white;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5), 0 4px 16px rgba(0,0,0,0.3);
 }
 
 .hero-meta {
@@ -441,6 +471,8 @@ onMounted(load)
   gap: 0.5rem;
   font-size: 1.125rem;
   font-weight: 500;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .hero-actions {

@@ -5,18 +5,18 @@
         <KeyRound :size="32" />
       </div>
       
-      <h1>Forgot Password?</h1>
-      <p class="subtitle">No worries, we'll send you reset instructions.</p>
+      <h1>{{ $t('forgotPassword.title') }}</h1>
+      <p class="subtitle">{{ $t('forgotPassword.subtitle') }}</p>
 
       <form @submit.prevent="submit" class="auth-form">
         <div class="form-group">
-          <label>Email Address</label>
+          <label>{{ $t('login.emailLabel') }}</label>
           <div class="input-wrapper">
             <Mail :size="20" class="input-icon" />
             <input 
               type="email" 
               v-model="email" 
-              placeholder="Enter your email" 
+              :placeholder="$t('login.emailPlaceholder')" 
               required 
               :disabled="loading"
             />
@@ -24,18 +24,18 @@
         </div>
 
         <button type="submit" class="btn btn--primary" :disabled="loading">
-          <span v-if="!loading">Send Reset Link</span>
-          <span v-else>Sending...</span>
+          <span v-if="!loading">{{ $t('forgotPassword.sendLink') }}</span>
+          <span v-else>{{ $t('common.loading') }}</span>
         </button>
 
         <div v-if="sent" class="success-message">
           <CheckCircle2 :size="20" />
-          <span>If an account exists for {{ email }}, we've sent instructions.</span>
+          <span>{{ $t('forgotPassword.successMessage', { email }) }}</span>
         </div>
 
         <router-link :to="{ name: 'login' }" class="back-link">
           <ArrowLeft :size="16" />
-          <span>Back to log in</span>
+          <span>{{ $t('forgotPassword.backToLogin') }}</span>
         </router-link>
       </form>
     </div>

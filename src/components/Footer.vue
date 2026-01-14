@@ -10,8 +10,7 @@
             <span class="footer-logo-text">Blue Zone Twente</span>
           </div>
           <p class="footer-description">
-            A vibrant community dedicated to healthy, social, and sustainable living
-            in the beautiful Twente region.
+            {{ $t('footer.description') }}
           </p>
           <div class="footer-social">
             <a href="#" class="footer-social-link" aria-label="Facebook">
@@ -31,31 +30,31 @@
 
         <!-- Quick Links -->
         <div class="footer-section">
-          <h3 class="footer-title">Quick Links</h3>
+          <h3 class="footer-title">{{ $t('footer.quickLinks') }}</h3>
           <ul class="footer-links">
-            <li><a href="#" @click.prevent="navigate('home')">Home</a></li>
-            <li><a href="#" @click.prevent="navigate('story')">Our Story</a></li>
-            <li><a href="#" @click.prevent="navigate('events')">Events</a></li>
-            <li><a href="#" @click.prevent="navigate('forum')">Forum</a></li>
-            <li><a href="#" @click.prevent="navigate('map')">Map</a></li>
+            <li><a href="#" @click.prevent="navigate('home')">{{ $t('nav.home') }}</a></li>
+            <li><a href="#" @click.prevent="navigate('story')">{{ $t('nav.story') }}</a></li>
+            <li><a href="#" @click.prevent="navigate('events')">{{ $t('nav.events') }}</a></li>
+            <li><a href="#" @click.prevent="navigate('forum')">{{ $t('nav.forum') }}</a></li>
+            <li><a href="#" @click.prevent="navigate('map')">{{ $t('nav.map') }}</a></li>
           </ul>
         </div>
 
         <!-- Community -->
         <div class="footer-section">
-          <h3 class="footer-title">Community</h3>
+          <h3 class="footer-title">{{ $t('footer.community') }}</h3>
           <ul class="footer-links">
-            <li><a href="#" @click.prevent="navigate('newsletter')">Newsletter</a></li>
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">Resources</a></li>
-            <li><a href="#">Partnerships</a></li>
-            <li><a href="#">Volunteer</a></li>
+            <li><a href="#" @click.prevent="navigate('newsletter')">{{ $t('nav.newsletter') }}</a></li>
+            <li><a href="#">{{ $t('footer.blog') }}</a></li>
+            <li><a href="#">{{ $t('footer.resources') }}</a></li>
+            <li><a href="#">{{ $t('footer.partnerships') }}</a></li>
+            <li><a href="#">{{ $t('footer.volunteer') }}</a></li>
           </ul>
         </div>
 
         <!-- Contact -->
         <div class="footer-section">
-          <h3 class="footer-title">Contact</h3>
+          <h3 class="footer-title">{{ $t('footer.contact') }}</h3>
           <ul class="footer-contact">
             <li class="footer-contact-item">
               <Mail :size="16" />
@@ -76,12 +75,12 @@
       <!-- Footer Bottom -->
       <div class="footer-bottom">
         <p class="footer-copyright">
-          © {{ currentYear }} Blue Zone Twente. All rights reserved.
+          {{ $t('footer.copyright', { year: currentYear }) }}
         </p>
         <div class="footer-legal">
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Service</a>
-          <a href="#">Cookie Policy</a>
+          <a href="#">{{ $t('footer.privacyPolicy') }}</a>
+          <a href="#">{{ $t('footer.termsOfService') }}</a>
+          <a href="#">{{ $t('footer.cookiePolicy') }}</a>
         </div>
       </div>
     </div>

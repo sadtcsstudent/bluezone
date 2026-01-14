@@ -10,6 +10,18 @@
     </main>
     <Footer />
     <ToastContainer />
+    <ConfirmModal
+      :is-open="confirmState.isOpen.value"
+      :title="confirmState.title.value"
+      :message="confirmState.message.value"
+      :confirm-text="confirmState.confirmText.value"
+      :cancel-text="confirmState.cancelText.value"
+      :type="confirmState.type.value"
+      :show-cancel="confirmState.showCancel.value"
+      @confirm="confirmState.handleConfirm"
+      @cancel="confirmState.handleCancel"
+      @close="confirmState.handleClose"
+    />
   </div>
 </template>
 
@@ -19,9 +31,13 @@ import { useRoute } from 'vue-router'
 import Navigation from './components/Navigation.vue'
 import Footer from './components/Footer.vue'
 import ToastContainer from './components/ToastContainer.vue'
+import ConfirmModal from './components/ConfirmModal.vue'
 import { useAuthStore } from '@/stores/auth'
 import { socketService } from '@/services/socket.service'
+import { useConfirm } from '@/composables/useConfirm'
 import { WifiOff } from 'lucide-vue-next'
+
+const confirmState = useConfirm()
 
 const route = useRoute()
 const authStore = useAuthStore()
