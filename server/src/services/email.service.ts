@@ -1,18 +1,24 @@
-import { Resend } from 'resend';
+import axios from 'axios';
 import { welcomeEmailTemplate, passwordResetTemplate } from '../utils/email.templates';
 
-let resendClient: Resend | null = null;
+const MAILERLITE_API_URL = 'https://connect.mailerlite.com/api';
 
-const getResendClient = () => {
-  if (resendClient) return resendClient;
+const getMailerLiteClient = () => {
+  const apiKey = process.env.MAILERLITE_API_KEY;
 
-  if (process.env.RESEND_API_KEY) {
-    resendClient = new Resend(process.env.RESEND_API_KEY);
-    return resendClient;
+  if (!apiKey) {
+    console.warn('MAILERLITE_API_KEY not configured. Emails will not be sent.');
+    return null;
   }
 
-  console.warn('RESEND_API_KEY not configured. Emails will not be sent.');
-  return null;
+  return axios.create({
+    baseURL: MAILERLITE_API_URL,
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    }
+  });
 };
 
 const getClientUrl = () => {
@@ -22,91 +28,88 @@ const getClientUrl = () => {
 export const sendWelcomeEmail = async (email: string, name: string) => {
   try {
     console.log(`Attempting to send welcome email to ${email}`);
-    const resend = getResendClient();
+    const client = getMailerLiteClient();
 
-    if (!resend) {
-      console.log('Resend not configured, skipping email');
+    if (!client) {
+      console.log('MailerLite not configured, skipping email');
       return;
     }
 
-    const { data, error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'BlueZone <noreply@bluezonetwente.com>',
-      to: email,
+    const response = await client.post('/emails', {
+      from: {
+        email: process.env.EMAIL_FROM || 'noreply@bluezonetwente.com',
+        name: 'BlueZone'
+      },
+      to: [{ email }],
       subject: 'Welcome to BlueZone!',
-      html: welcomeEmailTemplate(name),
+      html: welcomeEmailTemplate(name)
     });
 
-    if (error) {
-      console.error('Error sending welcome email:', error);
-    } else {
-      console.log(`Welcome email sent to ${email}`, data);
-    }
-  } catch (error) {
-    console.error('Error sending welcome email:', error);
+    console.log(`Welcome email sent to ${email}`, response.data);
+  } catch (error: any) {
+    console.error('Error sending welcome email:', error.response?.data || error.message);
   }
 };
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
   try {
     console.log(`Attempting to send password reset email to ${email}`);
-    const resend = getResendClient();
+    const client = getMailerLiteClient();
 
-    if (!resend) {
-      console.log('Resend not configured, skipping email');
+    if (!client) {
+      console.log('MailerLite not configured, skipping email');
       return;
     }
 
     const resetUrl = `${getClientUrl()}/reset-password?token=${token}`;
-    const { data, error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'BlueZone <noreply@bluezonetwente.com>',
-      to: email,
+    const response = await client.post('/emails', {
+      from: {
+        email: process.env.EMAIL_FROM || 'noreply@bluezonetwente.com',
+        name: 'BlueZone'
+      },
+      to: [{ email }],
       subject: 'Reset Your Password',
-      html: passwordResetTemplate(resetUrl),
+      html: passwordResetTemplate(resetUrl)
     });
 
-    if (error) {
-      console.error('Error sending password reset email:', error);
-    } else {
-      console.log(`Password reset email sent to ${email}`, data);
-    }
-  } catch (error) {
-    console.error('Error sending password reset email:', error);
+    console.log(`Password reset email sent to ${email}`, response.data);
+  } catch (error: any) {
+    console.error('Error sending password reset email:', error.response?.data || error.message);
   }
 };
 
 export const sendNewsletterConfirmation = async (email: string) => {
   try {
     console.log(`Attempting to send newsletter confirmation to ${email}`);
-    const resend = getResendClient();
+    const client = getMailerLiteClient();
 
-    if (!resend) {
-      console.log('Resend not configured, skipping email');
+    if (!client) {
+      console.log('MailerLite not configured, skipping email');
       return;
     }
 
-    const { data, error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'BlueZone <noreply@bluezonetwente.com>',
-      to: email,
+    const response = await client.post('/emails', {
+      from: {
+        email: process.env.EMAIL_FROM || 'noreply@bluezonetwente.com',
+        name: 'BlueZone'
+      },
+      to: [{ email }],
       subject: 'Newsletter Subscription Confirmed',
-      html: `<p>You have successfully subscribed to the BlueZone newsletter.</p>`,
+      html: `<p>You have successfully subscribed to the BlueZone newsletter.</p>`
     });
 
-    if (error) {
-      console.error('Error sending newsletter confirmation email:', error);
-    } else {
-      console.log(`Newsletter confirmation email sent to ${email}`, data);
-    }
-  } catch (error) {
-    console.error('Error sending newsletter confirmation email:', error);
+    console.log(`Newsletter confirmation email sent to ${email}`, response.data);
+  } catch (error: any) {
+    console.error('Error sending newsletter confirmation email:', error.response?.data || error.message);
   }
 };
 
 export const sendNewsletterBroadcast = async (recipients: string[], subject: string, content: string) => {
   try {
-    const resend = getResendClient();
+    const client = getMailerLiteClient();
 
-    if (!resend) {
-      console.log('Resend not configured, skipping newsletter broadcast');
+    if (!client) {
+      console.log('MailerLite not configured, skipping newsletter broadcast');
       return 0;
     }
 
@@ -115,9 +118,12 @@ export const sendNewsletterBroadcast = async (recipients: string[], subject: str
     let sentCount = 0;
     for (const email of recipients) {
       try {
-        const { error } = await resend.emails.send({
-          from: process.env.EMAIL_FROM || 'BlueZone <noreply@bluezonetwente.com>',
-          to: email,
+        await client.post('/emails', {
+          from: {
+            email: process.env.EMAIL_FROM || 'noreply@bluezonetwente.com',
+            name: 'BlueZone'
+          },
+          to: [{ email }],
           subject: subject,
           html: `<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
             ${content.replace(/\n/g, '<br>')}
@@ -127,16 +133,12 @@ export const sendNewsletterBroadcast = async (recipients: string[], subject: str
               You are receiving this email because you subscribed to the BlueZone newsletter.
               <a href="${getClientUrl()}/newsletter">Unsubscribe</a>
             </p>
-          </div>`,
+          </div>`
         });
 
-        if (error) {
-          console.error(`Failed to send to ${email}:`, error);
-        } else {
-          sentCount++;
-        }
-      } catch (err) {
-        console.error(`Failed to send to ${email}:`, err);
+        sentCount++;
+      } catch (err: any) {
+        console.error(`Failed to send to ${email}:`, err.response?.data || err.message);
       }
     }
 
