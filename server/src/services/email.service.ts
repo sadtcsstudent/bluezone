@@ -1,59 +1,18 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import { welcomeEmailTemplate, passwordResetTemplate } from '../utils/email.templates';
 
-let transporterPromise: Promise<nodemailer.Transporter> | null = null;
+let resendClient: Resend | null = null;
 
-const getTransporter = () => {
-  if (transporterPromise) return transporterPromise;
+const getResendClient = () => {
+  if (resendClient) return resendClient;
 
-  transporterPromise = (async () => {
-    if (process.env.SMTP_HOST) {
-      const port = parseInt(process.env.SMTP_PORT || '587');
-      return nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: port,
-        secure: port === 465, // true for 465, false for other ports
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-        connectionTimeout: 10000, // 10 seconds
-        greetingTimeout: 10000,
-        socketTimeout: 10000,
-      });
-    }
+  if (process.env.RESEND_API_KEY) {
+    resendClient = new Resend(process.env.RESEND_API_KEY);
+    return resendClient;
+  }
 
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('SMTP not configured. Creating Ethereal test account...');
-      try {
-        const testAccount = await nodemailer.createTestAccount();
-        const transporter = nodemailer.createTransport({
-          host: 'smtp.ethereal.email',
-          port: 587,
-          secure: false, // true for 465, false for other ports
-          auth: {
-            user: testAccount.user, // generated ethereal user
-            pass: testAccount.pass, // generated ethereal password
-          },
-        });
-        console.log('Ethereal Email Server ready');
-        console.log('Credentials:', testAccount.user, testAccount.pass);
-        return transporter;
-      } catch (err) {
-        console.error('Failed to create Ethereal test account', err);
-        throw err;
-      }
-    }
-
-    // Fallback or silent fail if not prod and not dev?
-    // Better to return a dummy that logs
-    console.warn('SMTP not configured and not in dev mode. Emails will not be sent.');
-    return nodemailer.createTransport({
-      jsonTransport: true
-    });
-  })();
-
-  return transporterPromise;
+  console.warn('RESEND_API_KEY not configured. Emails will not be sent.');
+  return null;
 };
 
 const getClientUrl = () => {
@@ -63,20 +22,24 @@ const getClientUrl = () => {
 export const sendWelcomeEmail = async (email: string, name: string) => {
   try {
     console.log(`Attempting to send welcome email to ${email}`);
-    const transporter = await getTransporter();
+    const resend = getResendClient();
 
-    // For jsonTransport (fallback), this mimics sendMail
-    const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM || '"BlueZone" <noreply@bluezone.com>',
+    if (!resend) {
+      console.log('Resend not configured, skipping email');
+      return;
+    }
+
+    const { data, error } = await resend.emails.send({
+      from: process.env.EMAIL_FROM || 'BlueZone <noreply@bluezonetwente.com>',
       to: email,
       subject: 'Welcome to BlueZone!',
       html: welcomeEmailTemplate(name),
     });
 
-    console.log(`Welcome email sent to ${email}`);
-    const previewUrl = nodemailer.getTestMessageUrl(info);
-    if (previewUrl) {
-      console.log('Preview URL: %s', previewUrl);
+    if (error) {
+      console.error('Error sending welcome email:', error);
+    } else {
+      console.log(`Welcome email sent to ${email}`, data);
     }
   } catch (error) {
     console.error('Error sending welcome email:', error);
@@ -86,20 +49,25 @@ export const sendWelcomeEmail = async (email: string, name: string) => {
 export const sendPasswordResetEmail = async (email: string, token: string) => {
   try {
     console.log(`Attempting to send password reset email to ${email}`);
-    const transporter = await getTransporter();
+    const resend = getResendClient();
+
+    if (!resend) {
+      console.log('Resend not configured, skipping email');
+      return;
+    }
 
     const resetUrl = `${getClientUrl()}/reset-password?token=${token}`;
-    const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM || '"BlueZone" <noreply@bluezone.com>',
+    const { data, error } = await resend.emails.send({
+      from: process.env.EMAIL_FROM || 'BlueZone <noreply@bluezonetwente.com>',
       to: email,
       subject: 'Reset Your Password',
       html: passwordResetTemplate(resetUrl),
     });
 
-    console.log(`Password reset email sent to ${email}`);
-    const previewUrl = nodemailer.getTestMessageUrl(info);
-    if (previewUrl) {
-      console.log('Preview URL: %s', previewUrl);
+    if (error) {
+      console.error('Error sending password reset email:', error);
+    } else {
+      console.log(`Password reset email sent to ${email}`, data);
     }
   } catch (error) {
     console.error('Error sending password reset email:', error);
@@ -109,19 +77,24 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
 export const sendNewsletterConfirmation = async (email: string) => {
   try {
     console.log(`Attempting to send newsletter confirmation to ${email}`);
-    const transporter = await getTransporter();
+    const resend = getResendClient();
 
-    const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM || '"BlueZone" <noreply@bluezone.com>',
+    if (!resend) {
+      console.log('Resend not configured, skipping email');
+      return;
+    }
+
+    const { data, error } = await resend.emails.send({
+      from: process.env.EMAIL_FROM || 'BlueZone <noreply@bluezonetwente.com>',
       to: email,
       subject: 'Newsletter Subscription Confirmed',
       html: `<p>You have successfully subscribed to the BlueZone newsletter.</p>`,
     });
 
-    console.log(`Newsletter confirmation email sent to ${email}`);
-    const previewUrl = nodemailer.getTestMessageUrl(info);
-    if (previewUrl) {
-      console.log('Preview URL: %s', previewUrl);
+    if (error) {
+      console.error('Error sending newsletter confirmation email:', error);
+    } else {
+      console.log(`Newsletter confirmation email sent to ${email}`, data);
     }
   } catch (error) {
     console.error('Error sending newsletter confirmation email:', error);
@@ -130,18 +103,20 @@ export const sendNewsletterConfirmation = async (email: string) => {
 
 export const sendNewsletterBroadcast = async (recipients: string[], subject: string, content: string) => {
   try {
-    const transporter = await getTransporter();
+    const resend = getResendClient();
 
-    // In a real production app with thousands of users, we would use a queue (BullMQ) 
-    // and a specialized provider API (SendGrid/SES) for bulk sending to avoid timeouts and blocks.
-    // For this MVP, we will send sequentially.
+    if (!resend) {
+      console.log('Resend not configured, skipping newsletter broadcast');
+      return 0;
+    }
+
     console.log(`Starting broadcast to ${recipients.length} subscribers...`);
 
     let sentCount = 0;
     for (const email of recipients) {
       try {
-        const info = await transporter.sendMail({
-          from: process.env.SMTP_FROM || '"BlueZone" <noreply@bluezone.com>',
+        const { error } = await resend.emails.send({
+          from: process.env.EMAIL_FROM || 'BlueZone <noreply@bluezonetwente.com>',
           to: email,
           subject: subject,
           html: `<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
@@ -154,13 +129,12 @@ export const sendNewsletterBroadcast = async (recipients: string[], subject: str
             </p>
           </div>`,
         });
-        sentCount++;
 
-        const previewUrl = nodemailer.getTestMessageUrl(info);
-        if (previewUrl) {
-          console.log('Preview URL: %s', previewUrl);
+        if (error) {
+          console.error(`Failed to send to ${email}:`, error);
+        } else {
+          sentCount++;
         }
-
       } catch (err) {
         console.error(`Failed to send to ${email}:`, err);
       }
