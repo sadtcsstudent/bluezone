@@ -1,7 +1,7 @@
-import { MailerLite } from '@mailerlite/mailerlite-nodejs';
+import MailerLite from '@mailerlite/mailerlite-nodejs';
 import { welcomeEmailTemplate, passwordResetTemplate } from '../utils/email.templates';
 
-let mailerLiteClient: MailerLite | null = null;
+let mailerLiteClient: any | null = null;
 
 const getMailerLiteClient = () => {
   if (mailerLiteClient) return mailerLiteClient;
