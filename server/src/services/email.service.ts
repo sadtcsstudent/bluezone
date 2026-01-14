@@ -1,9 +1,11 @@
-import axios from 'axios';
+import { MailerLite } from '@mailerlite/mailerlite-nodejs';
 import { welcomeEmailTemplate, passwordResetTemplate } from '../utils/email.templates';
 
-const MAILERLITE_API_URL = 'https://connect.mailerlite.com/api';
+let mailerLiteClient: MailerLite | null = null;
 
 const getMailerLiteClient = () => {
+  if (mailerLiteClient) return mailerLiteClient;
+
   const apiKey = process.env.MAILERLITE_API_KEY;
 
   if (!apiKey) {
@@ -11,14 +13,11 @@ const getMailerLiteClient = () => {
     return null;
   }
 
-  return axios.create({
-    baseURL: MAILERLITE_API_URL,
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': `Bearer ${apiKey}`
-    }
+  mailerLiteClient = new MailerLite({
+    api_key: apiKey
   });
+
+  return mailerLiteClient;
 };
 
 const getClientUrl = () => {
@@ -35,19 +34,18 @@ export const sendWelcomeEmail = async (email: string, name: string) => {
       return;
     }
 
-    const response = await client.post('/emails', {
-      from: {
-        email: process.env.EMAIL_FROM || 'noreply@bluezonetwente.com',
-        name: 'BlueZone'
-      },
+    const params = {
+      from: process.env.EMAIL_FROM || 'noreply@bluezonetwente.com',
+      from_name: 'BlueZone',
       to: [{ email }],
       subject: 'Welcome to BlueZone!',
       html: welcomeEmailTemplate(name)
-    });
+    };
 
+    const response = await client.emails.send(params);
     console.log(`Welcome email sent to ${email}`, response.data);
   } catch (error: any) {
-    console.error('Error sending welcome email:', error.response?.data || error.message);
+    console.error('Error sending welcome email:', error.response?.data || error.message || error);
   }
 };
 
@@ -62,19 +60,18 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
     }
 
     const resetUrl = `${getClientUrl()}/reset-password?token=${token}`;
-    const response = await client.post('/emails', {
-      from: {
-        email: process.env.EMAIL_FROM || 'noreply@bluezonetwente.com',
-        name: 'BlueZone'
-      },
+    const params = {
+      from: process.env.EMAIL_FROM || 'noreply@bluezonetwente.com',
+      from_name: 'BlueZone',
       to: [{ email }],
       subject: 'Reset Your Password',
       html: passwordResetTemplate(resetUrl)
-    });
+    };
 
+    const response = await client.emails.send(params);
     console.log(`Password reset email sent to ${email}`, response.data);
   } catch (error: any) {
-    console.error('Error sending password reset email:', error.response?.data || error.message);
+    console.error('Error sending password reset email:', error.response?.data || error.message || error);
   }
 };
 
@@ -88,19 +85,18 @@ export const sendNewsletterConfirmation = async (email: string) => {
       return;
     }
 
-    const response = await client.post('/emails', {
-      from: {
-        email: process.env.EMAIL_FROM || 'noreply@bluezonetwente.com',
-        name: 'BlueZone'
-      },
+    const params = {
+      from: process.env.EMAIL_FROM || 'noreply@bluezonetwente.com',
+      from_name: 'BlueZone',
       to: [{ email }],
       subject: 'Newsletter Subscription Confirmed',
       html: `<p>You have successfully subscribed to the BlueZone newsletter.</p>`
-    });
+    };
 
+    const response = await client.emails.send(params);
     console.log(`Newsletter confirmation email sent to ${email}`, response.data);
   } catch (error: any) {
-    console.error('Error sending newsletter confirmation email:', error.response?.data || error.message);
+    console.error('Error sending newsletter confirmation email:', error.response?.data || error.message || error);
   }
 };
 
@@ -118,11 +114,9 @@ export const sendNewsletterBroadcast = async (recipients: string[], subject: str
     let sentCount = 0;
     for (const email of recipients) {
       try {
-        await client.post('/emails', {
-          from: {
-            email: process.env.EMAIL_FROM || 'noreply@bluezonetwente.com',
-            name: 'BlueZone'
-          },
+        const params = {
+          from: process.env.EMAIL_FROM || 'noreply@bluezonetwente.com',
+          from_name: 'BlueZone',
           to: [{ email }],
           subject: subject,
           html: `<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
@@ -134,11 +128,12 @@ export const sendNewsletterBroadcast = async (recipients: string[], subject: str
               <a href="${getClientUrl()}/newsletter">Unsubscribe</a>
             </p>
           </div>`
-        });
+        };
 
+        await client.emails.send(params);
         sentCount++;
       } catch (err: any) {
-        console.error(`Failed to send to ${email}:`, err.response?.data || err.message);
+        console.error(`Failed to send to ${email}:`, err.response?.data || err.message || err);
       }
     }
 
