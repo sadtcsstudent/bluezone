@@ -81,7 +81,11 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
 
     const token = generateToken(user.id);
     setAuthCookie(res, token);
-    await sendWelcomeEmail(user.email, user.name);
+
+    // Send email async (don't block response)
+    sendWelcomeEmail(user.email, user.name).catch(err => {
+      console.error('Failed to send welcome email:', err);
+    });
 
     res.json({ token, user: formatUser(user) });
   } catch (error) {

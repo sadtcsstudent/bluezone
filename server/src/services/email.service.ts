@@ -1,23 +1,64 @@
-import MailerLite from '@mailerlite/mailerlite-nodejs';
+import nodemailer from 'nodemailer';
 import { welcomeEmailTemplate, passwordResetTemplate } from '../utils/email.templates';
 
-let mailerLiteClient: any | null = null;
+let transporterPromise: Promise<nodemailer.Transporter> | null = null;
 
-const getMailerLiteClient = () => {
-  if (mailerLiteClient) return mailerLiteClient;
+const getFromAddress = () => {
+  if (process.env.EMAIL_FROM) return process.env.EMAIL_FROM;
+  if (process.env.SMTP_FROM) return process.env.SMTP_FROM;
+  if (process.env.SMTP_USER) return `"BlueZone" <${process.env.SMTP_USER}>`;
+  return '"BlueZone" <noreply@bluezone.com>';
+};
 
-  const apiKey = process.env.MAILERLITE_API_KEY;
+const getTransporter = () => {
+  if (transporterPromise) return transporterPromise;
 
-  if (!apiKey) {
-    console.warn('MAILERLITE_API_KEY not configured. Emails will not be sent.');
-    return null;
-  }
+  transporterPromise = (async () => {
+    if (process.env.SMTP_HOST) {
+      const port = parseInt(process.env.SMTP_PORT || '587');
+      return nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: port,
+        secure: port === 465,
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 10000,
+      });
+    }
 
-  mailerLiteClient = new MailerLite({
-    api_key: apiKey
-  });
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('SMTP not configured. Creating Ethereal test account...');
+      try {
+        const testAccount = await nodemailer.createTestAccount();
+        const transporter = nodemailer.createTransport({
+          host: 'smtp.ethereal.email',
+          port: 587,
+          secure: false,
+          auth: {
+            user: testAccount.user,
+            pass: testAccount.pass,
+          },
+        });
+        console.log('Ethereal Email Server ready');
+        console.log('Credentials:', testAccount.user, testAccount.pass);
+        return transporter;
+      } catch (err) {
+        console.error('Failed to create Ethereal test account', err);
+        throw err;
+      }
+    }
 
-  return mailerLiteClient;
+    console.warn('SMTP not configured and not in dev mode. Emails will not be sent.');
+    return nodemailer.createTransport({
+      jsonTransport: true,
+    });
+  })();
+
+  return transporterPromise;
 };
 
 const getClientUrl = () => {
@@ -27,97 +68,82 @@ const getClientUrl = () => {
 export const sendWelcomeEmail = async (email: string, name: string) => {
   try {
     console.log(`Attempting to send welcome email to ${email}`);
-    const client = getMailerLiteClient();
+    const transporter = await getTransporter();
 
-    if (!client) {
-      console.log('MailerLite not configured, skipping email');
-      return;
-    }
-
-    const params = {
-      from: process.env.EMAIL_FROM || 'noreply@bluezonetwente.com',
-      from_name: 'BlueZone',
-      to: [{ email }],
+    const info = await transporter.sendMail({
+      from: getFromAddress(),
+      to: email,
       subject: 'Welcome to BlueZone!',
-      html: welcomeEmailTemplate(name)
-    };
+      html: welcomeEmailTemplate(name),
+    });
 
-    const response = await client.emails.send(params);
-    console.log(`Welcome email sent to ${email}`, response.data);
-  } catch (error: any) {
-    console.error('Error sending welcome email:', error.response?.data || error.message || error);
+    console.log(`Welcome email sent to ${email}`);
+    const previewUrl = nodemailer.getTestMessageUrl(info);
+    if (previewUrl) {
+      console.log('Preview URL: %s', previewUrl);
+    }
+  } catch (error) {
+    console.error('Error sending welcome email:', error);
   }
 };
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
   try {
     console.log(`Attempting to send password reset email to ${email}`);
-    const client = getMailerLiteClient();
-
-    if (!client) {
-      console.log('MailerLite not configured, skipping email');
-      return;
-    }
+    const transporter = await getTransporter();
 
     const resetUrl = `${getClientUrl()}/reset-password?token=${token}`;
-    const params = {
-      from: process.env.EMAIL_FROM || 'noreply@bluezonetwente.com',
-      from_name: 'BlueZone',
-      to: [{ email }],
+    const info = await transporter.sendMail({
+      from: getFromAddress(),
+      to: email,
       subject: 'Reset Your Password',
-      html: passwordResetTemplate(resetUrl)
-    };
+      html: passwordResetTemplate(resetUrl),
+    });
 
-    const response = await client.emails.send(params);
-    console.log(`Password reset email sent to ${email}`, response.data);
-  } catch (error: any) {
-    console.error('Error sending password reset email:', error.response?.data || error.message || error);
+    console.log(`Password reset email sent to ${email}`);
+    const previewUrl = nodemailer.getTestMessageUrl(info);
+    if (previewUrl) {
+      console.log('Preview URL: %s', previewUrl);
+    }
+  } catch (error) {
+    console.error('Error sending password reset email:', error);
   }
 };
 
 export const sendNewsletterConfirmation = async (email: string) => {
   try {
     console.log(`Attempting to send newsletter confirmation to ${email}`);
-    const client = getMailerLiteClient();
+    const transporter = await getTransporter();
 
-    if (!client) {
-      console.log('MailerLite not configured, skipping email');
-      return;
-    }
-
-    const params = {
-      from: process.env.EMAIL_FROM || 'noreply@bluezonetwente.com',
-      from_name: 'BlueZone',
-      to: [{ email }],
+    const info = await transporter.sendMail({
+      from: getFromAddress(),
+      to: email,
       subject: 'Newsletter Subscription Confirmed',
-      html: `<p>You have successfully subscribed to the BlueZone newsletter.</p>`
-    };
+      html: `<p>You have successfully subscribed to the BlueZone newsletter.</p>`,
+    });
 
-    const response = await client.emails.send(params);
-    console.log(`Newsletter confirmation email sent to ${email}`, response.data);
-  } catch (error: any) {
-    console.error('Error sending newsletter confirmation email:', error.response?.data || error.message || error);
+    console.log(`Newsletter confirmation email sent to ${email}`);
+    const previewUrl = nodemailer.getTestMessageUrl(info);
+    if (previewUrl) {
+      console.log('Preview URL: %s', previewUrl);
+    }
+  } catch (error) {
+    console.error('Error sending newsletter confirmation email:', error);
   }
 };
 
 export const sendNewsletterBroadcast = async (recipients: string[], subject: string, content: string) => {
   try {
-    const client = getMailerLiteClient();
-
-    if (!client) {
-      console.log('MailerLite not configured, skipping newsletter broadcast');
-      return 0;
-    }
+    const transporter = await getTransporter();
 
     console.log(`Starting broadcast to ${recipients.length} subscribers...`);
 
     let sentCount = 0;
     for (const email of recipients) {
       try {
-        const params = {
-          from: process.env.EMAIL_FROM || 'noreply@bluezonetwente.com',
-          from_name: 'BlueZone',
-          to: [{ email }],
+        const info = await transporter.sendMail({
+          from: getFromAddress(),
+          to: email,
           subject: subject,
           html: `<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
             ${content.replace(/\n/g, '<br>')}
@@ -127,13 +153,16 @@ export const sendNewsletterBroadcast = async (recipients: string[], subject: str
               You are receiving this email because you subscribed to the BlueZone newsletter.
               <a href="${getClientUrl()}/newsletter">Unsubscribe</a>
             </p>
-          </div>`
-        };
-
-        await client.emails.send(params);
+          </div>`,
+        });
         sentCount++;
-      } catch (err: any) {
-        console.error(`Failed to send to ${email}:`, err.response?.data || err.message || err);
+
+        const previewUrl = nodemailer.getTestMessageUrl(info);
+        if (previewUrl) {
+          console.log('Preview URL: %s', previewUrl);
+        }
+      } catch (err) {
+        console.error(`Failed to send to ${email}:`, err);
       }
     }
 
