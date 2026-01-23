@@ -177,7 +177,24 @@
       "polls": "Peilingen",
       "initiatives": "Initiatieven",
       "moderation": "Moderatie",
+      "content": "Content",
       "newsletter": "Nieuwsbrief"
+    },
+    "contentTab": {
+      "title": "Contentbeheer",
+      "subtitle": "Bewerk alle vertalingen en markdown-content",
+      "searchPlaceholder": "Zoek op sleutel...",
+      "sectionLabel": "Sectie",
+      "sectionAll": "Alle secties",
+      "formatLabel": "Formaat",
+      "formatPlain": "Tekst",
+      "formatMarkdown": "Markdown",
+      "englishLabel": "Engels",
+      "dutchLabel": "Nederlands",
+      "reset": "Reset",
+      "saveChanges": "Wijzigingen opslaan",
+      "saving": "Opslaan...",
+      "noResults": "Geen sleutels gevonden."
     },
     "stats": {
       "platformHealth": "Platformstatistieken en gezondheid",

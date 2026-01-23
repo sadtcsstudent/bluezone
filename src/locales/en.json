@@ -177,7 +177,24 @@
       "polls": "Polls",
       "initiatives": "Initiatives",
       "moderation": "Moderation",
+      "content": "Content",
       "newsletter": "Newsletter"
+    },
+    "contentTab": {
+      "title": "Content Editor",
+      "subtitle": "Edit all translation keys and markdown content",
+      "searchPlaceholder": "Search keys...",
+      "sectionLabel": "Section",
+      "sectionAll": "All sections",
+      "formatLabel": "Format",
+      "formatPlain": "Plain",
+      "formatMarkdown": "Markdown",
+      "englishLabel": "English",
+      "dutchLabel": "Dutch",
+      "reset": "Reset",
+      "saveChanges": "Save changes",
+      "saving": "Saving...",
+      "noResults": "No keys match your search."
     },
     "stats": {
       "platformHealth": "Platform statistics and health",

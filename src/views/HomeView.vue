@@ -7,21 +7,17 @@
           <div class="hero__content">
             <div class="hero__badge">
               <Sprout :size="16" class="hero__badge-icon" />
-              <span class="hero__badge-text">
-                {{ $t('home.badge') }}
-              </span>
+              <MarkdownText keypath="home.badge" tag="span" inline class-name="hero__badge-text" />
             </div>
-            <h1 class="hero__title">{{ $t('home.title') }}</h1>
-            <p class="hero__description">
-              {{ $t('home.description') }}
-            </p>
+            <MarkdownText keypath="home.title" tag="h1" inline class-name="hero__title" />
+            <MarkdownText keypath="home.description" class-name="hero__description" />
             <div class="hero__actions" v-if="!isLoggedIn">
               <button class="btn btn--primary" @click="handleNavigate('signup')">
-                <span>{{ $t('home.joinCommunity') }}</span>
+                <MarkdownText keypath="home.joinCommunity" tag="span" inline />
                 <ArrowRight :size="20" />
               </button>
               <button class="btn btn--outline" @click="handleNavigate('story')">
-                {{ $t('home.learnMore') }}
+                <MarkdownText keypath="home.learnMore" tag="span" inline />
               </button>
             </div>
           </div>
@@ -38,7 +34,7 @@
                 <Users :size="24" />
               </div>
               <div>
-                <div class="hero__stat-label">{{ $t('home.communityMembers') }}</div>
+                <MarkdownText keypath="home.communityMembers" tag="div" inline class-name="hero__stat-label" />
                 <div class="hero__stat-value">{{ userCount > 0 ? userCount.toLocaleString() + '+' : '1,200+' }}</div>
               </div>
             </div>
@@ -51,38 +47,30 @@
     <section class="values">
       <div class="values__container">
         <div class="values__header">
-          <h2>{{ $t('home.coreValues') }}</h2>
-          <p class="values__subtitle">
-            {{ $t('home.coreValuesSubtitle') }}
-          </p>
+          <MarkdownText keypath="home.coreValues" tag="h2" inline />
+          <MarkdownText keypath="home.coreValuesSubtitle" class-name="values__subtitle" />
         </div>
         <div class="values__grid">
           <div class="value-card value-card--primary">
             <div class="value-card__icon value-card__icon--primary">
               <Heart :size="28" />
             </div>
-            <h3 class="value-card__title">{{ $t('home.communityConnection') }}</h3>
-            <p class="value-card__description">
-              {{ $t('home.communityConnectionDesc') }}
-            </p>
+            <MarkdownText keypath="home.communityConnection" tag="h3" inline class-name="value-card__title" />
+            <MarkdownText keypath="home.communityConnectionDesc" class-name="value-card__description" />
           </div>
           <div class="value-card value-card--secondary">
             <div class="value-card__icon value-card__icon--secondary">
               <Sprout :size="28" />
             </div>
-            <h3 class="value-card__title">{{ $t('home.healthyLiving') }}</h3>
-            <p class="value-card__description">
-              {{ $t('home.healthyLivingDesc') }}
-            </p>
+            <MarkdownText keypath="home.healthyLiving" tag="h3" inline class-name="value-card__title" />
+            <MarkdownText keypath="home.healthyLivingDesc" class-name="value-card__description" />
           </div>
           <div class="value-card value-card--accent">
             <div class="value-card__icon value-card__icon--accent">
               <Leaf :size="28" />
             </div>
-            <h3 class="value-card__title">{{ $t('home.sustainability') }}</h3>
-            <p class="value-card__description">
-              {{ $t('home.sustainabilityDesc') }}
-            </p>
+            <MarkdownText keypath="home.sustainability" tag="h3" inline class-name="value-card__title" />
+            <MarkdownText keypath="home.sustainabilityDesc" class-name="value-card__description" />
           </div>
         </div>
       </div>
@@ -94,12 +82,10 @@
         <div class="pulse-copy">
           <div class="pulse-badge">
             <Sparkles :size="16" />
-            <span>{{ $t('home.hearFromCommunity') }}</span>
+            <MarkdownText keypath="home.hearFromCommunity" tag="span" inline />
           </div>
-          <h2>{{ $t('home.communityPulse') }}</h2>
-          <p>
-            {{ $t('home.communityPulseDesc') }}
-          </p>
+          <MarkdownText keypath="home.communityPulse" tag="h2" inline />
+          <MarkdownText keypath="home.communityPulseDesc" />
         </div>
         <CommunityPoll />
       </div>
@@ -110,13 +96,11 @@
       <div class="events__container">
         <div class="events__header">
           <div>
-            <h2>{{ $t('home.upcomingEvents') }}</h2>
-            <p class="events__subtitle">
-              {{ $t('home.upcomingEventsSubtitle') }}
-            </p>
+            <MarkdownText keypath="home.upcomingEvents" tag="h2" inline />
+            <MarkdownText keypath="home.upcomingEventsSubtitle" class-name="events__subtitle" />
           </div>
           <button class="events__view-all events__view-all--desktop" @click="handleNavigate('events')">
-            <span>{{ $t('home.viewAllEvents') }}</span>
+            <MarkdownText keypath="home.viewAllEvents" tag="span" inline />
             <ArrowRight :size="20" />
           </button>
         </div>
@@ -131,7 +115,7 @@
           />
         </div>
         <button class="events__view-all events__view-all--mobile" @click="handleNavigate('events')">
-          {{ $t('home.viewAllEvents') }}
+          <MarkdownText keypath="home.viewAllEvents" tag="span" inline />
         </button>
       </div>
     </section>
@@ -139,17 +123,15 @@
     <!-- CTA Section -->
     <section class="cta" v-if="!isLoggedIn">
       <div class="cta__container">
-        <h2 class="cta__title">{{ $t('home.ctaTitle') }}</h2>
-        <p class="cta__description">
-          {{ $t('home.ctaDescription') }}
-        </p>
+        <MarkdownText keypath="home.ctaTitle" tag="h2" inline class-name="cta__title" />
+        <MarkdownText keypath="home.ctaDescription" class-name="cta__description" />
         <div class="cta__actions">
           <button class="btn btn--white" @click="handleNavigate('signup')">
-            {{ $t('home.createAccount') }}
+            <MarkdownText keypath="home.createAccount" tag="span" inline />
           </button>
           <button class="btn btn--outline-white" @click="handleNavigate('map')">
             <MapPin :size="20" />
-            <span>{{ $t('home.exploreLocalInitiatives') }}</span>
+            <MarkdownText keypath="home.exploreLocalInitiatives" tag="span" inline />
           </button>
         </div>
       </div>
@@ -166,6 +148,7 @@ import api from '@/services/api'
 import EventCard from '../components/EventCard.vue'
 import ImageWithFallback from '../components/ImageWithFallback.vue'
 import CommunityPoll from '../components/CommunityPoll.vue'
+import MarkdownText from '../components/MarkdownText.vue'
 import { useConfirm } from '@/composables/useConfirm'
 
 export default {
@@ -174,6 +157,7 @@ export default {
     EventCard,
     ImageWithFallback,
     CommunityPoll,
+    MarkdownText,
     ArrowRight,
     Users,
     MapPin,

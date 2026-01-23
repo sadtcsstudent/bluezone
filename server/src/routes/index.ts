@@ -14,6 +14,7 @@ import uploadRoutes from './upload.routes';
 import companyRoutes from './company.routes';
 import pollsRoutes from './polls.routes';
 import categoriesRoutes from './categories.routes';
+import i18nRoutes from './i18n.routes';
 
 const router = Router();
 
@@ -37,6 +38,7 @@ router.use('/groups', groupsRoutes);
 router.use('/messages', messagesRoutes);
 router.use('/notifications', notificationsRoutes);
 router.use('/admin', adminRoutes);
+router.use('/i18n', i18nRoutes);
 router.use('/upload', uploadRoutes);
 router.use('/company', companyRoutes);
 router.use('/polls', pollsRoutes);

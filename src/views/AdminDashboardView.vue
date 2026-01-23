@@ -362,6 +362,131 @@
           </div>
         </div>
 
+        <!-- Content Tab -->
+        <div v-if="activeTab === 'content'" class="admin-panel admin-panel--content">
+          <div class="panel-header panel-header--sticky">
+            <div>
+              <h2>{{ $t('admin.contentTab.title') }}</h2>
+              <p>{{ $t('admin.contentTab.subtitle') }}</p>
+            </div>
+            <button class="btn btn--primary" @click="saveContentChanges" :disabled="contentSaving">
+              <Check :size="16" />
+              {{ contentSaving ? $t('admin.contentTab.saving') : $t('admin.contentTab.saveChanges') }}
+            </button>
+          </div>
+
+          <!-- Section Tabs -->
+          <div class="content-tabs">
+            <button
+              class="content-tab"
+              :class="{ active: contentSection === 'all' }"
+              @click="contentSection = 'all'"
+            >
+              All
+            </button>
+            <button
+              v-for="section in contentSections"
+              :key="section"
+              class="content-tab"
+              :class="{ active: contentSection === section }"
+              @click="contentSection = section"
+            >
+              {{ formatSectionName(section) }}
+              <span class="content-tab-count">{{ getSectionCount(section) }}</span>
+            </button>
+          </div>
+
+          <div class="content-controls">
+            <div class="search-input search-input--wide">
+              <Search :size="16" />
+              <input
+                v-model="contentSearch"
+                type="text"
+                :placeholder="$t('admin.contentTab.searchPlaceholder')"
+              />
+            </div>
+          </div>
+
+          <div v-if="!contentReady" class="empty-state">
+            <p>{{ $t('common.loading') }}</p>
+          </div>
+
+          <div v-else class="content-list">
+            <div v-if="filteredContentKeys.length === 0" class="empty-state">
+              <p>{{ $t('admin.contentTab.noResults') }}</p>
+            </div>
+
+            <!-- Grouped by subsection -->
+            <div v-else class="content-sections">
+              <div
+                v-for="group in groupedContentKeys"
+                :key="group.name"
+                class="content-section"
+              >
+                <button
+                  class="content-section-header"
+                  @click="toggleSection(group.name)"
+                >
+                  <ChevronRight
+                    :size="18"
+                    class="section-chevron"
+                    :class="{ expanded: expandedSections.has(group.name) }"
+                  />
+                  <span class="section-name">{{ group.displayName }}</span>
+                  <span class="section-count">{{ group.keys.length }} items</span>
+                </button>
+
+                <div
+                  v-show="expandedSections.has(group.name)"
+                  class="content-section-body"
+                >
+                  <div v-for="key in group.keys" :key="key" class="content-row content-row--compact">
+                    <div class="content-key">
+                      <span class="content-key-text">{{ getKeyName(key) }}</span>
+                      <div class="content-format">
+                        <select v-model="contentDrafts[key].format" class="format-select">
+                          <option value="plain">Plain</option>
+                          <option value="markdown">Markdown</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="content-locales">
+                      <div class="content-locale">
+                        <div class="locale-header">
+                          <label>EN</label>
+                          <button
+                            v-if="hasOverride(key, 'en')"
+                            class="link-btn link-btn--small"
+                            type="button"
+                            @click="resetContentValue(key, 'en')"
+                          >
+                            Reset
+                          </button>
+                        </div>
+                        <textarea v-model="contentDrafts[key].en" rows="2"></textarea>
+                      </div>
+                      <div class="content-locale">
+                        <div class="locale-header">
+                          <label>NL</label>
+                          <button
+                            v-if="hasOverride(key, 'nl')"
+                            class="link-btn link-btn--small"
+                            type="button"
+                            @click="resetContentValue(key, 'nl')"
+                          >
+                            Reset
+                          </button>
+                        </div>
+                        <textarea v-model="contentDrafts[key].nl" rows="2"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Newsletter Tab -->
         <div v-if="activeTab === 'newsletter'" class="admin-panel admin-panel--fullpage">
           <div class="panel-header">
@@ -751,9 +876,9 @@
 <script setup>
 import { onMounted, ref, computed, watch, nextTick } from 'vue'
 import {
-  LayoutDashboard, Users, Calendar, Mail, Leaf,
+  LayoutDashboard, Users, Calendar, Mail, Leaf, FileText,
   Search, Ban, Trash2, Plus, MessageSquare, Unlock, MapPin, PieChart, Menu,
-  Tag, X, Check, Upload, GripVertical
+  Tag, X, Check, Upload, GripVertical, ChevronRight
 } from 'lucide-vue-next'
 import * as LucideIcons from 'lucide-vue-next'
 import api from '@/services/api'
@@ -763,6 +888,10 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { availableIcons, colorPresets } from '@/utils/iconsList'
 import draggable from 'vuedraggable'
+import enMessages from '@/locales/en.json'
+import nlMessages from '@/locales/nl.json'
+import { flattenMessages } from '@/utils/i18n'
+import { loadI18nOverrides } from '@/i18n'
 
 const { t } = useI18n()
 
@@ -831,6 +960,20 @@ const newCategory = ref({ name: '', icon: 'Tag', color: '#3b82f6' })
 const showIconPicker = ref(false)
 const iconSearchQuery = ref('')
 
+const contentSearch = ref('')
+const contentSection = ref('all')
+const contentSaving = ref(false)
+const contentReady = ref(false)
+const i18nOverrides = ref({})
+const i18nFormats = ref({})
+const contentDrafts = ref({})
+const expandedSections = ref(new Set())
+
+const baseMessages = {
+  en: flattenMessages(enMessages),
+  nl: flattenMessages(nlMessages)
+}
+
 const tabs = computed(() => [
   { id: 'overview', label: t('admin.tabs.overview'), icon: LayoutDashboard },
   { id: 'users', label: t('admin.tabs.users'), icon: Users },
@@ -839,6 +982,7 @@ const tabs = computed(() => [
   { id: 'polls', label: t('admin.tabs.polls'), icon: PieChart },
   { id: 'initiatives', label: t('admin.tabs.initiatives'), icon: Leaf },
   { id: 'moderation', label: t('admin.tabs.moderation'), icon: MessageSquare },
+  { id: 'content', label: t('admin.tabs.content'), icon: FileText },
   { id: 'newsletter', label: t('admin.tabs.newsletter'), icon: Mail }
 ])
 
@@ -851,8 +995,208 @@ const filteredIcons = computed(() => {
   )
 })
 
+const allContentKeys = computed(() => {
+  const keys = new Set([
+    ...Object.keys(baseMessages.en),
+    ...Object.keys(baseMessages.nl),
+    ...Object.keys(i18nOverrides.value)
+  ])
+  return Array.from(keys).sort()
+})
+
+const contentSections = computed(() => {
+  const sections = new Set()
+  allContentKeys.value.forEach((key) => {
+    sections.add(key.split('.')[0])
+  })
+  return Array.from(sections).sort()
+})
+
+const filteredContentKeys = computed(() => {
+  const query = contentSearch.value.trim().toLowerCase()
+  return allContentKeys.value.filter((key) => {
+    if (contentSection.value !== 'all' && key.split('.')[0] !== contentSection.value) {
+      return false
+    }
+    if (!query) return true
+    return key.toLowerCase().includes(query)
+  })
+})
+
+// Group filtered keys by subsection (second part of the key)
+const groupedContentKeys = computed(() => {
+  const groups = new Map()
+
+  filteredContentKeys.value.forEach((key) => {
+    const parts = key.split('.')
+    // Group by first two parts (e.g., "story.hero" or "nav")
+    const groupKey = parts.length > 1 ? `${parts[0]}.${parts[1]}` : parts[0]
+
+    if (!groups.has(groupKey)) {
+      groups.set(groupKey, {
+        name: groupKey,
+        displayName: formatGroupName(groupKey),
+        keys: []
+      })
+    }
+    groups.get(groupKey).keys.push(key)
+  })
+
+  return Array.from(groups.values()).sort((a, b) => a.name.localeCompare(b.name))
+})
+
+const formatSectionName = (section) => {
+  // Convert camelCase/lowercase to Title Case
+  return section
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, (str) => str.toUpperCase())
+    .trim()
+}
+
+const formatGroupName = (groupKey) => {
+  const parts = groupKey.split('.')
+  return parts
+    .map((part) => part.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()))
+    .join(' > ')
+}
+
+const getKeyName = (key) => {
+  // Return only the last part(s) of the key for cleaner display
+  const parts = key.split('.')
+  return parts.slice(2).join('.') || parts[parts.length - 1]
+}
+
+const getSectionCount = (section) => {
+  return allContentKeys.value.filter((key) => key.split('.')[0] === section).length
+}
+
+const toggleSection = (sectionName) => {
+  if (expandedSections.value.has(sectionName)) {
+    expandedSections.value.delete(sectionName)
+  } else {
+    expandedSections.value.add(sectionName)
+  }
+  // Force reactivity
+  expandedSections.value = new Set(expandedSections.value)
+}
+
 const getIconComponent = (iconName) => {
   return LucideIcons[iconName] || LucideIcons.Tag
+}
+
+const buildContentDrafts = () => {
+  const drafts = {}
+  allContentKeys.value.forEach((key) => {
+    const enDefault = baseMessages.en[key] ?? ''
+    const nlDefault = baseMessages.nl[key] ?? ''
+    const override = i18nOverrides.value[key] || {}
+
+    drafts[key] = {
+      en: override.en ?? enDefault,
+      nl: override.nl ?? nlDefault,
+      format: i18nFormats.value[key] || 'plain',
+      defaults: { en: enDefault, nl: nlDefault }
+    }
+  })
+  contentDrafts.value = drafts
+}
+
+const fetchI18nOverrides = async () => {
+  contentReady.value = false
+  try {
+    const data = await api.get('/admin/i18n/overrides')
+    const overrides = {}
+    const formats = {}
+
+    ;(data.overrides || []).forEach((item) => {
+      if (!overrides[item.key]) overrides[item.key] = {}
+      overrides[item.key][item.locale] = item.value
+    })
+
+    ;(data.formats || []).forEach((item) => {
+      formats[item.key] = item.format
+    })
+
+    i18nOverrides.value = overrides
+    i18nFormats.value = formats
+  } catch (err) {
+    console.error('Failed to load content overrides', err)
+    useToastStore().error('Failed to load content overrides')
+  } finally {
+    buildContentDrafts()
+    contentReady.value = true
+  }
+}
+
+const hasOverride = (key, locale) => {
+  return typeof i18nOverrides.value[key]?.[locale] !== 'undefined'
+}
+
+const resetContentValue = (key, locale) => {
+  const defaults = contentDrafts.value[key]?.defaults
+  if (!defaults) return
+
+  contentDrafts.value[key][locale] = defaults[locale] ?? ''
+}
+
+const saveContentChanges = async () => {
+  contentSaving.value = true
+  try {
+    const overridesPayload = []
+    const formatsPayload = []
+
+    allContentKeys.value.forEach((key) => {
+      const draft = contentDrafts.value[key]
+      if (!draft) return
+
+      const enDefault = draft.defaults?.en ?? ''
+      const nlDefault = draft.defaults?.nl ?? ''
+      const formatCurrent = draft.format || 'plain'
+      const formatExisting = i18nFormats.value[key] || 'plain'
+
+      if (formatCurrent !== formatExisting) {
+        formatsPayload.push({ key, format: formatCurrent })
+      }
+
+      const overrideEn = i18nOverrides.value[key]?.en
+      const overrideNl = i18nOverrides.value[key]?.nl
+
+      if (draft.en === enDefault) {
+        if (typeof overrideEn !== 'undefined') {
+          overridesPayload.push({ key, locale: 'en', value: null })
+        }
+      } else if (draft.en !== overrideEn) {
+        overridesPayload.push({ key, locale: 'en', value: draft.en })
+      }
+
+      if (draft.nl === nlDefault) {
+        if (typeof overrideNl !== 'undefined') {
+          overridesPayload.push({ key, locale: 'nl', value: null })
+        }
+      } else if (draft.nl !== overrideNl) {
+        overridesPayload.push({ key, locale: 'nl', value: draft.nl })
+      }
+    })
+
+    if (overridesPayload.length === 0 && formatsPayload.length === 0) {
+      useToastStore().success('No content changes to save')
+      return
+    }
+
+    await api.put('/admin/i18n/overrides', {
+      overrides: overridesPayload,
+      formats: formatsPayload
+    })
+
+    await fetchI18nOverrides()
+    await loadI18nOverrides()
+    useToastStore().success('Content updated successfully')
+  } catch (err) {
+    console.error('Failed to save content overrides', err)
+    useToastStore().error('Failed to save content overrides')
+  } finally {
+    contentSaving.value = false
+  }
 }
 
 // Category functions
@@ -1139,6 +1483,9 @@ watch(activeTab, (newTab) => {
   if (newTab === 'polls') {
     resetPollForm()
     fetchPolls()
+  }
+  if (newTab === 'content') {
+    fetchI18nOverrides()
   }
 })
 
@@ -1856,6 +2203,313 @@ onMounted(load)
 .panel-header p {
   color: rgb(var(--color-text-secondary));
   font-size: 0.875rem;
+}
+
+.panel-header--sticky {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+  margin: -2rem -2rem 0;
+  padding: 2rem 2rem 1.25rem;
+}
+
+/* Content Tabs */
+.content-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgb(var(--color-border));
+}
+
+.content-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgb(var(--color-border));
+  border-radius: 2rem;
+  background: white;
+  color: rgb(var(--color-text-secondary));
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.content-tab:hover {
+  border-color: rgb(var(--color-primary));
+  color: rgb(var(--color-primary));
+}
+
+.content-tab.active {
+  background: rgb(var(--color-primary));
+  border-color: rgb(var(--color-primary));
+  color: white;
+}
+
+.content-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.375rem;
+  border-radius: 1rem;
+  background: rgba(0, 0, 0, 0.1);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.content-tab.active .content-tab-count {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.content-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.search-input--wide {
+  flex: 1;
+  min-width: 300px;
+}
+
+.content-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 200px;
+}
+
+.content-filter select {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(var(--color-border));
+  background: white;
+  color: rgb(var(--color-text));
+}
+
+.content-list {
+  margin-top: 1rem;
+}
+
+/* Content Sections (Collapsible) */
+.content-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.content-section {
+  border: 1px solid rgb(var(--color-border));
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: white;
+}
+
+.content-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: rgb(var(--color-background));
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.content-section-header:hover {
+  background: rgb(var(--color-border) / 0.5);
+}
+
+.section-chevron {
+  color: rgb(var(--color-text-secondary));
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.section-chevron.expanded {
+  transform: rotate(90deg);
+}
+
+.section-name {
+  font-weight: 600;
+  color: rgb(var(--color-text));
+  flex: 1;
+}
+
+.section-count {
+  font-size: 0.8125rem;
+  color: rgb(var(--color-text-secondary));
+  padding: 0.25rem 0.625rem;
+  background: white;
+  border-radius: 1rem;
+}
+
+.content-section-body {
+  border-top: 1px solid rgb(var(--color-border));
+}
+
+.content-row--compact {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgb(var(--color-border));
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.content-row--compact:last-child {
+  border-bottom: none;
+}
+
+.content-row--compact .content-key {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.content-row--compact .content-key-text {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgb(var(--color-text-secondary));
+  font-family: monospace;
+}
+
+.format-select {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid rgb(var(--color-border));
+  background: white;
+  font-size: 0.75rem;
+  color: rgb(var(--color-text-secondary));
+}
+
+.content-locales {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.locale-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.375rem;
+}
+
+.locale-header label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgb(var(--color-text-secondary));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.link-btn--small {
+  font-size: 0.75rem;
+  padding: 0;
+}
+
+.content-row--compact .content-locale textarea {
+  min-height: 60px;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .content-locales {
+    grid-template-columns: 1fr;
+  }
+
+  .content-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 0.5rem;
+  }
+
+  .content-tab {
+    white-space: nowrap;
+  }
+}
+
+.content-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.content-row {
+  border: 1px solid rgb(var(--color-border));
+  border-radius: 0.75rem;
+  padding: 1rem;
+  display: grid;
+  gap: 1rem;
+  background: rgb(var(--color-background));
+}
+
+.content-key {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.content-key-text {
+  font-weight: 600;
+  color: rgb(var(--color-text));
+  word-break: break-word;
+}
+
+.content-format {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.content-format select {
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(var(--color-border));
+  background: white;
+  color: rgb(var(--color-text));
+}
+
+.content-locale {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.content-locale textarea {
+  border: 1px solid rgb(var(--color-border));
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  min-height: 90px;
+  resize: vertical;
+}
+
+.link-btn {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: rgb(var(--color-primary));
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.link-btn:hover {
+  text-decoration: underline;
 }
 
 /* Empty State */

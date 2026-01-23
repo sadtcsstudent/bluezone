@@ -6,12 +6,10 @@
         <div class="story-hero-content">
           <div class="story-badge">
             <Heart :size="16" class="story-badge-icon" />
-            <span class="story-badge-text">{{ $t('story.badge') }}</span>
+            <MarkdownText keypath="story.badge" tag="span" inline class-name="story-badge-text" />
           </div>
-          <h1>{{ $t('story.title') }}</h1>
-          <p class="story-hero-subtitle">
-            {{ $t('story.subtitle') }}
-          </p>
+          <MarkdownText keypath="story.title" tag="h1" inline />
+          <MarkdownText keypath="story.subtitle" class-name="story-hero-subtitle" />
         </div>
       </div>
     </section>
@@ -21,16 +19,10 @@
       <div class="origin-container">
         <div class="origin-grid">
           <div class="origin-content">
-            <h2>{{ $t('story.originTitle') }}</h2>
-            <p class="origin-text">
-              {{ $t('story.originText1') }}
-            </p>
-            <p class="origin-text">
-              {{ $t('story.originText2') }}
-            </p>
-            <p class="origin-text">
-              {{ $t('story.originText3') }}
-            </p>
+            <MarkdownText keypath="story.originTitle" tag="h2" inline />
+            <MarkdownText keypath="story.originText1" class-name="origin-text" />
+            <MarkdownText keypath="story.originText2" class-name="origin-text" />
+            <MarkdownText keypath="story.originText3" class-name="origin-text" />
           </div>
           <div class="origin-image-wrapper">
             <ImageWithFallback
@@ -52,10 +44,8 @@
             <div class="mvv-icon mvv-icon--primary">
               <Target :size="32" />
             </div>
-            <h2>{{ $t('story.missionTitle') }}</h2>
-            <p class="mvv-text">
-              {{ $t('story.missionText') }}
-            </p>
+            <MarkdownText keypath="story.missionTitle" tag="h2" inline />
+            <MarkdownText keypath="story.missionText" class-name="mvv-text" />
           </div>
 
           <!-- Vision -->
@@ -63,10 +53,8 @@
             <div class="mvv-icon mvv-icon--secondary">
               <Eye :size="32" />
             </div>
-            <h2>{{ $t('story.visionTitle') }}</h2>
-            <p class="mvv-text">
-              {{ $t('story.visionText') }}
-            </p>
+            <MarkdownText keypath="story.visionTitle" tag="h2" inline />
+            <MarkdownText keypath="story.visionText" class-name="mvv-text" />
           </div>
 
           <!-- Values -->
@@ -74,31 +62,23 @@
             <div class="mvv-icon mvv-icon--accent">
               <Compass :size="32" />
             </div>
-            <h2>{{ $t('story.valuesTitle') }}</h2>
+            <MarkdownText keypath="story.valuesTitle" tag="h2" inline />
             <div class="values-grid">
               <div class="value-card">
-                <h4>{{ $t('story.values.communityFirst.title') }}</h4>
-                <p class="value-text">
-                  {{ $t('story.values.communityFirst.text') }}
-                </p>
+                <MarkdownText keypath="story.values.communityFirst.title" tag="h4" inline />
+                <MarkdownText keypath="story.values.communityFirst.text" class-name="value-text" />
               </div>
               <div class="value-card">
-                <h4>{{ $t('story.values.inclusivity.title') }}</h4>
-                <p class="value-text">
-                  {{ $t('story.values.inclusivity.text') }}
-                </p>
+                <MarkdownText keypath="story.values.inclusivity.title" tag="h4" inline />
+                <MarkdownText keypath="story.values.inclusivity.text" class-name="value-text" />
               </div>
               <div class="value-card">
-                <h4>{{ $t('story.values.transparency.title') }}</h4>
-                <p class="value-text">
-                  {{ $t('story.values.transparency.text') }}
-                </p>
+                <MarkdownText keypath="story.values.transparency.title" tag="h4" inline />
+                <MarkdownText keypath="story.values.transparency.text" class-name="value-text" />
               </div>
               <div class="value-card">
-                <h4>{{ $t('story.values.sustainability.title') }}</h4>
-                <p class="value-text">
-                  {{ $t('story.values.sustainability.text') }}
-                </p>
+                <MarkdownText keypath="story.values.sustainability.title" tag="h4" inline />
+                <MarkdownText keypath="story.values.sustainability.text" class-name="value-text" />
               </div>
             </div>
           </div>
@@ -110,38 +90,30 @@
     <section class="what-we-do-section">
       <div class="what-we-do-container">
         <div class="what-we-do-header">
-          <h2>{{ $t('story.whatWeDo.title') }}</h2>
-          <p class="what-we-do-subtitle">
-            {{ $t('story.whatWeDo.subtitle') }}
-          </p>
+          <MarkdownText keypath="story.whatWeDo.title" tag="h2" inline />
+          <MarkdownText keypath="story.whatWeDo.subtitle" class-name="what-we-do-subtitle" />
         </div>
         <div class="what-we-do-grid">
           <div class="activity-card">
             <div class="activity-icon">
               <Users :size="24" />
             </div>
-            <h4>{{ $t('story.whatWeDo.connect.title') }}</h4>
-            <p class="activity-text">
-              {{ $t('story.whatWeDo.connect.text') }}
-            </p>
+            <MarkdownText keypath="story.whatWeDo.connect.title" tag="h4" inline />
+            <MarkdownText keypath="story.whatWeDo.connect.text" class-name="activity-text" />
           </div>
           <div class="activity-card">
             <div class="activity-icon">
               <Sprout :size="24" />
             </div>
-            <h4>{{ $t('story.whatWeDo.learn.title') }}</h4>
-            <p class="activity-text">
-              {{ $t('story.whatWeDo.learn.text') }}
-            </p>
+            <MarkdownText keypath="story.whatWeDo.learn.title" tag="h4" inline />
+            <MarkdownText keypath="story.whatWeDo.learn.text" class-name="activity-text" />
           </div>
           <div class="activity-card">
             <div class="activity-icon">
               <Heart :size="24" />
             </div>
-            <h4>{{ $t('story.whatWeDo.act.title') }}</h4>
-            <p class="activity-text">
-              {{ $t('story.whatWeDo.act.text') }}
-            </p>
+            <MarkdownText keypath="story.whatWeDo.act.title" tag="h4" inline />
+            <MarkdownText keypath="story.whatWeDo.act.text" class-name="activity-text" />
           </div>
         </div>
       </div>
@@ -150,12 +122,10 @@
     <!-- Join Us -->
     <section class="join-us-section" v-if="!isLoggedIn">
       <div class="join-us-container">
-        <h2 class="join-us-title">{{ $t('story.joinMovement.title') }}</h2>
-        <p class="join-us-text">
-          {{ $t('story.joinMovement.text') }}
-        </p>
+        <MarkdownText keypath="story.joinMovement.title" tag="h2" inline class-name="join-us-title" />
+        <MarkdownText keypath="story.joinMovement.text" class-name="join-us-text" />
         <button @click="handleJoin" class="join-us-btn">
-          {{ $t('story.joinBtn') }}
+          <MarkdownText keypath="story.joinBtn" tag="span" inline />
         </button>
       </div>
     </section>
@@ -167,6 +137,7 @@ import { Heart, Users, Sprout, Target, Eye, Compass } from 'lucide-vue-next'
 import { mapState } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import ImageWithFallback from '../components/ImageWithFallback.vue'
+import MarkdownText from '../components/MarkdownText.vue'
 
 export default {
   name: 'StoryView',
@@ -177,7 +148,8 @@ export default {
     Sprout,
     Target,
     Eye,
-    Compass
+    Compass,
+    MarkdownText
   },
   computed: {
     ...mapState(useAuthStore, ['isLoggedIn'])

@@ -5,21 +5,17 @@
       <div class="newsletter-header">
         <div class="newsletter-badge">
           <Mail :size="16" class="badge-icon" />
-          <span class="badge-text">{{ $t('newsletterPage.badge') }}</span>
+          <MarkdownText keypath="newsletterPage.badge" tag="span" inline class-name="badge-text" />
         </div>
-        <h1>{{ $t('newsletterPage.title') }}</h1>
-        <p class="newsletter-subtitle">
-          {{ $t('newsletterPage.subtitle') }}
-        </p>
+        <MarkdownText keypath="newsletterPage.title" tag="h1" inline />
+        <MarkdownText keypath="newsletterPage.subtitle" class-name="newsletter-subtitle" />
       </div>
 
       <!-- Subscribe Section -->
       <div class="subscribe-section">
         <div class="subscribe-content">
-          <h2 class="subscribe-title">{{ $t('newsletterPage.subscribeTitle') }}</h2>
-          <p class="subscribe-description">
-            {{ $t('newsletterPage.subscribeDesc') }}
-          </p>
+          <MarkdownText keypath="newsletterPage.subscribeTitle" tag="h2" inline class-name="subscribe-title" />
+          <MarkdownText keypath="newsletterPage.subscribeDesc" class-name="subscribe-description" />
 
           <form v-if="!subscribed" @submit.prevent="handleSubscribe" class="subscribe-form">
             <input
@@ -30,63 +26,61 @@
               class="subscribe-input"
             />
             <button type="submit" class="subscribe-button">
-              <span>{{ $t('newsletterPage.subscribeButton') }}</span>
+              <MarkdownText keypath="newsletterPage.subscribeButton" tag="span" inline />
               <ArrowRight :size="20" />
             </button>
           </form>
 
           <div v-else class="subscribed-message">
             <CheckCircle :size="24" />
-            <span>{{ $t('newsletterPage.successMessage') }}</span>
+            <MarkdownText keypath="newsletterPage.successMessage" tag="span" inline />
           </div>
 
           <div class="privacy-container">
-            <p class="privacy-text">
-              {{ $t('newsletterPage.privacyText') }}
-              <button v-if="subscribed" @click="handleUnsubscribe" class="unsubscribe-link">{{ $t('newsletterPage.unsubscribe') }}</button>
-              <span v-else>{{ $t('newsletterPage.unsubscribeText') }}</span>
-            </p>
+            <div class="privacy-text">
+              <MarkdownText keypath="newsletterPage.privacyText" tag="span" inline />
+              <button v-if="subscribed" @click="handleUnsubscribe" class="unsubscribe-link">
+                <MarkdownText keypath="newsletterPage.unsubscribe" tag="span" inline />
+              </button>
+              <span v-else>
+                <MarkdownText keypath="newsletterPage.unsubscribeText" tag="span" inline />
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- What You'll Receive -->
       <div class="benefits-section">
-        <h2 class="benefits-title">{{ $t('newsletterPage.benefits.title') }}</h2>
+        <MarkdownText keypath="newsletterPage.benefits.title" tag="h2" inline class-name="benefits-title" />
         <div class="benefits-grid">
           <div class="benefit-card">
             <div class="benefit-icon benefit-icon--primary">
               <Calendar :size="24" />
             </div>
-            <h4>{{ $t('newsletterPage.benefits.highlightTitle') }}</h4>
-            <p class="benefit-text">
-              {{ $t('newsletterPage.benefits.highlightDesc') }}
-            </p>
+            <MarkdownText keypath="newsletterPage.benefits.highlightTitle" tag="h4" inline />
+            <MarkdownText keypath="newsletterPage.benefits.highlightDesc" class-name="benefit-text" />
           </div>
           <div class="benefit-card">
             <div class="benefit-icon benefit-icon--secondary">
               <Mail :size="24" />
             </div>
-            <h4>{{ $t('newsletterPage.benefits.tipsTitle') }}</h4>
-            <p class="benefit-text">
-              {{ $t('newsletterPage.benefits.tipsDesc') }}
-            </p>
+            <MarkdownText keypath="newsletterPage.benefits.tipsTitle" tag="h4" inline />
+            <MarkdownText keypath="newsletterPage.benefits.tipsDesc" class-name="benefit-text" />
           </div>
           <div class="benefit-card">
             <div class="benefit-icon benefit-icon--accent">
               <CheckCircle :size="24" />
             </div>
-            <h4>{{ $t('newsletterPage.benefits.storiesTitle') }}</h4>
-            <p class="benefit-text">
-              {{ $t('newsletterPage.benefits.storiesDesc') }}
-            </p>
+            <MarkdownText keypath="newsletterPage.benefits.storiesTitle" tag="h4" inline />
+            <MarkdownText keypath="newsletterPage.benefits.storiesDesc" class-name="benefit-text" />
           </div>
         </div>
       </div>
 
       <!-- Past Newsletters -->
       <div class="archive-section">
-        <h2 class="archive-title">{{ $t('newsletterPage.archiveTitle') }}</h2>
+        <MarkdownText keypath="newsletterPage.archiveTitle" tag="h2" inline class-name="archive-title" />
         <div class="archive-list">
           <div
             v-for="(newsletter, index) in pastNewsletters"
@@ -128,6 +122,7 @@
 <script>
 import { Mail, Calendar, Download, ArrowRight, CheckCircle } from 'lucide-vue-next'
 import api from '@/services/api'
+import MarkdownText from '../components/MarkdownText.vue'
 
 export default {
   name: 'NewsletterView',
@@ -136,7 +131,8 @@ export default {
     Calendar,
     Download,
     ArrowRight,
-    CheckCircle
+    CheckCircle,
+    MarkdownText
   },
   data() {
     return {

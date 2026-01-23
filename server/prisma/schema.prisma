@@ -43,6 +43,7 @@ model User {
   resetTokens       PasswordResetToken[]
   newsletterSub     NewsletterSubscriber?       @relation("UserNewsletter")
   createdInitiatives Initiative[]               @relation("CreatedInitiatives")
+  i18nOverrides     I18nOverride[]              @relation("I18nUpdatedBy")
 
   createdAt         DateTime                    @default(now())
   updatedAt         DateTime                    @updatedAt
@@ -231,6 +232,30 @@ model ConversationParticipant {
   user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([conversationId, userId])
+}
+
+model I18nKey {
+  key       String          @id
+  format    String          @default("plain")
+  overrides I18nOverride[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+model I18nOverride {
+  id          String   @id @default(cuid())
+  key         String
+  locale      String
+  value       String
+  updatedById String?
+  updatedBy   User?    @relation("I18nUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  keyMeta     I18nKey  @relation(fields: [key], references: [key], onDelete: Cascade)
+
+  @@unique([key, locale])
+  @@index([locale])
 }
 
 model DiscussionLike {

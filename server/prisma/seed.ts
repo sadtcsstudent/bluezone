@@ -256,6 +256,17 @@ async function main() {
 
   const [adminUser, memberUser, moderatorUser] = users;
 
+  const categoryNames = Array.from(new Set(eventsData.map((event) => event.category)));
+  await Promise.all(
+    categoryNames.map((name) =>
+      prisma.category.upsert({
+        where: { name },
+        update: {},
+        create: { name, icon: 'Tag', color: '#3b82f6' }
+      })
+    )
+  );
+
   const events = await Promise.all(
     eventsData.map((event, idx) =>
       prisma.event.create({
@@ -265,7 +276,7 @@ async function main() {
           date: event.date,
           time: event.time,
           location: event.location,
-          category: event.category,
+          category: { connect: { name: event.category } },
           imageUrl: event.imageUrl,
           maxAttendees: event.attendees,
           organizerId: adminUser.id
