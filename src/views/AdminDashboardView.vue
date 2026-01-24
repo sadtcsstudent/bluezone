@@ -1084,6 +1084,18 @@ const getIconComponent = (iconName) => {
   return LucideIcons[iconName] || LucideIcons.Tag
 }
 
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+const withRetry = async (requestFn, retries = 2, delayMs = 1200) => {
+  try {
+    return await requestFn()
+  } catch (err) {
+    if (retries <= 0) throw err
+    await wait(delayMs)
+    return withRetry(requestFn, retries - 1, delayMs * 2)
+  }
+}
+
 const buildContentDrafts = () => {
   const drafts = {}
   allContentKeys.value.forEach((key) => {
@@ -1104,7 +1116,7 @@ const buildContentDrafts = () => {
 const fetchI18nOverrides = async () => {
   contentReady.value = false
   try {
-    const data = await api.get('/admin/i18n/overrides')
+    const data = await withRetry(() => api.get('/admin/i18n/overrides'))
     const overrides = {}
     const formats = {}
 
@@ -1183,10 +1195,12 @@ const saveContentChanges = async () => {
       return
     }
 
-    await api.put('/admin/i18n/overrides', {
-      overrides: overridesPayload,
-      formats: formatsPayload
-    })
+    await withRetry(() =>
+      api.put('/admin/i18n/overrides', {
+        overrides: overridesPayload,
+        formats: formatsPayload
+      })
+    )
 
     await fetchI18nOverrides()
     await loadI18nOverrides()

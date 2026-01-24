@@ -19,8 +19,18 @@ const i18n = createI18n({
 })
 
 const baseMessages = { en, nl }
+const MAX_I18N_RETRIES = 2
+const I18N_RETRY_DELAY_MS = 1500
 
-export const loadI18nOverrides = async (locale = i18n.global.locale.value) => {
+const scheduleI18nRetry = (locale, attempt) => {
+  if (attempt >= MAX_I18N_RETRIES) return
+  const delay = I18N_RETRY_DELAY_MS * Math.pow(2, attempt)
+  setTimeout(() => {
+    loadI18nOverrides(locale, attempt + 1)
+  }, delay)
+}
+
+export const loadI18nOverrides = async (locale = i18n.global.locale.value, attempt = 0) => {
   try {
     const currentLocale = locale || 'en'
     const data = await api.get(`/i18n/overrides?locale=${currentLocale}`)
@@ -36,6 +46,7 @@ export const loadI18nOverrides = async (locale = i18n.global.locale.value) => {
     }
   } catch (err) {
     console.warn('Failed to load i18n overrides', err)
+    scheduleI18nRetry(locale, attempt)
   }
 }
 
