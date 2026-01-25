@@ -12,13 +12,13 @@ export const initiativeSchemas = {
       description: z.string().min(5),
       category: z.string().optional(),
       type: z.string().optional(),
-      location: z.string().optional(),
-      latitude: z.number().optional(),
-      longitude: z.number().optional(),
-      coordinateX: z.number().optional(),
-      coordinateY: z.number().optional(),
-      contact: z.string().optional(),
-      website: z.string().optional()
+      location: z.string().nullable().optional(),
+      latitude: z.number().nullable().optional(),
+      longitude: z.number().nullable().optional(),
+      coordinateX: z.number().nullable().optional(),
+      coordinateY: z.number().nullable().optional(),
+      contact: z.string().nullable().optional(),
+      website: z.string().nullable().optional()
     })
   })
 };
