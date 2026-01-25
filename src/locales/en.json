@@ -40,6 +40,8 @@
     "healthyLivingDesc": "Promoting physical and mental wellbeing through nutrition, movement, mindfulness, and access to healthy local food.",
     "sustainability": "Sustainability",
     "sustainabilityDesc": "Creating a regenerative future through eco-friendly practices, local food systems, and environmental stewardship.",
+    "lifelongLearning": "Lifelong Learning",
+    "lifelongLearningDesc": "Encouraging curiosity and continuous growth through workshops, shared skills, and practical experiments.",
     "communityPulse": "Community Pulse",
     "hearFromCommunity": "Hear from the community",
     "communityPulseDesc": "Quick questions to learn what matters most right now. Share your vote and see what the community thinks.",
@@ -280,6 +282,9 @@
       "subtitle": "Compose and send updates to all subscribers",
       "subjectLabel": "Subject Line",
       "subjectPlaceholder": "e.g. Weekly Community Updates",
+      "imageLabel": "Newsletter Image",
+      "imageHelp": "Optional — add a cover image for the latest news card.",
+      "removeImage": "Remove Image",
       "contentLabel": "Content",
       "contentPlaceholder": "Write your newsletter content here...",
       "preview": "Preview",
@@ -400,7 +405,15 @@
     "noEvents": "No events found matching your criteria.",
     "listView": "List View",
     "calendarView": "Calendar View",
-    "confirmRegister": "Would you like to register for \"{title}\"?"
+    "confirmRegister": "Would you like to register for \"{title}\"?",
+    "learningNetwork": {
+      "title": "Learning Network",
+      "subtitle": "Small organizations and local leaders collaborate to tackle shared challenges and organize gatherings to work through them together.",
+      "participantsTitle": "Participants",
+      "participantsText": "Community organizations, professionals, and residents who want to learn together and co-create practical solutions.",
+      "methodsTitle": "Methods",
+      "methodsText": "Work sessions, peer learning circles, field experiments, and feedback loops that turn ideas into action."
+    }
   },
   "forgotPassword": {
     "title": "Reset Password",
@@ -411,6 +424,7 @@
   },
   "forum": {
     "title": "Community Forum",
+    "badge": "Forum",
     "headerTitle": "Join the Conversation",
     "subtitle": "Join the conversation, share ideas, and connect with neighbors.",
     "headerSubtitle": "Connect with fellow community members, share experiences, and learn from each other.",
@@ -418,6 +432,13 @@
     "newDiscussion": "New Discussion",
     "searchPlaceholder": "Search discussions...",
     "categories": "Categories",
+    "categoryLabels": {
+      "all": "All Discussions",
+      "foodNutrition": "Food & Nutrition",
+      "healthWellbeing": "Health & Wellbeing",
+      "localInitiatives": "Local Initiatives",
+      "generalDiscussion": "General Discussion"
+    },
     "trending": "Trending Topics",
     "noDiscussions": "No discussions found.",
     "sort": {
@@ -505,6 +526,7 @@
     "privacyText": "We respect your privacy.",
     "unsubscribe": "Unsubscribe",
     "unsubscribeText": "Unsubscribe anytime.",
+    "latestTitle": "Latest News",
     "benefits": {
       "title": "What You'll Receive",
       "highlightTitle": "Event Highlights",
@@ -597,12 +619,21 @@
     "title": "Building a Healthier, More Connected Twente",
     "subtitle": "Blue Zone Twente is a living laboratory and learning network where community members come together to create lasting change.",
     "originTitle": "How It All Began",
+    "originImage": "https://images.unsplash.com/photo-1661328992560-55256f06bdad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXN0YWluYWJsZSUyMGxpdmluZ3xlbnwxfHx8fDE3NjQ0OTg4MDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
     "missionTitle": "Our Mission",
     "visionTitle": "Our Vision",
     "valuesTitle": "Our Values",
     "originText1": "In 2023, a group of passionate residents, health professionals, and sustainability advocates came together with a shared vision: to transform Twente into a region where people live longer, healthier, and happier lives.",
     "originText2": "Inspired by the world's Blue Zones—regions where people live measurably longer lives—we set out to create our own blueprint for wellbeing. We recognized that true health goes beyond individual choices; it's shaped by our communities, environments, and connections.",
     "originText3": "From community gardens to walking groups, from local food initiatives to neighborhood gatherings, Blue Zone Twente has grown into a movement of over 1,200 members across the region.",
+    "blueZones": {
+      "title": "Blue Zones Worldwide",
+      "subtitle": "Lessons from the places where people live the longest and healthiest lives.",
+      "worldwideTitle": "Blue Zones Around the Globe",
+      "worldwideText": "Blue Zones have been identified in regions such as Okinawa (Japan), Sardinia (Italy), Nicoya (Costa Rica), Ikaria (Greece), and Loma Linda (USA). Each community has its own culture, yet they share habits that support longevity.",
+      "characteristicsTitle": "Shared Blue Zone Characteristics",
+      "characteristicsText": "Strong social ties, regular movement, plant-forward eating, purposeful daily routines, and environments that make healthy choices the easy choices."
+    },
     "missionText": "To create a thriving ecosystem where residents of Twente can easily access resources, connect with like-minded individuals, and participate in initiatives that promote healthy, social, and sustainable living for all.",
     "visionText": "A Twente where every community is a Blue Zone—where people naturally make healthy choices, where neighbors know and support each other, and where sustainable practices are woven into the fabric of daily life.",
     "values": {
@@ -638,6 +669,26 @@
         "title": "Act",
         "text": "Support for local initiatives, from community gardens to food cooperatives to walking groups."
       }
+    },
+    "people": {
+      "title": "The People Behind Blue Zone Twente",
+      "subtitle": "Meet two local changemakers helping the movement grow.",
+      "memberOne": {
+        "name": "Name One",
+        "role": "Role or Focus Area",
+        "text": "Short bio goes here. Highlight their experience, interests, or why they care about Blue Zone Twente.",
+        "image": "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=1200&q=80"
+      },
+      "memberTwo": {
+        "name": "Name Two",
+        "role": "Role or Focus Area",
+        "text": "Short bio goes here. Share what they bring to the community and the impact they want to make.",
+        "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1200&q=80"
+      }
+    },
+    "finance": {
+      "title": "Financing and Support",
+      "text": "Funding and support details can be shared here, including grants, partners, and how the community contributes to keeping initiatives running."
     },
     "joinMovement": {
       "title": "Be Part of the Movement",

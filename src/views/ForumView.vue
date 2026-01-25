@@ -43,7 +43,7 @@
                 :class="['category-item', { 'category-item--active': selectedCategory === cat.id }]"
                 @click="selectedCategory = cat.id"
               >
-                <span class="category-name">{{ cat.name }}</span>
+                <span class="category-name">{{ $t(cat.labelKey) }}</span>
                 <span class="category-count">{{ cat.count }}</span>
               </button>
             </div>
@@ -137,7 +137,7 @@
             <select v-model="newDiscussion.category" required>
               <option value="" disabled>Select a category</option>
               <option v-for="cat in categories.filter(c => c.id !== 'all')" :key="cat.id" :value="cat.id">
-                {{ cat.name }}
+                {{ $t(cat.labelKey) }}
               </option>
             </select>
           </div>
@@ -182,11 +182,11 @@ export default {
       selectedCategory: 'all',
       sortBy: 'recent',
       categories: [
-        { id: 'all', name: 'All Discussions' },
-        { id: 'Food & Nutrition', name: 'Food & Nutrition' },
-        { id: 'Health & Wellbeing', name: 'Health & Wellbeing' },
-        { id: 'Local Initiatives', name: 'Local Initiatives' },
-        { id: 'General Discussion', name: 'General Discussion' }
+        { id: 'all', labelKey: 'forum.categoryLabels.all' },
+        { id: 'Food & Nutrition', labelKey: 'forum.categoryLabels.foodNutrition' },
+        { id: 'Health & Wellbeing', labelKey: 'forum.categoryLabels.healthWellbeing' },
+        { id: 'Local Initiatives', labelKey: 'forum.categoryLabels.localInitiatives' },
+        { id: 'General Discussion', labelKey: 'forum.categoryLabels.generalDiscussion' }
       ],
       trendingTopics: [],
       discussions: [],

@@ -9,7 +9,7 @@
       <div class="hero-section">
         <div class="hero-background">
           <ImageWithFallback
-            :src="event.image || getCategoryFallbackImage(event.category)"
+            :src="event.imageUrl || getCategoryFallbackImage(event.category)"
             class-name="hero-img"
             alt="Event cover"
           />
@@ -184,6 +184,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useToastStore } from '@/stores/toast'
 import { useTranslateCategory } from '@/composables/useTranslateCategory'
 import { useI18n } from 'vue-i18n'
+import { resolveImageUrl } from '@/utils/resolveImageUrl'
 
 const { translateCategory } = useTranslateCategory()
 const { t } = useI18n()
@@ -234,6 +235,7 @@ const load = async () => {
     event.value = {
       ...data.event,
       category: typeof data.event.category === 'object' ? data.event.category?.name : data.event.category,
+      imageUrl: resolveImageUrl(data.event.imageUrl || data.event.image || ''),
       status: userStatus || null
     }
 

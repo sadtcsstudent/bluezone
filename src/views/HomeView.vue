@@ -72,6 +72,13 @@
             <MarkdownText keypath="home.sustainability" tag="h3" inline class-name="value-card__title" />
             <MarkdownText keypath="home.sustainabilityDesc" class-name="value-card__description" />
           </div>
+          <div class="value-card value-card--tertiary">
+            <div class="value-card__icon value-card__icon--tertiary">
+              <BookOpen :size="28" />
+            </div>
+            <MarkdownText keypath="home.lifelongLearning" tag="h3" inline class-name="value-card__title" />
+            <MarkdownText keypath="home.lifelongLearningDesc" class-name="value-card__description" />
+          </div>
         </div>
       </div>
     </section>
@@ -140,7 +147,7 @@
 </template>
 
 <script>
-import { ArrowRight, Users, MapPin, Sprout, Heart, Leaf, Sparkles } from 'lucide-vue-next'
+import { ArrowRight, Users, MapPin, Sprout, Heart, Leaf, Sparkles, BookOpen } from 'lucide-vue-next'
 import { mapState } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import { useToastStore } from '@/stores/toast'
@@ -150,6 +157,7 @@ import ImageWithFallback from '../components/ImageWithFallback.vue'
 import CommunityPoll from '../components/CommunityPoll.vue'
 import MarkdownText from '../components/MarkdownText.vue'
 import { useConfirm } from '@/composables/useConfirm'
+import { resolveImageUrl } from '@/utils/resolveImageUrl'
 
 export default {
   name: 'HomePage',
@@ -164,7 +172,8 @@ export default {
     Sprout,
     Heart,
     Leaf,
-    Sparkles
+    Sparkles,
+    BookOpen
   },
   setup() {
     const confirmModal = useConfirm()
@@ -207,6 +216,7 @@ export default {
           return {
             ...event,
             category: typeof event.category === 'object' ? event.category?.name : event.category,
+            imageUrl: resolveImageUrl(event.imageUrl || event.image || ''),
             attendees: attendeeCount,
             attendeeCount,
             status: event.status || null
@@ -530,7 +540,13 @@ export default {
 
 @media (min-width: 768px) {
   .values__grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .values__grid {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
@@ -555,6 +571,10 @@ export default {
   background: linear-gradient(135deg, rgba(var(--color-accent), 0.1) 0%, transparent 100%);
 }
 
+.value-card--tertiary {
+  background: linear-gradient(135deg, rgba(var(--color-primary-dark), 0.08) 0%, transparent 100%);
+}
+
 .value-card__icon {
   width: 3.5rem;
   height: 3.5rem;
@@ -577,6 +597,11 @@ export default {
 .value-card__icon--accent {
   background: rgba(var(--color-primary), 0.2);
   color: rgb(var(--color-primary));
+}
+
+.value-card__icon--tertiary {
+  background: rgba(var(--color-primary-dark), 0.2);
+  color: rgb(var(--color-primary-dark));
 }
 
 .value-card__title {

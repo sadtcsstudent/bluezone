@@ -8,6 +8,13 @@
 </template>
 
 <script>
+const getInitialSrc = (src, fallbackSrc) => {
+  if (typeof src !== 'string' || src.trim() === '') {
+    return fallbackSrc
+  }
+  return src
+}
+
 export default {
   name: 'ImageWithFallback',
   props: {
@@ -30,13 +37,13 @@ export default {
   },
   data() {
     return {
-      currentSrc: this.src,
+      currentSrc: getInitialSrc(this.src, this.fallbackSrc),
       hasError: false
     }
   },
   watch: {
     src(newSrc) {
-      this.currentSrc = newSrc
+      this.currentSrc = getInitialSrc(newSrc, this.fallbackSrc)
       this.hasError = false
     }
   },

@@ -79,15 +79,58 @@
       </div>
 
       <!-- Past Newsletters -->
-      <div class="archive-section">
+      <div v-if="latestNewsletter" class="latest-section">
+        <MarkdownText keypath="newsletterPage.latestTitle" tag="h2" inline class-name="latest-title" />
+        <div class="latest-card">
+          <div v-if="latestNewsletter.imageUrl" class="latest-media">
+            <ImageWithFallback
+              :src="latestNewsletter.imageUrl"
+              :alt="latestNewsletter.title"
+              class-name="latest-image"
+            />
+          </div>
+          <div class="latest-content">
+            <h3>{{ latestNewsletter.title }}</h3>
+            <div class="newsletter-date">
+              <Calendar :size="16" />
+              <span>{{ latestNewsletter.date }}</span>
+            </div>
+            <p class="latest-description">
+              {{ latestNewsletter.description }}
+            </p>
+            <div class="newsletter-topics">
+              <span
+                v-for="(topic, topicIndex) in latestNewsletter.topics"
+                :key="topicIndex"
+                class="topic-tag"
+              >
+                {{ topic }}
+              </span>
+            </div>
+            <button class="download-button" @click="downloadNewsletter(latestNewsletter)">
+              <Download :size="20" />
+              <span>{{ $t('newsletterPage.download') }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="olderNewsletters.length" class="archive-section">
         <MarkdownText keypath="newsletterPage.archiveTitle" tag="h2" inline class-name="archive-title" />
         <div class="archive-list">
           <div
-            v-for="(newsletter, index) in pastNewsletters"
+            v-for="(newsletter, index) in olderNewsletters"
             :key="index"
             class="newsletter-item"
           >
             <div class="newsletter-content">
+              <div v-if="newsletter.imageUrl" class="newsletter-media">
+                <ImageWithFallback
+                  :src="newsletter.imageUrl"
+                  :alt="newsletter.title"
+                  class-name="newsletter-image"
+                />
+              </div>
               <div class="newsletter-info">
                 <h3>{{ newsletter.title }}</h3>
                 <div class="newsletter-date">
@@ -109,7 +152,7 @@
               </div>
               <button class="download-button" @click="downloadNewsletter(newsletter)">
                 <Download :size="20" />
-                <span>Download</span>
+                <span>{{ $t('newsletterPage.download') }}</span>
               </button>
             </div>
           </div>
@@ -123,6 +166,8 @@
 import { Mail, Calendar, Download, ArrowRight, CheckCircle } from 'lucide-vue-next'
 import api from '@/services/api'
 import MarkdownText from '../components/MarkdownText.vue'
+import ImageWithFallback from '../components/ImageWithFallback.vue'
+import { resolveImageUrl } from '@/utils/resolveImageUrl'
 
 export default {
   name: 'NewsletterView',
@@ -132,7 +177,8 @@ export default {
     Download,
     ArrowRight,
     CheckCircle,
-    MarkdownText
+    MarkdownText,
+    ImageWithFallback
   },
   data() {
     return {
@@ -141,11 +187,21 @@ export default {
       pastNewsletters: []
     }
   },
+  computed: {
+    latestNewsletter() {
+      return this.pastNewsletters[0] || null
+    },
+    olderNewsletters() {
+      return this.pastNewsletters.slice(1)
+    }
+  },
   async created() {
     const data = await api.get('/newsletter/past')
     this.pastNewsletters = data.newsletters?.map((n) => ({
       ...n,
-      date: new Date(n.publishedAt).toLocaleDateString()
+      date: new Date(n.publishedAt).toLocaleDateString(),
+      imageUrl: resolveImageUrl(n.imageUrl || ''),
+      fileUrl: resolveImageUrl(n.fileUrl || '')
     })) || []
   },
   methods: {
@@ -446,6 +502,68 @@ export default {
   line-height: 1.6;
 }
 
+/* Latest News */
+.latest-section {
+  margin-bottom: 4rem;
+}
+
+.latest-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: rgb(var(--color-text));
+  margin-bottom: 2rem;
+}
+
+.latest-card {
+  display: grid;
+  gap: 2rem;
+  padding: 2.5rem;
+  border-radius: 1.25rem;
+  background: white;
+  border: 1px solid rgb(var(--color-border));
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+}
+
+@media (min-width: 768px) {
+  .latest-card {
+    grid-template-columns: 1fr 1.4fr;
+    align-items: center;
+  }
+}
+
+.latest-media {
+  border-radius: 1rem;
+  overflow: hidden;
+  height: 100%;
+  min-height: 220px;
+}
+
+.latest-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.latest-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.latest-content h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: rgb(var(--color-text));
+  margin: 0;
+}
+
+.latest-description {
+  color: rgb(var(--color-text-secondary));
+  font-size: 1.125rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
 /* Archive Section */
 .archive-section {
   margin-bottom: 4rem;
@@ -488,6 +606,21 @@ export default {
     align-items: center;
     justify-content: space-between;
   }
+}
+
+.newsletter-media {
+  width: 100%;
+  max-width: 220px;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-border));
+  flex-shrink: 0;
+}
+
+.newsletter-image {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
 }
 
 .newsletter-info {

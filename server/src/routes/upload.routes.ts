@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import multer from 'multer';
 import { authenticate } from '../middleware/auth.middleware';
-import { uploadAvatar, uploadEventImage, uploadGroupAvatar } from '../controllers/upload.controller';
+import { uploadAvatar, uploadEventImage, uploadGroupAvatar, uploadNewsletterImage } from '../controllers/upload.controller';
 
 const router = Router();
 
@@ -20,6 +20,7 @@ const upload = multer({
 
 router.post('/avatar', authenticate, upload.single('file'), uploadAvatar);
 router.post('/event-image', authenticate, upload.single('file'), uploadEventImage);
+router.post('/newsletter-image', authenticate, upload.single('file'), uploadNewsletterImage);
 router.post('/group-avatar', authenticate, upload.single('file'), uploadGroupAvatar);
 
 export default router;

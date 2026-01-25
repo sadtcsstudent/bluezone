@@ -37,6 +37,15 @@ export const uploadEventImage = async (req: Request, res: Response, next: NextFu
   }
 };
 
+export const uploadNewsletterImage = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const url = await processImage(req.file as Express.Multer.File, 'newsletter');
+    res.json({ url });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const uploadGroupAvatar = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const url = await processImage(req.file as Express.Multer.File, 'group');

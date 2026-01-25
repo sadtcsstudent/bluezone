@@ -500,6 +500,27 @@
               <input v-model="newsletter.subject" type="text" required :placeholder="$t('admin.newsletterTab.subjectPlaceholder')" />
             </div>
 
+            <div class="form-group">
+              <label>{{ $t('admin.newsletterTab.imageLabel') }}</label>
+              <label class="file-upload-label">
+                <div class="upload-placeholder" v-if="!newsletterImagePreview && !newsletter.imageUrl">
+                  <Upload :size="24" />
+                  <span>{{ $t('admin.newsletterTab.imageLabel') }}</span>
+                </div>
+                <img v-else :src="newsletterImagePreview || newsletter.imageUrl" class="image-preview" />
+                <input type="file" accept="image/*" @change="handleNewsletterImageSelect" class="file-input" />
+              </label>
+              <button
+                v-if="newsletterImagePreview || newsletter.imageUrl"
+                type="button"
+                class="btn btn--sm btn--ghost remove-image"
+                @click="clearNewsletterImage"
+              >
+                <X :size="16" /> {{ $t('admin.newsletterTab.removeImage') }}
+              </button>
+              <p class="help-text">{{ $t('admin.newsletterTab.imageHelp') }}</p>
+            </div>
+
             <div class="form-group form-group--fullheight">
               <label>{{ $t('admin.newsletterTab.contentLabel') }}</label>
               <textarea
@@ -929,7 +950,9 @@ const searchingAddress = ref(false)
 const eventAddressQuery = ref('')
 const searchingEventAddress = ref(false)
 
-const newsletter = ref({ subject: '', content: '' })
+const newsletter = ref({ subject: '', content: '', imageUrl: '' })
+const newsletterImageFile = ref(null)
+const newsletterImagePreview = ref(null)
 const newEvent = ref({ title: '', date: '', location: '', description: '', categoryId: '', imageUrl: '' })
 const selectedImage = ref(null)
 const imagePreview = ref(null)
@@ -1677,6 +1700,34 @@ const uploadEventImage = async () => {
   return res.url
 }
 
+const handleNewsletterImageSelect = (event) => {
+  const file = event.target.files[0]
+  if (!file) return
+
+  newsletterImageFile.value = file
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    newsletterImagePreview.value = e.target.result
+  }
+  reader.readAsDataURL(file)
+}
+
+const clearNewsletterImage = () => {
+  newsletterImageFile.value = null
+  newsletterImagePreview.value = null
+  newsletter.value.imageUrl = ''
+}
+
+const uploadNewsletterImage = async () => {
+  if (!newsletterImageFile.value) return newsletter.value.imageUrl || ''
+  const formData = new FormData()
+  formData.append('file', newsletterImageFile.value)
+  const res = await api.post('/upload/newsletter-image', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  })
+  return res.url
+}
+
 const saveEvent = async () => {
     // Validation
     if (!newEvent.value.title.trim()) {
@@ -1753,13 +1804,17 @@ const sendNewsletter = async () => {
 
   sending.value = true;
   try {
+    const imageUrl = newsletterImageFile.value ? await uploadNewsletterImage() : newsletter.value.imageUrl
     const response = await api.post('/admin/newsletter/send', {
       subject: newsletter.value.subject,
-      content: newsletter.value.content
+      content: newsletter.value.content,
+      imageUrl: imageUrl || ''
     });
     
     alert(response.message || `Newsletter sent to ${response.count} subscribers!`);
-    newsletter.value = { subject: '', content: '' };
+    newsletter.value = { subject: '', content: '', imageUrl: '' };
+    newsletterImageFile.value = null
+    newsletterImagePreview.value = null
   } catch (err) {
     console.error('Failed to send newsletter', err);
     alert('Failed to send newsletter: ' + (err.response?.data?.message || err.message));

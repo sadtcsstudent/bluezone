@@ -49,17 +49,35 @@
           </div>
         </div>
 
-        <!-- Category Filter -->
-        <div class="category-filter">
-          <Filter :size="20" class="filter-icon" />
-          <button
-            v-for="category in categories"
+      <!-- Category Filter -->
+      <div class="category-filter">
+        <Filter :size="20" class="filter-icon" />
+        <button
+          v-for="category in categories"
             :key="category"
             @click="selectCategory(category)"
             :class="['category-btn', { 'category-btn--active': isActiveCategory(category) }]"
           >
             {{ translateCategory(category) }}
           </button>
+        </div>
+      </div>
+
+      <!-- Learning Network -->
+      <div class="learning-network">
+        <div class="learning-network__header">
+          <h2>{{ $t('eventsPage.learningNetwork.title') }}</h2>
+          <p class="learning-network__subtitle">{{ $t('eventsPage.learningNetwork.subtitle') }}</p>
+        </div>
+        <div class="learning-network__grid">
+          <div class="learning-network__card">
+            <h3>{{ $t('eventsPage.learningNetwork.participantsTitle') }}</h3>
+            <p class="learning-network__text">{{ $t('eventsPage.learningNetwork.participantsText') }}</p>
+          </div>
+          <div class="learning-network__card">
+            <h3>{{ $t('eventsPage.learningNetwork.methodsTitle') }}</h3>
+            <p class="learning-network__text">{{ $t('eventsPage.learningNetwork.methodsText') }}</p>
+          </div>
         </div>
       </div>
 
@@ -114,6 +132,7 @@ import { useToastStore } from '@/stores/toast'
 import { useAuthStore } from '@/stores/auth'
 import { useConfirm } from '@/composables/useConfirm'
 import { useTranslateCategory } from '@/composables/useTranslateCategory'
+import { resolveImageUrl } from '@/utils/resolveImageUrl'
 
 export default {
   name: 'EventsView',
@@ -208,6 +227,7 @@ export default {
           return {
             ...event,
             category: typeof event.category === 'object' ? event.category?.name : event.category,
+            imageUrl: resolveImageUrl(event.imageUrl || event.image || ''),
             attendees: attendeeCount,
             attendeeCount,
             status: event.status || null
@@ -508,6 +528,66 @@ export default {
   background: rgb(var(--color-primary));
   color: white;
   border-color: rgb(var(--color-primary));
+}
+
+/* Learning Network */
+.learning-network {
+  margin: 3rem 0 2.5rem;
+  padding: 2.5rem;
+  border-radius: 1.25rem;
+  background: linear-gradient(135deg, rgba(var(--color-primary), 0.08), rgba(var(--color-accent), 0.12));
+  border: 1px solid rgba(var(--color-primary), 0.15);
+}
+
+.learning-network__header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.learning-network__header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: rgb(var(--color-text));
+  margin: 0;
+}
+
+.learning-network__subtitle {
+  color: rgb(var(--color-text-secondary));
+  max-width: 46rem;
+  margin: 0.75rem auto 0;
+  line-height: 1.6;
+}
+
+.learning-network__grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .learning-network__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.learning-network__card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.75rem;
+  border: 1px solid rgb(var(--color-border));
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.learning-network__card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: rgb(var(--color-text));
+  margin: 0 0 0.75rem;
+}
+
+.learning-network__text {
+  color: rgb(var(--color-text-secondary));
+  line-height: 1.6;
+  margin: 0;
 }
 
 /* Events Grid/List */

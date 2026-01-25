@@ -26,10 +26,30 @@
           </div>
           <div class="origin-image-wrapper">
             <ImageWithFallback
-              src="https://images.unsplash.com/photo-1661328992560-55256f06bdad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXN0YWluYWJsZSUyMGxpdmluZ3xlbnwxfHx8fDE3NjQ0OTg4MDN8MA&ixlib=rb-4.1.0&q=80&w=1080"
+              :src="resolveStoryImage('story.originImage')"
               alt="Sustainable living"
               class-name="origin-image"
             />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Blue Zones -->
+    <section class="blue-zones-section">
+      <div class="blue-zones-container">
+        <div class="blue-zones-header">
+          <MarkdownText keypath="story.blueZones.title" tag="h2" inline />
+          <MarkdownText keypath="story.blueZones.subtitle" class-name="blue-zones-subtitle" />
+        </div>
+        <div class="blue-zones-grid">
+          <div class="info-card">
+            <MarkdownText keypath="story.blueZones.worldwideTitle" tag="h3" inline />
+            <MarkdownText keypath="story.blueZones.worldwideText" class-name="info-text" />
+          </div>
+          <div class="info-card">
+            <MarkdownText keypath="story.blueZones.characteristicsTitle" tag="h3" inline />
+            <MarkdownText keypath="story.blueZones.characteristicsText" class-name="info-text" />
           </div>
         </div>
       </div>
@@ -86,6 +106,42 @@
       </div>
     </section>
 
+    <!-- People -->
+    <section class="people-section">
+      <div class="people-container">
+        <div class="people-header">
+          <MarkdownText keypath="story.people.title" tag="h2" inline />
+          <MarkdownText keypath="story.people.subtitle" class-name="people-subtitle" />
+        </div>
+        <div class="people-grid">
+          <div class="person-card">
+            <ImageWithFallback
+              :src="resolveStoryImage('story.people.memberOne.image')"
+              :alt="$t('story.people.memberOne.name')"
+              class-name="person-photo"
+            />
+            <div class="person-content">
+              <MarkdownText keypath="story.people.memberOne.name" tag="h3" inline class-name="person-name" />
+              <MarkdownText keypath="story.people.memberOne.role" tag="p" inline class-name="person-role" />
+              <MarkdownText keypath="story.people.memberOne.text" class-name="person-text" />
+            </div>
+          </div>
+          <div class="person-card">
+            <ImageWithFallback
+              :src="resolveStoryImage('story.people.memberTwo.image')"
+              :alt="$t('story.people.memberTwo.name')"
+              class-name="person-photo"
+            />
+            <div class="person-content">
+              <MarkdownText keypath="story.people.memberTwo.name" tag="h3" inline class-name="person-name" />
+              <MarkdownText keypath="story.people.memberTwo.role" tag="p" inline class-name="person-role" />
+              <MarkdownText keypath="story.people.memberTwo.text" class-name="person-text" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- What We Do -->
     <section class="what-we-do-section">
       <div class="what-we-do-container">
@@ -119,6 +175,16 @@
       </div>
     </section>
 
+    <!-- Finance -->
+    <section class="finance-section">
+      <div class="finance-container">
+        <div class="finance-card">
+          <MarkdownText keypath="story.finance.title" tag="h2" inline />
+          <MarkdownText keypath="story.finance.text" class-name="finance-text" />
+        </div>
+      </div>
+    </section>
+
     <!-- Join Us -->
     <section class="join-us-section" v-if="!isLoggedIn">
       <div class="join-us-container">
@@ -138,6 +204,7 @@ import { mapState } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import ImageWithFallback from '../components/ImageWithFallback.vue'
 import MarkdownText from '../components/MarkdownText.vue'
+import { resolveImageUrl } from '@/utils/resolveImageUrl'
 
 export default {
   name: 'StoryView',
@@ -157,6 +224,9 @@ export default {
   methods: {
     handleJoin() {
       this.$router.push({ name: 'signup' })
+    },
+    resolveStoryImage(keypath) {
+      return resolveImageUrl(this.$t(keypath))
     }
   }
 }
@@ -306,6 +376,81 @@ export default {
   object-fit: cover;
 }
 
+/* Blue Zones Section */
+.blue-zones-section {
+  padding: 5rem 0;
+  background: rgb(var(--color-background));
+}
+
+.blue-zones-container {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .blue-zones-container {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .blue-zones-container {
+    padding: 0 2rem;
+  }
+}
+
+.blue-zones-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.blue-zones-header h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: rgb(var(--color-text));
+}
+
+.blue-zones-subtitle {
+  margin-top: 1rem;
+  color: rgb(var(--color-text-secondary));
+  max-width: 42rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.blue-zones-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .blue-zones-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.info-card {
+  padding: 2rem;
+  border-radius: 1rem;
+  background: white;
+  border: 1px solid rgb(var(--color-border));
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.info-card h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: rgb(var(--color-text));
+}
+
+.info-text {
+  color: rgb(var(--color-text-secondary));
+  line-height: 1.7;
+}
+
 /* Mission, Vision, Values Section */
 .mvv-section {
   padding: 5rem 0;
@@ -414,6 +559,102 @@ export default {
   line-height: 1.6;
 }
 
+/* People Section */
+.people-section {
+  padding: 5rem 0;
+}
+
+.people-container {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .people-container {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .people-container {
+    padding: 0 2rem;
+  }
+}
+
+.people-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.people-header h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: rgb(var(--color-text));
+}
+
+.people-subtitle {
+  margin-top: 1rem;
+  color: rgb(var(--color-text-secondary));
+  max-width: 42rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.people-grid {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .people-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.person-card {
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-border));
+  background: white;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.person-photo {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+}
+
+.person-content {
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex-grow: 1;
+}
+
+.person-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: rgb(var(--color-text));
+  margin: 0;
+}
+
+.person-role {
+  color: rgb(var(--color-primary));
+  font-weight: 600;
+  margin: 0;
+}
+
+.person-text {
+  color: rgb(var(--color-text-secondary));
+  line-height: 1.6;
+  margin: 0;
+}
+
 /* What We Do Section */
 .what-we-do-section {
   padding: 5rem 0;
@@ -498,6 +739,52 @@ export default {
 .activity-text {
   color: rgb(var(--color-text-secondary));
   line-height: 1.6;
+}
+
+/* Finance Section */
+.finance-section {
+  padding: 5rem 0;
+  background: rgb(var(--color-background));
+}
+
+.finance-container {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .finance-container {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .finance-container {
+    padding: 0 2rem;
+  }
+}
+
+.finance-card {
+  background: white;
+  border-radius: 1rem;
+  border: 1px solid rgb(var(--color-border));
+  padding: 2.5rem;
+  text-align: center;
+}
+
+.finance-card h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: rgb(var(--color-text));
+  margin-bottom: 1rem;
+}
+
+.finance-text {
+  color: rgb(var(--color-text-secondary));
+  line-height: 1.7;
+  max-width: 48rem;
+  margin: 0 auto;
 }
 
 /* Join Us Section */

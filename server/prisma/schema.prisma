@@ -207,6 +207,7 @@ model Newsletter {
   description  String
   topics       String[]   @default([])
   publishedAt  DateTime
+  imageUrl     String?
   fileUrl      String?
 
   createdAt    DateTime  @default(now())

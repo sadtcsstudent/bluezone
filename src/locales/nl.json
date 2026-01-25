@@ -40,6 +40,8 @@
     "healthyLivingDesc": "Het bevorderen van fysiek en mentaal welzijn door voeding, beweging, mindfulness en toegang tot gezond lokaal voedsel.",
     "sustainability": "Duurzaamheid",
     "sustainabilityDesc": "Het creëren van een regeneratieve toekomst door milieuvriendelijke praktijken, lokale voedselsystemen en milieubeheer.",
+    "lifelongLearning": "Levenslang Leren",
+    "lifelongLearningDesc": "Nieuwsgierigheid en voortdurende groei stimuleren via workshops, gedeelde vaardigheden en praktische experimenten.",
     "communityPulse": "Gemeenschapspols",
     "hearFromCommunity": "Hoor van de gemeenschap",
     "communityPulseDesc": "Snelle vragen om te leren wat er nu het meest toe doet. Deel je stem en zie wat de gemeenschap denkt.",
@@ -280,6 +282,9 @@
       "subtitle": "Stel updates samen en verstuur naar alle abonnees",
       "subjectLabel": "Onderwerpregegel",
       "subjectPlaceholder": "bijv. Wekelijkse Gemeenschapsupdates",
+      "imageLabel": "Nieuwsafbeelding",
+      "imageHelp": "Optioneel — voeg een omslagafbeelding toe voor het laatste nieuws.",
+      "removeImage": "Afbeelding verwijderen",
       "contentLabel": "Inhoud",
       "contentPlaceholder": "Schrijf hier je nieuwsbrief inhoud...",
       "preview": "Voorbeeld",
@@ -400,7 +405,15 @@
     "noEvents": "Geen evenementen gevonden die aan je criteria voldoen.",
     "listView": "Lijstweergave",
     "calendarView": "Kalenderweergave",
-    "confirmRegister": "Wil je je registreren voor \"{title}\"?"
+    "confirmRegister": "Wil je je registreren voor \"{title}\"?",
+    "learningNetwork": {
+      "title": "Leernetwerk",
+      "subtitle": "Kleine organisaties en lokale mensen werken samen aan gedeelde vraagstukken en organiseren bijeenkomsten om deze samen te bespreken.",
+      "participantsTitle": "Deelnemers",
+      "participantsText": "Organisaties, professionals en bewoners die samen willen leren en praktische oplossingen willen ontwikkelen.",
+      "methodsTitle": "Werkwijze",
+      "methodsText": "Werksessies, leercirkels, praktijkexperimenten en feedbackrondes die ideeën omzetten in actie."
+    }
   },
   "forgotPassword": {
     "title": "Wachtwoord Resetten",
@@ -411,6 +424,7 @@
   },
   "forum": {
     "title": "Gemeenschapsforum",
+    "badge": "Forum",
     "headerTitle": "Doe Mee Aan Het Gesprek",
     "subtitle": "Praat mee, deel ideeën en kom in contact met buren.",
     "headerSubtitle": "Verbind met andere leden, deel ervaringen en leer van elkaar.",
@@ -418,6 +432,13 @@
     "newDiscussion": "Nieuwe Discussie",
     "searchPlaceholder": "Zoek discussies...",
     "categories": "Categorieën",
+    "categoryLabels": {
+      "all": "Alle Discussies",
+      "foodNutrition": "Voeding & Gezondheid",
+      "healthWellbeing": "Gezondheid & Welzijn",
+      "localInitiatives": "Lokale Initiatieven",
+      "generalDiscussion": "Algemene Discussie"
+    },
     "trending": "Populaire Onderwerpen",
     "noDiscussions": "Geen discussies gevonden.",
     "sort": {
@@ -505,6 +526,7 @@
     "privacyText": "Wij respecteren je privacy.",
     "unsubscribe": "Uitschrijven",
     "unsubscribeText": "Schrijf je op elk moment uit.",
+    "latestTitle": "Laatste Nieuws",
     "benefits": {
       "title": "Wat Je Krijgt",
       "highlightTitle": "Evenement Hoogtepunten",
@@ -597,12 +619,21 @@
     "title": "Bouwen aan een Gezonder, Meer Verbonden Twente",
     "subtitle": "Blue Zone Twente is een levend laboratorium en leernetwerk waar gemeenschapsleden samenkomen om blijvende verandering te creëren.",
     "originTitle": "Hoe Het Begon",
+    "originImage": "https://images.unsplash.com/photo-1661328992560-55256f06bdad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXN0YWluYWJsZSUyMGxpdmluZ3xlbnwxfHx8fDE3NjQ0OTg4MDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
     "missionTitle": "Onze Missie",
     "visionTitle": "Onze Visie",
     "valuesTitle": "Onze Waarden",
     "originText1": "In 2023 kwamen een groep gepassioneerde bewoners, gezondheidsprofessionals en duurzaamheidsvoorstanders samen met een gedeelde visie: Twente transformeren in een regio waar mensen langer, gezonder en gelukkiger leven.",
     "originText2": "Geïnspireerd door de Blue Zones van de wereld—regio's waar mensen aantoonbaar langer leven—gingen we op pad om onze eigen blauwdruk voor welzijn te creëren. We erkenden dat ware gezondheid verder gaat dan individuele keuzes; het wordt gevormd door onze gemeenschappen, omgevingen en verbindingen.",
     "originText3": "Van gemeenschapstuinen tot wandelgroepen, van lokale voedselinitiatieven tot buurtbijeenkomsten, Blue Zone Twente is uitgegroeid tot een beweging van meer dan 1.200 leden in de regio.",
+    "blueZones": {
+      "title": "Blue Zones Wereldwijd",
+      "subtitle": "Lessen uit plaatsen waar mensen het langst en gezondst leven.",
+      "worldwideTitle": "Blue Zones Over de Hele Wereld",
+      "worldwideText": "Blue Zones zijn gevonden in regio's zoals Okinawa (Japan), Sardinie (Italie), Nicoya (Costa Rica), Ikaria (Griekenland) en Loma Linda (VS). Elke gemeenschap heeft een eigen cultuur, maar deelt gewoonten die een lang en vitaal leven ondersteunen.",
+      "characteristicsTitle": "Gedeelde Blue Zone Kenmerken",
+      "characteristicsText": "Sterke sociale banden, regelmatige beweging, plantgerichte voeding, zingeving in het dagelijks leven en omgevingen die gezonde keuzes makkelijk maken."
+    },
     "missionText": "Een bloeiend ecosysteem creëren waar inwoners van Twente eenvoudig toegang hebben tot middelen, verbinding kunnen maken met gelijkgestemden en kunnen deelnemen aan initiatieven die gezond, sociaal en duurzaam leven voor iedereen bevorderen.",
     "visionText": "Een Twente waar elke gemeenschap een Blue Zone is—waar mensen van nature gezonde keuzes maken, waar buren elkaar kennen en steunen, en waar duurzame praktijken verweven zijn in het dagelijks leven.",
     "values": {
@@ -638,6 +669,26 @@
         "title": "Handelen",
         "text": "Ondersteuning voor lokale initiatieven, van gemeenschapstuinen tot voedselcoöperaties tot wandelgroepen."
       }
+    },
+    "people": {
+      "title": "De Mensen Achter Blue Zone Twente",
+      "subtitle": "Maak kennis met twee lokale kartrekkers die de beweging laten groeien.",
+      "memberOne": {
+        "name": "Naam Een",
+        "role": "Rol of Focusgebied",
+        "text": "Korte bio komt hier. Benoem hun ervaring, interesses of waarom ze geven om Blue Zone Twente.",
+        "image": "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=1200&q=80"
+      },
+      "memberTwo": {
+        "name": "Naam Twee",
+        "role": "Rol of Focusgebied",
+        "text": "Korte bio komt hier. Deel wat ze in de gemeenschap brengen en welke impact ze willen maken.",
+        "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1200&q=80"
+      }
+    },
+    "finance": {
+      "title": "Financiering en Ondersteuning",
+      "text": "Hier kan informatie staan over financiering, subsidies, partners en hoe de gemeenschap bijdraagt om initiatieven draaiende te houden."
     },
     "joinMovement": {
       "title": "Word Onderdeel van de Beweging",

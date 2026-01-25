@@ -2,7 +2,7 @@
   <div class="event-card">
     <div class="event-card__image-wrapper">
       <ImageWithFallback
-        :src="imageUrl"
+        :src="resolvedImageUrl"
         :alt="title"
         class-name="event-card__image"
       />
@@ -54,6 +54,7 @@
 import { Calendar, Clock, MapPin, Users, Check, Star } from 'lucide-vue-next'
 import ImageWithFallback from './ImageWithFallback.vue'
 import { useTranslateCategory } from '@/composables/useTranslateCategory'
+import { resolveImageUrl } from '@/utils/resolveImageUrl'
 
 export default {
   name: 'EventCard',
@@ -116,6 +117,11 @@ export default {
     onViewDetails: {
       type: Function,
       default: () => {}
+    }
+  },
+  computed: {
+    resolvedImageUrl() {
+      return resolveImageUrl(this.imageUrl)
     }
   },
   methods: {

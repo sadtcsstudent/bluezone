@@ -204,7 +204,7 @@ export const getStats = async (_req: Request, res: Response, next: NextFunction)
 
 export const broadcastNewsletter = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { subject, content } = req.body;
+    const { subject, content, imageUrl } = req.body;
 
     if (!subject || !content) {
       throw new AppError(400, 'Subject and content are required');
@@ -230,6 +230,7 @@ export const broadcastNewsletter = async (req: Request, res: Response, next: Nex
       data: {
         title: subject,
         description: content.substring(0, 200) + (content.length > 200 ? '...' : ''), // Brief summary
+        imageUrl: imageUrl || null,
         fileUrl: '', // No file for email broadcasts usually, or could generate PDF later
         publishedAt: new Date(),
         topics: ['Community Update']
