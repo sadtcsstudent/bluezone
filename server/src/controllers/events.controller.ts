@@ -60,7 +60,7 @@ export const listEvents = async (req: Request, res: Response, next: NextFunction
       };
     });
 
-    res.set('Cache-Control', 'public, max-age=300');
+    res.set('Cache-Control', 'no-store');
     res.json({ events: formattedEvents, total, page: Math.floor(skip / take) + 1, limit: take });
   } catch (error) {
     next(error);

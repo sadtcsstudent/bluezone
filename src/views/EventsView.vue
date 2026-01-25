@@ -63,24 +63,6 @@
         </div>
       </div>
 
-      <!-- Learning Network -->
-      <div class="learning-network">
-        <div class="learning-network__header">
-          <h2>{{ $t('eventsPage.learningNetwork.title') }}</h2>
-          <p class="learning-network__subtitle">{{ $t('eventsPage.learningNetwork.subtitle') }}</p>
-        </div>
-        <div class="learning-network__grid">
-          <div class="learning-network__card">
-            <h3>{{ $t('eventsPage.learningNetwork.participantsTitle') }}</h3>
-            <p class="learning-network__text">{{ $t('eventsPage.learningNetwork.participantsText') }}</p>
-          </div>
-          <div class="learning-network__card">
-            <h3>{{ $t('eventsPage.learningNetwork.methodsTitle') }}</h3>
-            <p class="learning-network__text">{{ $t('eventsPage.learningNetwork.methodsText') }}</p>
-          </div>
-        </div>
-      </div>
-
       <!-- Loading State -->
       <div v-if="loading" class="loading-state">
         <div class="spinner"></div>
@@ -118,6 +100,24 @@
         <p class="no-results-text">
           Try adjusting your filters or search query
         </p>
+      </div>
+
+      <!-- Learning Network -->
+      <div class="learning-network">
+        <div class="learning-network__header">
+          <h2>{{ $t('eventsPage.learningNetwork.title') }}</h2>
+          <p class="learning-network__subtitle">{{ $t('eventsPage.learningNetwork.subtitle') }}</p>
+        </div>
+        <div class="learning-network__grid">
+          <div class="learning-network__card">
+            <h3>{{ $t('eventsPage.learningNetwork.participantsTitle') }}</h3>
+            <p class="learning-network__text">{{ $t('eventsPage.learningNetwork.participantsText') }}</p>
+          </div>
+          <div class="learning-network__card">
+            <h3>{{ $t('eventsPage.learningNetwork.methodsTitle') }}</h3>
+            <p class="learning-network__text">{{ $t('eventsPage.learningNetwork.methodsText') }}</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
