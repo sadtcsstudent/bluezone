@@ -421,6 +421,7 @@ export default {
   font-size: 1.125rem;
   line-height: 1.7;
   margin: 0;
+  white-space: pre-line;
 }
 
 .hero__actions {
@@ -702,6 +703,7 @@ export default {
 .events__subtitle {
   margin-top: 0.5rem;
   color: rgb(var(--color-text-secondary));
+  white-space: pre-line;
 }
 
 .events__view-all {

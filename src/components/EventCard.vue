@@ -14,11 +14,11 @@
       <div class="event-card__details">
         <div class="event-card__detail">
           <Calendar :size="16" />
-          <span>{{ date }}</span>
+          <span>{{ displayDate }}</span>
         </div>
         <div class="event-card__detail">
           <Clock :size="16" />
-          <span>{{ time }}</span>
+          <span>{{ displayTime }}</span>
         </div>
         <div class="event-card__detail">
           <MapPin :size="16" />
@@ -122,6 +122,12 @@ export default {
   computed: {
     resolvedImageUrl() {
       return resolveImageUrl(this.imageUrl)
+    },
+    displayDate() {
+      return this.formatDateValue(this.date)
+    },
+    displayTime() {
+      return this.formatTimeValue(this.time, this.date)
     }
   },
   methods: {
@@ -130,6 +136,23 @@ export default {
     },
     handleRegister() {
       this.onRegister()
+    },
+    formatDateValue(value) {
+      if (typeof value !== 'string') return value ? String(value) : ''
+      const trimmed = value.trim()
+      if (!trimmed) return ''
+      const tIndex = trimmed.indexOf('T')
+      return tIndex > 0 ? trimmed.slice(0, tIndex) : trimmed
+    },
+    formatTimeValue(timeValue, dateValue) {
+      if (typeof timeValue === 'string' && timeValue.trim()) return timeValue.trim()
+      if (typeof dateValue !== 'string') return ''
+      const tIndex = dateValue.indexOf('T')
+      if (tIndex < 0) return ''
+      const timePart = dateValue.slice(tIndex + 1).replace('Z', '')
+      const parts = timePart.split(':')
+      if (parts.length >= 2) return `${parts[0]}:${parts[1]}`
+      return timePart
     }
   }
 }

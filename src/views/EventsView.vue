@@ -415,6 +415,7 @@ export default {
   color: rgb(var(--color-text-secondary));
   font-size: 1.125rem;
   line-height: 1.6;
+  white-space: pre-line;
 }
 
 /* Search and Controls */
@@ -556,6 +557,7 @@ export default {
   max-width: 46rem;
   margin: 0.75rem auto 0;
   line-height: 1.6;
+  white-space: pre-line;
 }
 
 .learning-network__grid {
@@ -588,6 +590,7 @@ export default {
   color: rgb(var(--color-text-secondary));
   line-height: 1.6;
   margin: 0;
+  white-space: pre-line;
 }
 
 /* Events Grid/List */

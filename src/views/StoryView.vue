@@ -610,6 +610,7 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100%;
+  gap: 0;
 }
 
 .person-photo {
@@ -621,11 +622,24 @@ export default {
 }
 
 .person-content {
-  padding: 1.75rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   flex-grow: 1;
+}
+
+@media (min-width: 768px) {
+  .person-card {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .person-photo {
+    width: 220px;
+    height: 220px;
+    flex-shrink: 0;
+  }
 }
 
 .person-name {
