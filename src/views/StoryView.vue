@@ -422,12 +422,7 @@ export default {
 .blue-zones-grid {
   display: grid;
   gap: 1.5rem;
-}
-
-@media (min-width: 768px) {
-  .blue-zones-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  grid-template-columns: 1fr;
 }
 
 .info-card {
@@ -604,12 +599,7 @@ export default {
 .people-grid {
   display: grid;
   gap: 2rem;
-}
-
-@media (min-width: 768px) {
-  .people-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  grid-template-columns: 1fr;
 }
 
 .person-card {

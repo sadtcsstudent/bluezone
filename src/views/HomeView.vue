@@ -24,7 +24,7 @@
           <div class="hero__image-container">
             <div class="hero__image-wrapper">
               <ImageWithFallback
-                src="https://images.unsplash.com/photo-1625246433906-6cfa33544b31?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb21tdW5pdHklMjBnYXRoZXJpbmd8ZW58MXx8fHwxNzY0NDU5MDg4fDA&ixlib=rb-4.1.0&q=80&w=1080"
+                src="/images/homepagebig.jpeg"
                 alt="Community gathering"
                 class-name="hero__image"
               />

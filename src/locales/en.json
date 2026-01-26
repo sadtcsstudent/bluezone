@@ -619,7 +619,7 @@
     "title": "Building a Healthier, More Connected Twente",
     "subtitle": "Blue Zone Twente connects people and combines strengths to work on caring neighborhoods where people live longer, healthier, more connected, and more vital lives.",
     "originTitle": "How It All Began",
-    "originImage": "https://images.unsplash.com/photo-1661328992560-55256f06bdad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXN0YWluYWJsZSUyMGxpdmluZ3xlbnwxfHx8fDE3NjQ0OTg4MDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "originImage": "/images/our-story-big-picture.jpeg",
     "missionTitle": "Our Mission",
     "visionTitle": "Our Vision",
     "valuesTitle": "Our values",
@@ -677,7 +677,7 @@
         "name": "Birgit Muijsenberg",
         "role": "Project Leader Blue Zone Twente",
         "text": "As project leader of Blue Zone Twente, Birgit Muijsenberg brings a unique combination of strategic insight, the power to connect, and a deep-rooted passion for a more vital society. With a background in social projects and regional collaboration, she understands like no other how to connect partners around a shared mission.\n\nDriven by her interest in lifestyle, health, and the power of communities, Birgit is committed to transforming Twente step by step into a region where people live longer, healthier, and happier lives. She strongly believes in the power of small, achievable changes that together have a major impact. Her motivation stems from the conviction that everyone—regardless of background or age—deserves access to an environment that makes healthy behavior a given.\n\nWith her open mind, enthusiasm, and sharp eye, Birgit inspires and connects people. She builds bridges between science, practice, and the daily lives of Twente residents, working tirelessly towards a future where well-being is paramount.",
-        "image": "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=1200&q=80"
+        "image": "/images/picture-birgit.png"
       },
       "memberTwo": {
         "name": "Anne Dannenberg",
