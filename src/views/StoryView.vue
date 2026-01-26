@@ -614,8 +614,10 @@ export default {
 
 .person-photo {
   width: 100%;
-  height: 260px;
-  object-fit: cover;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  background: rgb(var(--color-background));
 }
 
 .person-content {

@@ -1,4 +1,13 @@
 import 'dotenv/config';
+import path from 'path';
+
+const resolveUploadsDir = () => {
+  const raw = process.env.UPLOADS_DIR;
+  if (!raw || raw.trim() === '') {
+    return path.join(process.cwd(), 'uploads');
+  }
+  return path.isAbsolute(raw) ? raw : path.join(process.cwd(), raw);
+};
 
 export const config = {
   port: Number(process.env.PORT) || 4000,
@@ -6,6 +15,7 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET || 'change-me',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   bcryptRounds: parseInt(process.env.BCRYPT_ROUNDS || '12', 10),
+  uploadsDir: resolveUploadsDir(),
   email: {
     host: process.env.SMTP_HOST,
     port: parseInt(process.env.SMTP_PORT || '587', 10),

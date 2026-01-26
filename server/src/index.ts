@@ -3,7 +3,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import helmet from 'helmet';
 import hpp from 'hpp';
-import path from 'path';
+import fs from 'fs';
 import http from 'http';
 import { config } from './config';
 import routes from './routes';
@@ -29,7 +29,10 @@ app.use(cookieParser());
 app.use(hpp());
 app.use(generalLimiter);
 app.use(csrfProtection);
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+if (!fs.existsSync(config.uploadsDir)) {
+  fs.mkdirSync(config.uploadsDir, { recursive: true });
+}
+app.use('/uploads', express.static(config.uploadsDir));
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 app.use('/api', routes);

@@ -3,9 +3,10 @@ import sharp from 'sharp';
 import path from 'path';
 import fs from 'fs';
 import { AppError } from '../utils/errors';
+import { config } from '../config';
 
 const ensureUploadsDir = () => {
-  const dir = path.join(process.cwd(), 'uploads');
+  const dir = config.uploadsDir;
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   return dir;
 };
