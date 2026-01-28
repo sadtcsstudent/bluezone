@@ -120,6 +120,8 @@ export default {
   color: white;
   padding: 3rem 0 1.5rem;
   margin-top: auto;
+  position: relative;
+  z-index: 10;
 }
 
 .footer-container {

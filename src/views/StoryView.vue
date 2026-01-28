@@ -14,25 +14,6 @@
       </div>
     </section>
 
-    <!-- In-page Navigation -->
-    <section class="story-nav">
-      <div class="story-nav-container">
-        <label class="story-nav-label" for="story-section-select">
-          <MarkdownText keypath="story.jumpToLabel" tag="span" inline />
-        </label>
-        <div class="story-nav-select">
-          <select id="story-section-select" v-model="selectedStorySection" @change="jumpToSection">
-            <option value="" disabled>{{ $t('story.jumpToPlaceholder') }}</option>
-            <option value="#mission-vision-values">{{ $t('story.sections.missionVisionValues') }}</option>
-            <option value="#blue-zone-twente">{{ $t('story.sections.blueZoneTwente') }}</option>
-            <option value="#our-team">{{ $t('story.sections.ourTeam') }}</option>
-            <option value="#blue-zones-worldwide">{{ $t('story.sections.blueZonesWorldwide') }}</option>
-            <option value="#finance">{{ $t('story.sections.funding') }}</option>
-          </select>
-        </div>
-      </div>
-    </section>
-
     <!-- Mission, Vision, Values -->
     <section id="mission-vision-values" class="mvv-section story-section">
       <div class="mvv-container">
@@ -283,23 +264,8 @@ export default {
     handleJoin() {
       this.$router.push({ name: 'signup' })
     },
-    jumpToSection() {
-      if (!this.selectedStorySection) return
-      const target = document.querySelector(this.selectedStorySection)
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      } else {
-        window.location.hash = this.selectedStorySection
-      }
-      this.selectedStorySection = ''
-    },
     resolveStoryImage(keypath) {
       return resolveImageUrl(this.$t(keypath))
-    }
-  },
-  data() {
-    return {
-      selectedStorySection: ''
     }
   }
 }
@@ -387,59 +353,6 @@ export default {
   line-height: 1.7;
   max-width: 48rem;
   margin: 0 auto;
-}
-
-/* In-page Navigation */
-.story-nav {
-  background: white;
-  border-bottom: 1px solid rgb(var(--color-border));
-}
-
-.story-nav-container {
-  max-width: 1024px;
-  margin: 0 auto;
-  padding: 1.25rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-@media (min-width: 640px) {
-  .story-nav-container {
-    padding: 1.25rem 1.5rem;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-  }
-}
-
-@media (min-width: 1024px) {
-  .story-nav-container {
-    padding: 1.25rem 2rem;
-  }
-}
-
-.story-nav-label {
-  font-weight: 600;
-  color: rgb(var(--color-text));
-}
-
-.story-nav-select select {
-  padding: 0.65rem 1rem;
-  border-radius: 9999px;
-  border: 1px solid rgb(var(--color-border));
-  background: white;
-  color: rgb(var(--color-text));
-  font-weight: 500;
-  min-width: 240px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.story-nav-select select:focus {
-  outline: none;
-  border-color: rgb(var(--color-primary));
-  box-shadow: 0 0 0 3px rgba(var(--color-primary), 0.1);
 }
 
 /* Origin Section */

@@ -561,7 +561,7 @@
       "storiesDesc": "Informatie over lokale initiatieven."
     },
     "archiveTitle": "Voorgaande nieuwsbrieven",
-    "download": "Downloaden"
+    "download": "Lees de volledige nieuwsbrief"
   },
   "profilePage": {
     "memberSince": "Lid sinds",
@@ -640,15 +640,6 @@
   },
   "story": {
     "badge": "Ons Verhaal",
-    "jumpToLabel": "Ga naar onderdeel",
-    "jumpToPlaceholder": "Kies een onderdeel",
-    "sections": {
-      "missionVisionValues": "Missie, visie en waarden",
-      "blueZoneTwente": "Blue Zone Twente",
-      "ourTeam": "Ons team",
-      "blueZonesWorldwide": "Blue Zones wereldwijd",
-      "funding": "Financiering"
-    },
     "title": "Bouwen aan een gezonder, meer verbonden Twente",
     "subtitle": "Blue Zone Twente verbindt mensen en combineert krachten om te werken aan zorgzame wijken en buurten waar mensen langer gezond, verbonden en vitaal leven.",
     "originTitle": "Hoe het begon",
@@ -710,7 +701,7 @@
         "name": "Birgit Muijsenberg",
         "role": "Projectleider Blue Zone Twente",
         "text": "Birgit Muijsenberg brengt als projectleider van Blue Zone Twente een unieke combinatie van strategisch inzicht, verbindingskracht en een diepgewortelde passie voor een vitalere samenleving. Met een achtergrond in sociaal-maatschappelijke projecten en regionale samenwerking weet zij als geen ander hoe je partners verbindt rondom een gezamenlijke missie.\n\nGedreven door haar interesse in leefstijl, gezondheid en de kracht van gemeenschappen, zet Birgit zich in om Twente stap voor stap te transformeren tot een regio waar mensen langer gezond en gelukkig leven. Ze gelooft sterk in de kracht van kleine, haalbare veranderingen die samen een groot effect hebben. Haar motivatie komt voort uit de overtuiging dat iedereen – ongeacht achtergrond of leeftijd – toegang verdient tot een omgeving die gezond gedrag vanzelfsprekend maakt.\n\nMet haar open houding, enthousiasme en scherpe blik weet Birgit mensen te inspireren en te verbinden. Ze bouwt bruggen tussen wetenschap, praktijk en de dagelijkse leefwereld van Twentenaren, en werkt met onvermoeibare energie aan een toekomst waarin welzijn centraal staat.",
-        "image": "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=1200&q=80"
+        "image": "/images/picture-birgit.png"
       },
       "memberTwo": {
         "name": "Anne Dannenberg",
@@ -808,7 +799,8 @@
       "viewDetails": "Bekijk Details",
       "register": "Registreren",
       "registered": "Geregistreerd",
-      "interested": "Geïnteresseerd"
+      "interested": "Geïnteresseerd",
+      "readMore": "Lees meer"
     },
     "forumCard": {
       "replies": "reacties"

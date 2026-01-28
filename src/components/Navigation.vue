@@ -15,7 +15,6 @@
               v-if="item.type === 'story'"
               class="nav-dropdown"
               @mouseenter="openStoryMenu"
-              @mouseleave="closeStoryMenu"
             >
               <button
                 class="nav-link nav-dropdown-trigger"
@@ -23,7 +22,7 @@
                 aria-haspopup="menu"
                 :aria-expanded="isStoryMenuOpen"
                 @focus="openStoryMenu"
-                @click="navigate(item.page)"
+                @click.prevent="toggleStoryMenu"
               >
                 {{ item.label }}
                 <ChevronDown :size="16" class="nav-dropdown-icon" />
@@ -205,7 +204,23 @@ export default {
     },
     closeStoryMenu() {
       this.isStoryMenuOpen = false
+    },
+    toggleStoryMenu() {
+      this.isStoryMenuOpen = !this.isStoryMenuOpen
+    },
+    handleOutsideClick(event) {
+      if (!this.isStoryMenuOpen) return
+      const dropdown = this.$el?.querySelector('.nav-dropdown')
+      if (dropdown && !dropdown.contains(event.target)) {
+        this.isStoryMenuOpen = false
+      }
     }
+  },
+  mounted() {
+    document.addEventListener('click', this.handleOutsideClick)
+  },
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleOutsideClick)
   },
   watch: {
     $route() {

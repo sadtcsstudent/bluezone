@@ -11,6 +11,14 @@
     <div class="event-card__content">
       <h3 class="event-card__title">{{ title }}</h3>
       <p class="event-card__description">{{ description }}</p>
+      <button
+        v-if="showReadMore"
+        class="event-card__read-more"
+        type="button"
+        @click.stop="openDescription"
+      >
+        {{ $t('components.eventCard.readMore') }}
+      </button>
       <div class="event-card__details">
         <div class="event-card__detail">
           <Calendar :size="16" />
@@ -47,11 +55,21 @@
         </button>
       </div>
     </div>
+
+    <div v-if="showDescriptionModal" class="event-card__modal" @click.self="closeDescription">
+      <div class="event-card__modal-content">
+        <button class="event-card__modal-close" type="button" @click="closeDescription">
+          <X :size="18" />
+        </button>
+        <h4 class="event-card__modal-title">{{ title }}</h4>
+        <p class="event-card__modal-text">{{ description }}</p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { Calendar, Clock, MapPin, Users, Check, Star } from 'lucide-vue-next'
+import { Calendar, Clock, MapPin, Users, Check, Star, X } from 'lucide-vue-next'
 import ImageWithFallback from './ImageWithFallback.vue'
 import { useTranslateCategory } from '@/composables/useTranslateCategory'
 import { resolveImageUrl } from '@/utils/resolveImageUrl'
@@ -65,7 +83,8 @@ export default {
     MapPin,
     Users,
     Check,
-    Star
+    Star,
+    X
   },
   setup() {
     const { translateCategory } = useTranslateCategory()
@@ -128,6 +147,14 @@ export default {
     },
     displayTime() {
       return this.formatTimeValue(this.time, this.date)
+    },
+    showReadMore() {
+      return typeof this.description === 'string' && this.description.length > 160
+    }
+  },
+  data() {
+    return {
+      showDescriptionModal: false
     }
   },
   methods: {
@@ -136,6 +163,12 @@ export default {
     },
     handleRegister() {
       this.onRegister()
+    },
+    openDescription() {
+      this.showDescriptionModal = true
+    },
+    closeDescription() {
+      this.showDescriptionModal = false
     },
     formatDateValue(value) {
       if (typeof value !== 'string') return value ? String(value) : ''
@@ -225,6 +258,25 @@ export default {
   font-size: 0.875rem;
   line-height: 1.5;
   margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-height: 4.5em;
+}
+
+.event-card__read-more {
+  border: none;
+  background: transparent;
+  color: rgb(var(--color-primary));
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  width: fit-content;
+}
+
+.event-card__read-more:hover {
+  color: rgb(var(--color-primary-dark));
 }
 
 .event-card__details {
@@ -250,6 +302,57 @@ export default {
   display: flex;
   gap: 0.5rem;
   margin-top: 1rem;
+}
+
+.event-card__modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 9999;
+}
+
+.event-card__modal-content {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  max-width: 560px;
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.event-card__modal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  border: none;
+  background: rgb(var(--color-background));
+  border-radius: 9999px;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.event-card__modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: rgb(var(--color-text));
+}
+
+.event-card__modal-text {
+  margin: 0;
+  color: rgb(var(--color-text-secondary));
+  line-height: 1.6;
 }
 
 .event-card__button {
