@@ -246,3 +246,21 @@ export const broadcastNewsletter = async (req: Request, res: Response, next: Nex
     next(error);
   }
 };
+
+export const listNewsletters = async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const newsletters = await prisma.newsletter.findMany({ orderBy: { publishedAt: 'desc' } });
+    res.json({ newsletters });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const adminDeleteNewsletter = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await prisma.newsletter.delete({ where: { id: req.params.id } });
+    res.json({ success: true });
+  } catch (error) {
+    next(error);
+  }
+};

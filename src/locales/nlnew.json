@@ -2,11 +2,6 @@
   "nav": {
     "home": "Home",
     "story": "Ons verhaal",
-    "storySections": {
-      "blueZoneTwente": "Blue Zone Twente",
-      "blueZonesWorldwide": "Blue Zones wereldwijd",
-      "ourTeam": "Ons team"
-    },
     "events": "Lerend netwerk",
     "forum": "Forum",
     "map": "Kaart",
@@ -33,7 +28,9 @@
   "home": {
     "badge": "Lerend netwerk",
     "title": "Welkom bij Blue Zone Twente",
-    "description": "Blue Zone Twente heeft als doel gezond oud worden in zorgzame wijken en buurten. Dit past binnen het programma positieve gezondheid van de provincie overijssel. Blue Zone Twente bundelt de kracht van Twentse burgerinitiatieven, zodat we samen sterker worden en een gezonde toekomst opbouwen. Word onderdeel van deze beweging en draag bij aan een vitaler Twente.\n\nSamen maken we Twente sterker!",
+    "description": "Blue Zone Twente heeft als doel gezond oud worden in zorgzame wijken en buurten. Dit past binnen het programma positieve gezondheid van de provincie overijssel. Blue Zone Twente bundelt de kracht van Twentse burgerinitiatieven, zodat we samen sterker worden en een gezonde toekomst opbouwen. Word onderdeel van deze beweging en draag bij aan een vitaler Twente.
+
+Samen maken we Twente sterker!",
     "joinCommunity": "Maak gratis een account aan",
     "learnMore": "Meer informatie",
     "communityMembers": "Betrokkenen",
@@ -295,12 +292,8 @@
       "preview": "Voorbeeld",
       "sending": "Verzenden...",
       "sendNewsletter": "Nieuwsbrief versturen",
-      "archiveTitle": "Eerdere nieuwsbrieven",
-      "archiveSubtitle": "Beheer eerder verstuurde nieuwsbrieven",
-      "noArchive": "Geen nieuwsbrieven gevonden",
       "confirmations": {
-        "send": "Weet je zeker dat je deze nieuwsbrief naar ALLE abonnees wilt versturen?",
-        "delete": "Deze nieuwsbrief verwijderen? Dit kan niet ongedaan worden gemaakt."
+        "send": "Weet je zeker dat je deze nieuwsbrief naar ALLE abonnees wilt versturen?"
       }
     },
     "initiativesTab": {
@@ -421,21 +414,7 @@
       "participantsTitle": "Deelnemers",
       "participantsText": "Burgerinitiatieven in Twente, professionals positieve gezondheid/blue zones vanuit kenniscentra (Universiteit Twente, Saxion en ROC van Twente, professionals participatie/positieve gezondheid Twentse Gemeenten en relevante netwerkpartners",
       "methodsTitle": "Methode",
-      "methodsText": "Vinden en verbinden van initiatieven Blue Zones in Twente, kennis en ervaring delen; brengen en halen, interactieve werkvormen, honoreren wat er is, geeft ruimte voor wat er nog niet is (met dank aan www.voicedialogue-academie.nl en www.voicedialogue.be) en met humor, hoop en handelingsperspectief (met dank aan www.klimaatgesprekken.nl).",
-      "links": {
-        "voiceDialogueAcademy": {
-          "label": "Voice Dialogue Academy",
-          "url": "https://www.voicedialogue-academie.nl"
-        },
-        "voiceDialogue": {
-          "label": "Voice Dialogue België",
-          "url": "https://www.voicedialogue.be"
-        },
-        "klimaatgesprekken": {
-          "label": "Klimaatgesprekken",
-          "url": "https://www.klimaatgesprekken.nl"
-        }
-      }
+      "methodsText": "Vinden en verbinden van initiatieven Blue Zones in Twente, kennis en ervaring delen; brengen en halen, interactieve werkvormen, honoreren wat er is, geeft ruimte voor wat er nog niet is (met dank aan www.voicedialogue-academie.nl en www.voicedialogue.be) en met humor, hoop en handelingsperspectief (met dank aan www.klimaatgesprekken.nl)."
     }
   },
   "forgotPassword": {
@@ -512,7 +491,6 @@
     "searchPlaceholder": "Zoek locaties...",
     "filter": "Filter",
     "getDirections": "Routebeschrijving",
-    "visitWebsite": "Bezoek website",
     "badge": "Lokale kaart",
     "filters": {
       "all": "Alle initiatieven",
@@ -640,15 +618,6 @@
   },
   "story": {
     "badge": "Ons Verhaal",
-    "jumpToLabel": "Ga naar onderdeel",
-    "jumpToPlaceholder": "Kies een onderdeel",
-    "sections": {
-      "missionVisionValues": "Missie, visie en waarden",
-      "blueZoneTwente": "Blue Zone Twente",
-      "ourTeam": "Ons team",
-      "blueZonesWorldwide": "Blue Zones wereldwijd",
-      "funding": "Financiering"
-    },
     "title": "Bouwen aan een gezonder, meer verbonden Twente",
     "subtitle": "Blue Zone Twente verbindt mensen en combineert krachten om te werken aan zorgzame wijken en buurten waar mensen langer gezond, verbonden en vitaal leven.",
     "originTitle": "Hoe het begon",
@@ -663,9 +632,36 @@
       "title": "Blue Zones wereldwijd",
       "subtitle": "Leren van bestaande Blue Zones.",
       "worldwideTitle": "Blue Zones over de hele wereld",
-      "worldwideText": "De term Blue Zones komt van Dan Buettner (2012), een journalist van de National Geographic. Hij identificeerde deze plekken op aarde, markeerde ze met een blauwe viltstift op de wereldkaart, en was verrast door de gezondheid en levensverwachting van de mensen daar.\n\nDe 6 blue zones in de wereld zijn: Sardinië (Italie), Okinawa (Japan), Loma Linda (Californië), Nicoya (Costa Rica), Ikaria (Griekenland) en Singapore.",
+      "worldwideText": "De term Blue Zones komt van Dan Buettner (2012), een journalist van de National Geographic. Hij identificeerde deze plekken op aarde, markeerde ze met een blauwe viltstift op de wereldkaart, en was verrast door de gezondheid en levensverwachting van de mensen daar.
+
+De 6 blue zones in de wereld zijn: Sardinië (Italie), Okinawa (Japan), Loma Linda (Californië), Nicoya (Costa Rica), Ikaria (Griekenland) en Singapore.",
       "characteristicsTitle": "Gedeelde Blue Zone kenmerken",
-      "characteristicsText": "Beweeg natuurlijk\nLeven in een omgeving die stimuleert om te bewegen zonder erbij na te denken.\n\nKen je doel\nWeet waarvoor je ’s ochtends wakker wilt worden.\n\nZo min mogelijk stress\nNeem dagelijks bewust tijd voor ontspanning.\n\nDe 80%-regel\nVerlaag je calorie-inname met 20% (stop met eten als je voor 80% verzadigd bent, verklein je porties of doe dagelijks aan intermittent vasten).\n\nPlantaardig voedsel\nVeel bonen (incl. soya en linzen) en max 5 x per maand vlees, regelmatig vis, voornamelijk weinig bewerkt voedsel en vezelrijk voedsel, volkorenbrood, handje noten, weinig suiker.\n\nDrinken\nVoornamelijk water, ook koffie en thee.\n\nGelijkgestemden of geloofsgemeenschap\nBehoren tot een groep met dezelfde normen en waarden, waarmee regelmatig wordt samengekomen.\n\nFamilie\nStel familie en geliefden op de eerste plaats.\n\nVriendenkring\nVoldoende sociale contacten die gezond gedrag vertonen."
+      "characteristicsText": "Beweeg natuurlijk
+Leven in een omgeving die stimuleert om te bewegen zonder erbij na te denken.
+
+Ken je doel
+Weet waarvoor je ’s ochtends wakker wilt worden.
+
+Zo min mogelijk stress
+Neem dagelijks bewust tijd voor ontspanning.
+
+De 80%-regel
+Verlaag je calorie-inname met 20% (stop met eten als je voor 80% verzadigd bent, verklein je porties of doe dagelijks aan intermittent vasten).
+
+Plantaardig voedsel
+Veel bonen (incl. soya en linzen) en max 5 x per maand vlees, regelmatig vis, voornamelijk weinig bewerkt voedsel en vezelrijk voedsel, volkorenbrood, handje noten, weinig suiker.
+
+Drinken
+Voornamelijk water, ook koffie en thee.
+
+Gelijkgestemden of geloofsgemeenschap
+Behoren tot een groep met dezelfde normen en waarden, waarmee regelmatig wordt samengekomen.
+
+Familie
+Stel familie en geliefden op de eerste plaats.
+
+Vriendenkring
+Voldoende sociale contacten die gezond gedrag vertonen."
     },
     "missionText": "Blue Zone Twente versterkt de Twentse gemeenschapskracht door gezond, betekenisvol en verbonden leven voor iedereen toegankelijk te maken. Vanuit burgerinitiatieven en geïnspireerd door de wereldwijde Blue Zones stimuleren we gezond gedrag, sociale verbondenheid en een leefomgeving waarin mensen elkaar ondersteunen. Zo bouwen we aan wijken en buurten waar mensen gezond en gelukkig oud kunnen worden.",
     "visionText": "Een Twente waar gezond en betekenisvol leven voor iedereen binnen handbereik is. Door de principes van Blue Zones en Positieve Gezondheid te omarmen, ontstaat een regio waarin mensen zich gesteund voelen, mee kunnen doen en langer vitaal blijven.",
@@ -709,7 +705,11 @@
       "memberOne": {
         "name": "Birgit Muijsenberg",
         "role": "Projectleider Blue Zone Twente",
-        "text": "Birgit Muijsenberg brengt als projectleider van Blue Zone Twente een unieke combinatie van strategisch inzicht, verbindingskracht en een diepgewortelde passie voor een vitalere samenleving. Met een achtergrond in sociaal-maatschappelijke projecten en regionale samenwerking weet zij als geen ander hoe je partners verbindt rondom een gezamenlijke missie.\n\nGedreven door haar interesse in leefstijl, gezondheid en de kracht van gemeenschappen, zet Birgit zich in om Twente stap voor stap te transformeren tot een regio waar mensen langer gezond en gelukkig leven. Ze gelooft sterk in de kracht van kleine, haalbare veranderingen die samen een groot effect hebben. Haar motivatie komt voort uit de overtuiging dat iedereen – ongeacht achtergrond of leeftijd – toegang verdient tot een omgeving die gezond gedrag vanzelfsprekend maakt.\n\nMet haar open houding, enthousiasme en scherpe blik weet Birgit mensen te inspireren en te verbinden. Ze bouwt bruggen tussen wetenschap, praktijk en de dagelijkse leefwereld van Twentenaren, en werkt met onvermoeibare energie aan een toekomst waarin welzijn centraal staat.",
+        "text": "Birgit Muijsenberg brengt als projectleider van Blue Zone Twente een unieke combinatie van strategisch inzicht, verbindingskracht en een diepgewortelde passie voor een vitalere samenleving. Met een achtergrond in sociaal-maatschappelijke projecten en regionale samenwerking weet zij als geen ander hoe je partners verbindt rondom een gezamenlijke missie.
+
+Gedreven door haar interesse in leefstijl, gezondheid en de kracht van gemeenschappen, zet Birgit zich in om Twente stap voor stap te transformeren tot een regio waar mensen langer gezond en gelukkig leven. Ze gelooft sterk in de kracht van kleine, haalbare veranderingen die samen een groot effect hebben. Haar motivatie komt voort uit de overtuiging dat iedereen – ongeacht achtergrond of leeftijd – toegang verdient tot een omgeving die gezond gedrag vanzelfsprekend maakt.
+
+Met haar open houding, enthousiasme en scherpe blik weet Birgit mensen te inspireren en te verbinden. Ze bouwt bruggen tussen wetenschap, praktijk en de dagelijkse leefwereld van Twentenaren, en werkt met onvermoeibare energie aan een toekomst waarin welzijn centraal staat.",
         "image": "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=1200&q=80"
       },
       "memberTwo": {
@@ -717,57 +717,11 @@
         "role": "Adviseur bij Kennispoort Regio Zwolle",
         "text": "Kennispoort Regio Zwolle is een van de burgerinitiatieven.",
         "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1200&q=80"
-      },
-      "memberThree": {
-        "name": "Teamlid",
-        "role": "Rol of partnerorganisatie",
-        "text": "Voeg een korte bio toe voor dit teamlid. Pas de naam, rol, tekst en afbeelding aan in de vertalingen.",
-        "image": "/images/team-placeholder.svg"
-      },
-      "memberFour": {
-        "name": "Teamlid",
-        "role": "Rol of partnerorganisatie",
-        "text": "Voeg een korte bio toe voor dit teamlid. Pas de naam, rol, tekst en afbeelding aan in de vertalingen.",
-        "image": "/images/team-placeholder.svg"
-      },
-      "memberFive": {
-        "name": "Teamlid",
-        "role": "Rol of partnerorganisatie",
-        "text": "Voeg een korte bio toe voor dit teamlid. Pas de naam, rol, tekst en afbeelding aan in de vertalingen.",
-        "image": "/images/team-placeholder.svg"
-      },
-      "memberSix": {
-        "name": "Teamlid",
-        "role": "Rol of partnerorganisatie",
-        "text": "Voeg een korte bio toe voor dit teamlid. Pas de naam, rol, tekst en afbeelding aan in de vertalingen.",
-        "image": "/images/team-placeholder.svg"
-      }
-    },
-    "partners": {
-      "title": "Partners",
-      "subtitle": "Organisaties die Blue Zone Twente ondersteunen.",
-      "zwanenhof": {
-        "name": "Zwanenhof",
-        "image": "/images/partners/zwanenhof.svg"
       }
     },
     "finance": {
       "title": "Financiering",
-      "text": "Blue Zone Twente wordt gefinancierd vanuit Provincie Overijssel en het Twente Noabers Fonds",
-      "logos": {
-        "provincieOverijssel": {
-          "src": "/images/funding/provincie-overijssel.svg",
-          "alt": "Provincie Overijssel"
-        },
-        "twentseNoabers": {
-          "src": "/images/funding/twentse-noabers.svg",
-          "alt": "Twentse Noabers"
-        },
-        "twentseNoabersFonds": {
-          "src": "/images/funding/twentse-noabers-fonds.svg",
-          "alt": "Twentse Noabers Fonds"
-        }
-      }
+      "text": "Blue Zone Twente wordt gefinancierd vanuit Provincie Overijssel en het Twente Noabers Fonds"
     },
     "joinMovement": {
       "title": "Word onderdeel van Blue Zone Twente",

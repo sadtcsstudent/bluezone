@@ -63,6 +63,36 @@
         </div>
       </div>
 
+      <!-- Learning Network -->
+      <div class="learning-network">
+        <div class="learning-network__header">
+          <h2>{{ $t('eventsPage.learningNetwork.title') }}</h2>
+          <p class="learning-network__subtitle">{{ $t('eventsPage.learningNetwork.subtitle') }}</p>
+        </div>
+        <div class="learning-network__grid">
+          <div class="learning-network__card">
+            <h3>{{ $t('eventsPage.learningNetwork.participantsTitle') }}</h3>
+            <p class="learning-network__text">{{ $t('eventsPage.learningNetwork.participantsText') }}</p>
+          </div>
+          <div class="learning-network__card">
+            <h3>{{ $t('eventsPage.learningNetwork.methodsTitle') }}</h3>
+            <p class="learning-network__text">{{ $t('eventsPage.learningNetwork.methodsText') }}</p>
+            <div class="learning-network__links">
+              <a
+                v-for="link in learningNetworkLinks"
+                :key="link.url"
+                :href="link.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="learning-network__link"
+              >
+                {{ link.label }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Loading State -->
       <div v-if="loading" class="loading-state">
         <div class="spinner"></div>
@@ -100,24 +130,6 @@
         <p class="no-results-text">
           Try adjusting your filters or search query
         </p>
-      </div>
-
-      <!-- Learning Network -->
-      <div class="learning-network">
-        <div class="learning-network__header">
-          <h2>{{ $t('eventsPage.learningNetwork.title') }}</h2>
-          <p class="learning-network__subtitle">{{ $t('eventsPage.learningNetwork.subtitle') }}</p>
-        </div>
-        <div class="learning-network__grid">
-          <div class="learning-network__card">
-            <h3>{{ $t('eventsPage.learningNetwork.participantsTitle') }}</h3>
-            <p class="learning-network__text">{{ $t('eventsPage.learningNetwork.participantsText') }}</p>
-          </div>
-          <div class="learning-network__card">
-            <h3>{{ $t('eventsPage.learningNetwork.methodsTitle') }}</h3>
-            <p class="learning-network__text">{{ $t('eventsPage.learningNetwork.methodsText') }}</p>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -174,13 +186,41 @@ export default {
   },
   computed: {
     filteredEvents() {
-      return this.events.filter(event => {
-        const categoryMatch = this.selectedCategory === 'all' || event.category?.name === this.selectedCategory
-        const searchMatch = this.searchQuery === '' ||
-          event.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          event.description.toLowerCase().includes(this.searchQuery.toLowerCase())
+      const normalizedQuery = this.searchQuery.trim().toLowerCase()
+      const filtered = this.events.filter((event) => {
+        const eventCategory = typeof event.category === 'string' ? event.category : event.category?.name
+        const categoryMatch = this.selectedCategory === 'all' || eventCategory === this.selectedCategory
+        const titleText = (event.title || '').toLowerCase()
+        const descriptionText = (event.description || '').toLowerCase()
+        const searchMatch = normalizedQuery === '' ||
+          titleText.includes(normalizedQuery) ||
+          descriptionText.includes(normalizedQuery)
         return categoryMatch && searchMatch
       })
+
+      return filtered.slice().sort((a, b) => {
+        const aValue = Date.parse(a.date || a.startDate || a.createdAt || a.updatedAt || '')
+        const bValue = Date.parse(b.date || b.startDate || b.createdAt || b.updatedAt || '')
+        const aTime = Number.isNaN(aValue) ? 0 : aValue
+        const bTime = Number.isNaN(bValue) ? 0 : bValue
+        return bTime - aTime
+      })
+    },
+    learningNetworkLinks() {
+      return [
+        {
+          label: this.$t('eventsPage.learningNetwork.links.voiceDialogueAcademy.label'),
+          url: this.$t('eventsPage.learningNetwork.links.voiceDialogueAcademy.url')
+        },
+        {
+          label: this.$t('eventsPage.learningNetwork.links.voiceDialogue.label'),
+          url: this.$t('eventsPage.learningNetwork.links.voiceDialogue.url')
+        },
+        {
+          label: this.$t('eventsPage.learningNetwork.links.klimaatgesprekken.label'),
+          url: this.$t('eventsPage.learningNetwork.links.klimaatgesprekken.url')
+        }
+      ].filter((link) => typeof link.url === 'string' && link.url.startsWith('http'))
     }
   },
   watch: {
@@ -219,7 +259,7 @@ export default {
 
       try {
         const offset = (this.page - 1) * this.limit
-        const data = await api.get(`/events?limit=${this.limit}&offset=${offset}`)
+        const data = await api.get(`/events?limit=${this.limit}&offset=${offset}&sort=latest`)
         const normalizeEvent = (event) => {
           const attendeeCount = event.attendees ?? event.attendeeCount ?? (
             event.registrations ? event.registrations.filter((r) => r.status === 'registered').length : 0
@@ -591,6 +631,32 @@ export default {
   line-height: 1.6;
   margin: 0;
   white-space: pre-line;
+}
+
+.learning-network__links {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.learning-network__link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.9rem;
+  border-radius: 9999px;
+  border: 1px solid rgb(var(--color-primary));
+  color: rgb(var(--color-primary));
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  background: transparent;
+}
+
+.learning-network__link:hover {
+  background: rgb(var(--color-primary));
+  color: white;
 }
 
 /* Events Grid/List */

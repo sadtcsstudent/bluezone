@@ -10,14 +10,44 @@
 
         <!-- Desktop Navigation -->
         <div class="nav-links">
-          <button
-            v-for="item in navItems"
-            :key="item.page"
-            @click="navigate(item.page)"
-            :class="['nav-link', { 'nav-link--active': currentPage === item.page }]"
-          >
-            {{ item.label }}
-          </button>
+          <template v-for="item in navItems" :key="item.page">
+            <div
+              v-if="item.type === 'story'"
+              class="nav-dropdown"
+              @mouseenter="openStoryMenu"
+              @mouseleave="closeStoryMenu"
+            >
+              <button
+                class="nav-link nav-dropdown-trigger"
+                :class="{ 'nav-link--active': currentPage === item.page }"
+                aria-haspopup="menu"
+                :aria-expanded="isStoryMenuOpen"
+                @focus="openStoryMenu"
+                @click="navigate(item.page)"
+              >
+                {{ item.label }}
+                <ChevronDown :size="16" class="nav-dropdown-icon" />
+              </button>
+              <div v-show="isStoryMenuOpen" class="nav-dropdown-menu" role="menu">
+                <button
+                  v-for="section in storyMenuItems"
+                  :key="section.hash"
+                  class="nav-dropdown-item"
+                  role="menuitem"
+                  @click="navigateStorySection(section.hash)"
+                >
+                  {{ section.label }}
+                </button>
+              </div>
+            </div>
+            <button
+              v-else
+              @click="navigate(item.page)"
+              :class="['nav-link', { 'nav-link--active': currentPage === item.page }]"
+            >
+              {{ item.label }}
+            </button>
+          </template>
         </div>
 
         <!-- Desktop Auth Buttons -->
@@ -52,14 +82,33 @@
       <!-- Mobile Menu -->
       <div v-if="isMobileMenuOpen" class="nav-mobile-menu">
         <div class="nav-mobile-links">
-          <button
-            v-for="item in navItems"
-            :key="item.page"
-            @click="navigateAndClose(item.page)"
-            :class="['nav-mobile-link', { 'nav-mobile-link--active': currentPage === item.page }]"
-          >
-            {{ item.label }}
-          </button>
+          <template v-for="item in navItems" :key="item.page">
+            <div v-if="item.type === 'story'" class="nav-mobile-story">
+              <button
+                @click="navigateAndClose(item.page)"
+                :class="['nav-mobile-link', { 'nav-mobile-link--active': currentPage === item.page }]"
+              >
+                {{ item.label }}
+              </button>
+              <div class="nav-mobile-submenu">
+                <button
+                  v-for="section in storyMenuItems"
+                  :key="section.hash"
+                  class="nav-mobile-sublink"
+                  @click="navigateStorySection(section.hash)"
+                >
+                  {{ section.label }}
+                </button>
+              </div>
+            </div>
+            <button
+              v-else
+              @click="navigateAndClose(item.page)"
+              :class="['nav-mobile-link', { 'nav-mobile-link--active': currentPage === item.page }]"
+            >
+              {{ item.label }}
+            </button>
+          </template>
         </div>
         <div class="nav-mobile-auth">
           <div class="nav-mobile-language">
@@ -90,7 +139,7 @@
 </template>
 
 <script>
-import { Sprout, Menu, X, MessageCircle, User } from 'lucide-vue-next'
+import { Menu, X, MessageCircle, User, ChevronDown } from 'lucide-vue-next'
 import NotificationBell from './NotificationBell.vue'
 import LanguageSwitcher from './LanguageSwitcher.vue'
 
@@ -101,6 +150,7 @@ export default {
     X,
     MessageCircle,
     User,
+    ChevronDown,
     NotificationBell,
     LanguageSwitcher
   },
@@ -114,6 +164,7 @@ export default {
   data() {
     return {
       isMobileMenuOpen: false,
+      isStoryMenuOpen: false,
       navKeys: ['home', 'story', 'events', 'forum', 'map', 'newsletter']
     }
   },
@@ -121,13 +172,26 @@ export default {
     navItems() {
       return this.navKeys.map(key => ({
         page: key,
-        label: this.$t(`nav.${key}`)
+        label: this.$t(`nav.${key}`),
+        type: key === 'story' ? 'story' : 'link'
       }))
+    },
+    storyMenuItems() {
+      return [
+        { hash: '#blue-zone-twente', label: this.$t('nav.storySections.blueZoneTwente') },
+        { hash: '#blue-zones-worldwide', label: this.$t('nav.storySections.blueZonesWorldwide') },
+        { hash: '#our-team', label: this.$t('nav.storySections.ourTeam') }
+      ]
     }
   },
   methods: {
     navigate(page) {
       this.$router.push({ name: page })
+    },
+    navigateStorySection(hash) {
+      this.$router.push({ name: 'story', hash })
+      this.isMobileMenuOpen = false
+      this.isStoryMenuOpen = false
     },
     navigateAndClose(page) {
       this.navigate(page)
@@ -135,11 +199,18 @@ export default {
     },
     toggleMobileMenu() {
       this.isMobileMenuOpen = !this.isMobileMenuOpen
+    },
+    openStoryMenu() {
+      this.isStoryMenuOpen = true
+    },
+    closeStoryMenu() {
+      this.isStoryMenuOpen = false
     }
   },
   watch: {
     $route() {
       this.isMobileMenuOpen = false
+      this.isStoryMenuOpen = false
     }
   }
 }
@@ -243,6 +314,57 @@ export default {
 .nav-link--active {
   color: rgb(var(--color-primary));
   background: rgba(var(--color-primary), 0.1);
+}
+
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.nav-dropdown-icon {
+  transition: transform 0.2s ease;
+}
+
+.nav-dropdown:hover .nav-dropdown-icon,
+.nav-dropdown:focus-within .nav-dropdown-icon {
+  transform: rotate(180deg);
+}
+
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  min-width: 220px;
+  background: white;
+  border: 1px solid rgb(var(--color-border));
+  border-radius: 0.75rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  z-index: 100;
+}
+
+.nav-dropdown-item {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: none;
+  background: transparent;
+  color: rgb(var(--color-text-secondary));
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-dropdown-item:hover {
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-text-primary));
 }
 
 /* Desktop Auth Buttons */
@@ -388,6 +510,36 @@ export default {
 .nav-mobile-link--active {
   color: rgb(var(--color-primary));
   background: rgba(var(--color-primary), 0.1);
+}
+
+.nav-mobile-story {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nav-mobile-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-left: 0.75rem;
+}
+
+.nav-mobile-sublink {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background: transparent;
+  border: none;
+  color: rgb(var(--color-text-secondary));
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.nav-mobile-sublink:hover {
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-text-primary));
 }
 
 .nav-mobile-auth {

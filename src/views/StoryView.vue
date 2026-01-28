@@ -14,49 +14,27 @@
       </div>
     </section>
 
-    <!-- Origin Story -->
-    <section class="origin-section">
-      <div class="origin-container">
-        <div class="origin-grid">
-          <div class="origin-content">
-            <MarkdownText keypath="story.originTitle" tag="h2" inline />
-            <MarkdownText keypath="story.originText1" class-name="origin-text" />
-            <MarkdownText keypath="story.originText2" class-name="origin-text" />
-            <MarkdownText keypath="story.originText3" class-name="origin-text" />
-          </div>
-          <div class="origin-image-wrapper">
-            <ImageWithFallback
-              :src="resolveStoryImage('story.originImage')"
-              alt="Sustainable living"
-              class-name="origin-image"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Blue Zones -->
-    <section class="blue-zones-section">
-      <div class="blue-zones-container">
-        <div class="blue-zones-header">
-          <MarkdownText keypath="story.blueZones.title" tag="h2" inline />
-          <MarkdownText keypath="story.blueZones.subtitle" class-name="blue-zones-subtitle" />
-        </div>
-        <div class="blue-zones-grid">
-          <div class="info-card">
-            <MarkdownText keypath="story.blueZones.worldwideTitle" tag="h3" inline />
-            <MarkdownText keypath="story.blueZones.worldwideText" class-name="info-text" />
-          </div>
-          <div class="info-card">
-            <MarkdownText keypath="story.blueZones.characteristicsTitle" tag="h3" inline />
-            <MarkdownText keypath="story.blueZones.characteristicsText" class-name="info-text" />
-          </div>
+    <!-- In-page Navigation -->
+    <section class="story-nav">
+      <div class="story-nav-container">
+        <label class="story-nav-label" for="story-section-select">
+          <MarkdownText keypath="story.jumpToLabel" tag="span" inline />
+        </label>
+        <div class="story-nav-select">
+          <select id="story-section-select" v-model="selectedStorySection" @change="jumpToSection">
+            <option value="" disabled>{{ $t('story.jumpToPlaceholder') }}</option>
+            <option value="#mission-vision-values">{{ $t('story.sections.missionVisionValues') }}</option>
+            <option value="#blue-zone-twente">{{ $t('story.sections.blueZoneTwente') }}</option>
+            <option value="#our-team">{{ $t('story.sections.ourTeam') }}</option>
+            <option value="#blue-zones-worldwide">{{ $t('story.sections.blueZonesWorldwide') }}</option>
+            <option value="#finance">{{ $t('story.sections.funding') }}</option>
+          </select>
         </div>
       </div>
     </section>
 
     <!-- Mission, Vision, Values -->
-    <section class="mvv-section">
+    <section id="mission-vision-values" class="mvv-section story-section">
       <div class="mvv-container">
         <div class="mvv-content">
           <!-- Mission -->
@@ -106,36 +84,61 @@
       </div>
     </section>
 
+    <!-- Origin Story -->
+    <section id="blue-zone-twente" class="origin-section story-section">
+      <div class="origin-container">
+        <div class="origin-grid">
+          <div class="origin-content">
+            <MarkdownText keypath="story.originTitle" tag="h2" inline />
+            <MarkdownText keypath="story.originText1" class-name="origin-text" />
+            <MarkdownText keypath="story.originText2" class-name="origin-text" />
+            <MarkdownText keypath="story.originText3" class-name="origin-text" />
+          </div>
+          <div class="origin-image-wrapper">
+            <ImageWithFallback
+              :src="resolveStoryImage('story.originImage')"
+              alt="Sustainable living"
+              class-name="origin-image"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- People -->
-    <section class="people-section">
+    <section id="our-team" class="people-section story-section">
       <div class="people-container">
         <div class="people-header">
           <MarkdownText keypath="story.people.title" tag="h2" inline />
           <MarkdownText keypath="story.people.subtitle" class-name="people-subtitle" />
         </div>
         <div class="people-grid">
-          <div class="person-card">
+          <div v-for="member in peopleMembers" :key="member.key" class="person-card">
             <ImageWithFallback
-              :src="resolveStoryImage('story.people.memberOne.image')"
-              :alt="$t('story.people.memberOne.name')"
+              :src="resolveStoryImage(member.imageKey)"
+              :alt="$t(member.nameKey)"
               class-name="person-photo"
             />
             <div class="person-content">
-              <MarkdownText keypath="story.people.memberOne.name" tag="h3" inline class-name="person-name" />
-              <MarkdownText keypath="story.people.memberOne.role" tag="p" inline class-name="person-role" />
-              <MarkdownText keypath="story.people.memberOne.text" class-name="person-text" />
+              <MarkdownText :keypath="member.nameKey" tag="h3" inline class-name="person-name" />
+              <MarkdownText :keypath="member.roleKey" tag="p" inline class-name="person-role" />
+              <MarkdownText :keypath="member.textKey" class-name="person-text" />
             </div>
           </div>
-          <div class="person-card">
-            <ImageWithFallback
-              :src="resolveStoryImage('story.people.memberTwo.image')"
-              :alt="$t('story.people.memberTwo.name')"
-              class-name="person-photo"
-            />
-            <div class="person-content">
-              <MarkdownText keypath="story.people.memberTwo.name" tag="h3" inline class-name="person-name" />
-              <MarkdownText keypath="story.people.memberTwo.role" tag="p" inline class-name="person-role" />
-              <MarkdownText keypath="story.people.memberTwo.text" class-name="person-text" />
+        </div>
+        <div class="partners-section">
+          <div class="partners-header">
+            <MarkdownText keypath="story.partners.title" tag="h3" inline />
+            <MarkdownText keypath="story.partners.subtitle" class-name="partners-subtitle" />
+          </div>
+          <div class="partners-grid">
+            <div class="partner-card">
+              <ImageWithFallback
+                :src="resolveStoryImage('story.partners.zwanenhof.image')"
+                :alt="$t('story.partners.zwanenhof.name')"
+                class-name="partner-logo"
+              />
+              <MarkdownText keypath="story.partners.zwanenhof.name" tag="p" inline class-name="partner-name" />
             </div>
           </div>
         </div>
@@ -143,7 +146,7 @@
     </section>
 
     <!-- What We Do -->
-    <section class="what-we-do-section">
+    <section class="what-we-do-section story-section">
       <div class="what-we-do-container">
         <div class="what-we-do-header">
           <MarkdownText keypath="story.whatWeDo.title" tag="h2" inline />
@@ -175,12 +178,41 @@
       </div>
     </section>
 
+    <!-- Blue Zones -->
+    <section id="blue-zones-worldwide" class="blue-zones-section story-section">
+      <div class="blue-zones-container">
+        <div class="blue-zones-header">
+          <MarkdownText keypath="story.blueZones.title" tag="h2" inline />
+          <MarkdownText keypath="story.blueZones.subtitle" class-name="blue-zones-subtitle" />
+        </div>
+        <div class="blue-zones-grid">
+          <div class="info-card">
+            <MarkdownText keypath="story.blueZones.worldwideTitle" tag="h3" inline />
+            <MarkdownText keypath="story.blueZones.worldwideText" class-name="info-text" />
+          </div>
+          <div class="info-card">
+            <MarkdownText keypath="story.blueZones.characteristicsTitle" tag="h3" inline />
+            <MarkdownText keypath="story.blueZones.characteristicsText" class-name="info-text" />
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Finance -->
-    <section class="finance-section">
+    <section id="finance" class="finance-section story-section">
       <div class="finance-container">
         <div class="finance-card">
           <MarkdownText keypath="story.finance.title" tag="h2" inline />
           <MarkdownText keypath="story.finance.text" class-name="finance-text" />
+          <div class="finance-logos">
+            <ImageWithFallback
+              v-for="logo in financeLogos"
+              :key="logo.srcKey"
+              :src="resolveStoryImage(logo.srcKey)"
+              :alt="$t(logo.altKey)"
+              class-name="finance-logo-image"
+            />
+          </div>
         </div>
       </div>
     </section>
@@ -219,14 +251,55 @@ export default {
     MarkdownText
   },
   computed: {
-    ...mapState(useAuthStore, ['isLoggedIn'])
+    ...mapState(useAuthStore, ['isLoggedIn']),
+    peopleMembers() {
+      const keys = ['memberOne', 'memberTwo', 'memberThree', 'memberFour', 'memberFive', 'memberSix']
+      return keys.map(key => ({
+        key,
+        nameKey: `story.people.${key}.name`,
+        roleKey: `story.people.${key}.role`,
+        textKey: `story.people.${key}.text`,
+        imageKey: `story.people.${key}.image`
+      }))
+    },
+    financeLogos() {
+      return [
+        {
+          srcKey: 'story.finance.logos.provincieOverijssel.src',
+          altKey: 'story.finance.logos.provincieOverijssel.alt'
+        },
+        {
+          srcKey: 'story.finance.logos.twentseNoabers.src',
+          altKey: 'story.finance.logos.twentseNoabers.alt'
+        },
+        {
+          srcKey: 'story.finance.logos.twentseNoabersFonds.src',
+          altKey: 'story.finance.logos.twentseNoabersFonds.alt'
+        }
+      ]
+    }
   },
   methods: {
     handleJoin() {
       this.$router.push({ name: 'signup' })
     },
+    jumpToSection() {
+      if (!this.selectedStorySection) return
+      const target = document.querySelector(this.selectedStorySection)
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      } else {
+        window.location.hash = this.selectedStorySection
+      }
+      this.selectedStorySection = ''
+    },
     resolveStoryImage(keypath) {
       return resolveImageUrl(this.$t(keypath))
+    }
+  },
+  data() {
+    return {
+      selectedStorySection: ''
     }
   }
 }
@@ -235,6 +308,10 @@ export default {
 <style scoped>
 .story-page {
   min-height: 100vh;
+}
+
+.story-section {
+  scroll-margin-top: 6rem;
 }
 
 /* Hero Section */
@@ -310,6 +387,59 @@ export default {
   line-height: 1.7;
   max-width: 48rem;
   margin: 0 auto;
+}
+
+/* In-page Navigation */
+.story-nav {
+  background: white;
+  border-bottom: 1px solid rgb(var(--color-border));
+}
+
+.story-nav-container {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .story-nav-container {
+    padding: 1.25rem 1.5rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (min-width: 1024px) {
+  .story-nav-container {
+    padding: 1.25rem 2rem;
+  }
+}
+
+.story-nav-label {
+  font-weight: 600;
+  color: rgb(var(--color-text));
+}
+
+.story-nav-select select {
+  padding: 0.65rem 1rem;
+  border-radius: 9999px;
+  border: 1px solid rgb(var(--color-border));
+  background: white;
+  color: rgb(var(--color-text));
+  font-weight: 500;
+  min-width: 240px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.story-nav-select select:focus {
+  outline: none;
+  border-color: rgb(var(--color-primary));
+  box-shadow: 0 0 0 3px rgba(var(--color-primary), 0.1);
 }
 
 /* Origin Section */
@@ -661,6 +791,60 @@ export default {
   margin: 0;
 }
 
+.partners-section {
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.partners-header {
+  text-align: center;
+}
+
+.partners-header h3 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: rgb(var(--color-text));
+}
+
+.partners-subtitle {
+  margin-top: 0.75rem;
+  color: rgb(var(--color-text-secondary));
+}
+
+.partners-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  align-items: center;
+}
+
+.partner-card {
+  border-radius: 0.75rem;
+  border: 1px solid rgb(var(--color-border));
+  background: white;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+  text-align: center;
+}
+
+.partner-logo {
+  width: 100%;
+  max-width: 220px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.partner-name {
+  font-weight: 600;
+  color: rgb(var(--color-text));
+  margin: 0;
+}
+
 /* What We Do Section */
 .what-we-do-section {
   padding: 5rem 0;
@@ -791,6 +975,24 @@ export default {
   line-height: 1.7;
   max-width: 48rem;
   margin: 0 auto;
+}
+
+.finance-logos {
+  margin-top: 2rem;
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  align-items: center;
+}
+
+.finance-logo-image {
+  width: 100%;
+  height: 80px;
+  object-fit: contain;
+  background: white;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(var(--color-border));
+  padding: 0.75rem;
 }
 
 /* Join Us Section */

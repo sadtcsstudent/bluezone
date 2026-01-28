@@ -64,25 +64,6 @@
       <div class="map-canvas">
         <div id="map" class="leaflet-map-container"></div>
 
-        <!-- Legend -->
-        <div class="map-legend">
-          <div class="legend-item">
-            <div class="legend-dot legend-dot--garden"></div>
-            <span>{{ $t('map.legend.garden') }}</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-dot legend-dot--market"></div>
-            <span>{{ $t('map.legend.market') }}</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-dot legend-dot--event"></div>
-            <span>{{ $t('map.legend.event') }}</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-dot legend-dot--group"></div>
-            <span>{{ $t('map.legend.group') }}</span>
-          </div>
-        </div>
       </div>
 
       <!-- Initiative Detail Modal -->
@@ -118,16 +99,18 @@
               <p v-if="selectedInitiative.contact" class="contact-item">
                 <strong>Contact:</strong> {{ selectedInitiative.contact }}
               </p>
-              <a
-                v-if="selectedInitiative.website"
-                :href="`https://${selectedInitiative.website}`"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="website-link"
-              >
-                <span>{{ selectedInitiative.website }}</span>
-                <ExternalLink :size="16" />
-              </a>
+              <div v-if="selectedInitiative.website" class="website-actions">
+                <span class="website-text">{{ selectedInitiative.website }}</span>
+                <a
+                  :href="normalizeWebsite(selectedInitiative.website)"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="website-button"
+                >
+                  <ExternalLink :size="16" />
+                  <span>{{ $t('map.visitWebsite') }}</span>
+                </a>
+              </div>
             </div>
 
             <!-- Actions -->
@@ -298,24 +281,8 @@ export default {
         }
 
         // Custom Icon using CSS classes
-        const getMarkerIcon = (type) => {
-          const props = 'width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
-          switch (type) {
-            case 'garden': // Leaf
-              return `<svg xmlns="http://www.w3.org/2000/svg" ${props}><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.5 2 4.5"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>`;
-            case 'market': // ShoppingBasket
-              return `<svg xmlns="http://www.w3.org/2000/svg" ${props}><path d="m5 11 4-7"/><path d="m19 11-4-7"/><path d="M2 11h20"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8c.9 0 1.8-.7 2-1.6l1.7-7.4"/><path d="m9 11 1 9"/></svg>`;
-            case 'event': // Calendar
-              return `<svg xmlns="http://www.w3.org/2000/svg" ${props}><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>`;
-            case 'group': // Users
-              return `<svg xmlns="http://www.w3.org/2000/svg" ${props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
-            default: // MapPin
-              return `<svg xmlns="http://www.w3.org/2000/svg" ${props}><path d="M12 12.2A4 4 0 0 0 8 8a4 4 0 0 0 8 0 4 4 0 0 0-4-4v0A4 4 0 0 0 8 8z"/><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
-          }
-        };
-
-        const iconHtml = `<div class="pin-icon pin-icon--${initiative.type}">
-          ${getMarkerIcon(initiative.type)}
+        const iconHtml = `<div class="pin-icon">
+          <img src="/images/blue-zone-horse.svg" alt="Blue Zone" />
         </div>`;
 
         const customIcon = L.divIcon({
@@ -379,6 +346,14 @@ export default {
         console.error(`Failed to ${action} initiative`, error)
         alert(`Failed to ${action} initiative`)
       }
+    },
+    normalizeWebsite(value) {
+      if (!value) return ''
+      const trimmed = value.trim()
+      if (!trimmed) return ''
+      return trimmed.startsWith('http://') || trimmed.startsWith('https://')
+        ? trimmed
+        : `https://${trimmed}`
     }
   }
 }
@@ -399,33 +374,17 @@ export default {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  color: white !important;
+  background: rgb(var(--color-primary)) !important;
   transition: transform 0.2s ease !important;
-  padding: 12px !important;
+  padding: 10px !important;
   box-sizing: border-box !important;
 }
 
-.pin-icon svg {
+.pin-icon img {
   width: 100% !important;
   height: 100% !important;
   flex-shrink: 0 !important;
   display: block !important;
-}
-
-.pin-icon--garden {
-  background: #3B8299 !important; /* Teal blue - matches legend */
-}
-
-.pin-icon--market {
-  background: #52A6C1 !important; /* Light blue - matches legend */
-}
-
-.pin-icon--event {
-  background: #8FC7DC !important; /* Soft sky blue - matches legend */
-}
-
-.pin-icon--group {
-  background: #295B6B !important; /* Dark teal - matches legend */
 }
 </style>
 
@@ -621,50 +580,7 @@ export default {
   border-bottom-color: white;
 }
 
-/* Legend */
-.map-legend {
-  position: absolute;
-  bottom: 1rem;
-  left: 1rem;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  border-radius: 0.75rem;
-  padding: 1rem;
-  border: 1px solid rgb(var(--color-border));
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  z-index: 1000; /* Ensure above Leaflet */
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-}
-
-.legend-dot {
-  width: 1rem;
-  height: 1rem;
-  border-radius: 9999px;
-}
-
-.legend-dot--garden {
-  background: rgb(var(--color-primary));
-}
-
-.legend-dot--market {
-  background: rgb(var(--color-secondary));
-}
-
-.legend-dot--event {
-  background: rgb(var(--color-accent));
-}
-
-.legend-dot--group {
-  background: rgb(var(--color-primary-dark));
-}
+/* Legend removed */
 
 /* Modal */
 .modal-overlay {
@@ -774,22 +690,37 @@ export default {
   gap: 0.5rem;
 }
 
-.contact-item {
-  color: rgb(var(--color-text-secondary));
-  margin: 0;
+.website-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.website-link {
+.website-text {
+  color: rgb(var(--color-text-secondary));
+}
+
+.website-button {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: rgb(var(--color-primary));
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  background: rgb(var(--color-primary));
+  color: white;
   text-decoration: none;
-  transition: color 0.2s ease;
+  width: fit-content;
+  transition: all 0.2s ease;
+  font-weight: 500;
 }
 
-.website-link:hover {
-  color: rgb(var(--color-primary-dark));
+.website-button:hover {
+  background: rgb(var(--color-primary-dark));
+}
+
+.contact-item {
+  color: rgb(var(--color-text-secondary));
+  margin: 0;
 }
 
 .modal-actions {

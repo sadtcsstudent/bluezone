@@ -106,6 +106,31 @@
     margin-top: 0.75rem;
   }
 
+  .markdown-text {
+    white-space: pre-line;
+  }
+
+  .markdown-text a.link-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    border: 1px solid rgb(var(--color-primary));
+    color: rgb(var(--color-primary));
+    background: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    margin: 0.15rem 0.2rem 0.15rem 0;
+  }
+
+  .markdown-text a.link-button:hover {
+    background: rgb(var(--color-primary));
+    color: white;
+  }
+
   .markdown-text ul,
   .markdown-text ol {
     margin: 0.75rem 0 0.75rem 1.5rem;

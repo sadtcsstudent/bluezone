@@ -539,6 +539,45 @@
               </button>
             </div>
           </form>
+
+          <div class="newsletter-history">
+            <div class="panel-header">
+              <h3>{{ $t('admin.newsletterTab.archiveTitle') }}</h3>
+              <p>{{ $t('admin.newsletterTab.archiveSubtitle') }}</p>
+            </div>
+
+            <div v-if="newslettersLoading" class="loading-state">
+              <div class="spinner"></div>
+            </div>
+
+            <div v-else-if="pastNewsletters.length === 0" class="empty-state">
+              <Mail :size="48" />
+              <h3>{{ $t('admin.newsletterTab.noArchive') }}</h3>
+            </div>
+
+            <div v-else class="newsletter-history__list">
+              <div v-for="newsletterItem in pastNewsletters" :key="newsletterItem.id" class="newsletter-history__item">
+                <div class="newsletter-history__info">
+                  <div class="newsletter-history__media">
+                    <ImageWithFallback
+                      :src="newsletterItem.imageUrl"
+                      :alt="newsletterItem.title"
+                      class-name="newsletter-history__image"
+                    />
+                  </div>
+                  <div>
+                    <h4>{{ newsletterItem.title }}</h4>
+                    <p class="meta-info">{{ newsletterItem.date }}</p>
+                  </div>
+                </div>
+                <div class="newsletter-history__actions">
+                  <button class="btn btn--sm btn--danger" @click="deleteNewsletter(newsletterItem.id)">
+                    {{ $t('common.delete') }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Initiatives Tab -->
@@ -913,6 +952,8 @@ import enMessages from '@/locales/en.json'
 import nlMessages from '@/locales/nl.json'
 import { flattenMessages } from '@/utils/i18n'
 import { loadI18nOverrides } from '@/i18n'
+import ImageWithFallback from '@/components/ImageWithFallback.vue'
+import { resolveImageUrl } from '@/utils/resolveImageUrl'
 
 const { t } = useI18n()
 
@@ -953,6 +994,8 @@ const searchingEventAddress = ref(false)
 const newsletter = ref({ subject: '', content: '', imageUrl: '' })
 const newsletterImageFile = ref(null)
 const newsletterImagePreview = ref(null)
+const pastNewsletters = ref([])
+const newslettersLoading = ref(false)
 const newEvent = ref({ title: '', date: '', location: '', description: '', categoryId: '', imageUrl: '' })
 const selectedImage = ref(null)
 const imagePreview = ref(null)
@@ -1524,6 +1567,9 @@ watch(activeTab, (newTab) => {
   if (newTab === 'content') {
     fetchI18nOverrides()
   }
+  if (newTab === 'newsletter') {
+    fetchPastNewsletters()
+  }
 })
 
 // Clean up event map when modal closes
@@ -1815,11 +1861,40 @@ const sendNewsletter = async () => {
     newsletter.value = { subject: '', content: '', imageUrl: '' };
     newsletterImageFile.value = null
     newsletterImagePreview.value = null
+    await fetchPastNewsletters()
   } catch (err) {
     console.error('Failed to send newsletter', err);
     alert('Failed to send newsletter: ' + (err.response?.data?.message || err.message));
   } finally {
     sending.value = false;
+  }
+}
+
+const fetchPastNewsletters = async () => {
+  newslettersLoading.value = true
+  try {
+    const data = await api.get('/admin/newsletter')
+    pastNewsletters.value = (data.newsletters || []).map((n) => ({
+      ...n,
+      date: new Date(n.publishedAt).toLocaleDateString(),
+      imageUrl: resolveImageUrl(n.imageUrl || ''),
+      fileUrl: resolveImageUrl(n.fileUrl || '')
+    }))
+  } catch (err) {
+    console.error('Failed to load newsletters', err)
+  } finally {
+    newslettersLoading.value = false
+  }
+}
+
+const deleteNewsletter = async (id) => {
+  if (!confirm(t('admin.newsletterTab.confirmations.delete'))) return
+  try {
+    await api.delete(`/admin/newsletter/${id}`)
+    pastNewsletters.value = pastNewsletters.value.filter((n) => n.id !== id)
+  } catch (err) {
+    console.error('Failed to delete newsletter', err)
+    alert('Failed to delete newsletter')
   }
 }
 
@@ -2787,6 +2862,64 @@ onMounted(load)
   height: calc(100vh - 220px);
   display: flex;
   flex-direction: column;
+}
+
+.newsletter-history {
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.newsletter-history__list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.newsletter-history__item {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(var(--color-border));
+  background: white;
+}
+
+@media (min-width: 768px) {
+  .newsletter-history__item {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.newsletter-history__info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.newsletter-history__media {
+  width: 90px;
+  height: 70px;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-border));
+  flex-shrink: 0;
+}
+
+.newsletter-history__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.newsletter-history__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .form-group--fullheight {

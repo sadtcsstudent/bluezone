@@ -37,6 +37,7 @@ export const listEvents = async (req: Request, res: Response, next: NextFunction
     if (category) where.categoryId = category;
 
     let orderBy: any = { date: 'asc' };
+    if (sort === 'latest' || sort === 'newest') orderBy = { date: 'desc' };
     if (sort === 'popularity') orderBy = { registrations: { _count: 'desc' } };
     if (sort === 'attendees') orderBy = { maxAttendees: 'desc' };
 

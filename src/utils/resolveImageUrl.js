@@ -23,5 +23,5 @@ export const resolveImageUrl = (url) => {
     return origin ? `${origin}${normalized}` : normalized
   }
 
-  return url
+  return normalized
 }

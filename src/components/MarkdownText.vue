@@ -9,16 +9,15 @@
     :is="tag"
     v-else
     :class="mergedClass"
-  >
-    {{ text }}
-  </component>
+    v-html="plainHtml"
+  />
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { getOverrideFormat } from '@/i18n/overrides'
-import { renderMarkdown, renderMarkdownInline } from '@/utils/markdown'
+import { renderMarkdown, renderMarkdownInline, renderPlainTextWithLinks } from '@/utils/markdown'
 
 const props = defineProps({
   keypath: { type: String, required: true },
@@ -35,6 +34,7 @@ const isMarkdown = computed(() => format.value === 'markdown')
 const renderedHtml = computed(() =>
   props.inline ? renderMarkdownInline(text.value) : renderMarkdown(text.value)
 )
+const plainHtml = computed(() => renderPlainTextWithLinks(text.value))
 const mergedClass = computed(() =>
   props.className ? `markdown-text ${props.className}` : 'markdown-text'
 )

@@ -82,7 +82,7 @@
       <div v-if="latestNewsletter" class="latest-section">
         <MarkdownText keypath="newsletterPage.latestTitle" tag="h2" inline class-name="latest-title" />
         <div class="latest-card">
-          <div v-if="latestNewsletter.imageUrl" class="latest-media">
+          <div class="latest-media">
             <ImageWithFallback
               :src="latestNewsletter.imageUrl"
               :alt="latestNewsletter.title"
@@ -107,8 +107,8 @@
                 {{ topic }}
               </span>
             </div>
-            <button class="download-button" @click="downloadNewsletter(latestNewsletter)">
-              <Download :size="20" />
+            <button class="download-button" @click="openNewsletter(latestNewsletter)">
+              <Eye :size="20" />
               <span>{{ $t('newsletterPage.download') }}</span>
             </button>
           </div>
@@ -124,7 +124,7 @@
             class="newsletter-item"
           >
             <div class="newsletter-content">
-              <div v-if="newsletter.imageUrl" class="newsletter-media">
+              <div class="newsletter-media">
                 <ImageWithFallback
                   :src="newsletter.imageUrl"
                   :alt="newsletter.title"
@@ -150,8 +150,8 @@
                   </span>
                 </div>
               </div>
-              <button class="download-button" @click="downloadNewsletter(newsletter)">
-                <Download :size="20" />
+              <button class="download-button" @click="openNewsletter(newsletter)">
+                <Eye :size="20" />
                 <span>{{ $t('newsletterPage.download') }}</span>
               </button>
             </div>
@@ -159,11 +159,40 @@
         </div>
       </div>
     </div>
+
+    <!-- Newsletter Modal -->
+    <div v-if="activeNewsletter" class="newsletter-modal" @click.self="closeNewsletter">
+      <div class="newsletter-modal__content">
+        <button class="newsletter-modal__close" @click="closeNewsletter">
+          <X :size="20" />
+        </button>
+        <div class="newsletter-modal__header">
+          <h3>{{ activeNewsletter.title }}</h3>
+          <div class="newsletter-date">
+            <Calendar :size="16" />
+            <span>{{ activeNewsletter.date }}</span>
+          </div>
+        </div>
+        <div class="newsletter-modal__media">
+          <ImageWithFallback
+            :src="activeNewsletter.imageUrl"
+            :alt="activeNewsletter.title"
+            class-name="newsletter-modal__image"
+          />
+        </div>
+        <div v-if="activeNewsletter.fileUrl" class="newsletter-modal__frame">
+          <iframe :src="activeNewsletter.fileUrl" title="Newsletter preview"></iframe>
+        </div>
+        <p v-else class="newsletter-modal__text">
+          {{ activeNewsletter.description }}
+        </p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { Mail, Calendar, Download, ArrowRight, CheckCircle } from 'lucide-vue-next'
+import { Mail, Calendar, ArrowRight, CheckCircle, Eye, X } from 'lucide-vue-next'
 import api from '@/services/api'
 import MarkdownText from '../components/MarkdownText.vue'
 import ImageWithFallback from '../components/ImageWithFallback.vue'
@@ -174,9 +203,10 @@ export default {
   components: {
     Mail,
     Calendar,
-    Download,
     ArrowRight,
     CheckCircle,
+    Eye,
+    X,
     MarkdownText,
     ImageWithFallback
   },
@@ -184,7 +214,8 @@ export default {
     return {
       email: '',
       subscribed: false,
-      pastNewsletters: []
+      pastNewsletters: [],
+      activeNewsletter: null
     }
   },
   computed: {
@@ -225,18 +256,11 @@ export default {
         console.error('Unsubscribe failed', err)
       }
     },
-    downloadNewsletter(newsletter) {
-      if (!newsletter.fileUrl) {
-        alert('Download not available for this newsletter.')
-        return
-      }
-      const link = document.createElement('a')
-      link.href = newsletter.fileUrl
-      link.setAttribute('download', '')
-      link.target = '_blank'
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+    openNewsletter(newsletter) {
+      this.activeNewsletter = newsletter
+    },
+    closeNewsletter() {
+      this.activeNewsletter = null
     }
   }
 }
@@ -682,5 +706,82 @@ export default {
 .download-button:hover {
   background: rgb(var(--color-primary));
   color: white;
+}
+
+.newsletter-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 9999;
+}
+
+.newsletter-modal__content {
+  background: white;
+  border-radius: 1rem;
+  max-width: 900px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 2rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.newsletter-modal__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  border: none;
+  background: rgb(var(--color-background));
+  border-radius: 9999px;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.newsletter-modal__close:hover {
+  background: rgb(var(--color-border));
+}
+
+.newsletter-modal__header h3 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem;
+  color: rgb(var(--color-text));
+}
+
+.newsletter-modal__media {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-border));
+}
+
+.newsletter-modal__image {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+}
+
+.newsletter-modal__frame iframe {
+  width: 100%;
+  height: 60vh;
+  border: none;
+}
+
+.newsletter-modal__text {
+  color: rgb(var(--color-text-secondary));
+  line-height: 1.6;
+  margin: 0;
 }
 </style>

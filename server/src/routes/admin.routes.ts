@@ -12,6 +12,8 @@ import {
   adminDeleteEvent,
   getStats,
   broadcastNewsletter,
+  listNewsletters,
+  adminDeleteNewsletter,
   updateUserRole
 } from '../controllers/admin.controller';
 import {
@@ -35,6 +37,8 @@ router.put('/events/:id', writeLimiter, adminUpdateEvent);
 router.delete('/events/:id', writeLimiter, adminDeleteEvent);
 router.get('/stats', readLimiter, getStats);
 router.post('/newsletter/send', writeLimiter, broadcastNewsletter);
+router.get('/newsletter', readLimiter, listNewsletters);
+router.delete('/newsletter/:id', writeLimiter, adminDeleteNewsletter);
 router.get('/i18n/overrides', readLimiter, listI18nOverrides);
 router.put('/i18n/overrides', writeLimiter, upsertI18nOverrides);
 router.delete('/i18n/overrides/:key/:locale', writeLimiter, deleteI18nOverride);
