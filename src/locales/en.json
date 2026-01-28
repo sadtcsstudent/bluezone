@@ -739,7 +739,7 @@
       "subtitle": "Organizations supporting Blue Zone Twente.",
       "zwanenhof": {
         "name": "Zwanenhof",
-        "image": "/images/partners/zwanenhof.svg"
+        "image": "/images/partners/zwanenhof.png"
       }
     },
     "finance": {
@@ -747,15 +747,15 @@
       "text": "Blue Zone Twente is funded by the Province of Overijssel and the Twente Noarbers Fund",
       "logos": {
         "provincieOverijssel": {
-          "src": "/images/funding/provincie-overijssel.svg",
+          "src": "/images/funding/provincie-overijssel.png",
           "alt": "Provincie Overijssel"
         },
         "twentseNoabers": {
-          "src": "/images/funding/twentse-noabers.svg",
+          "src": "/images/funding/twentse-noabers.png",
           "alt": "Twentse Noabers"
         },
         "twentseNoabersFonds": {
-          "src": "/images/funding/twentse-noabers-fonds.svg",
+          "src": "/images/funding/twentse-noabers-fonds.jpg",
           "alt": "Twentse Noabers Fonds"
         }
       }
