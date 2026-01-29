@@ -282,7 +282,7 @@ export default {
 
         // Custom Icon using CSS classes
         const iconHtml = `<div class="pin-icon">
-          <img src="/images/blue-zone-horse.svg" alt="Blue Zone" />
+          <img src="/images/blue-zone-horse.png" alt="Blue Zone" />
         </div>`;
 
         const customIcon = L.divIcon({
