@@ -374,7 +374,7 @@ export default {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  background: rgb(var(--color-primary)) !important;
+  background: white !important;
   transition: transform 0.2s ease !important;
   padding: 10px !important;
   box-sizing: border-box !important;
